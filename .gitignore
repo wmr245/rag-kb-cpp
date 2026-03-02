@@ -1,0 +1,8 @@
+.env
+__pycache__/
+*.pyc
+build/
+cmake-build-*/
+.vscode/
+.idea/
+.DS_Store
