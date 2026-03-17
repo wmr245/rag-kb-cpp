@@ -48,6 +48,9 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       UPLOAD_DIR: /workspace/uploads
+      REDIS_URL: redis://redis:6379/0
+      QUERY_CACHE_TTL_SEC: 300
+      QUERY_CACHE_PREFIX: rag:query:v1
 
       EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-openai_compatible}
       EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-v2}
