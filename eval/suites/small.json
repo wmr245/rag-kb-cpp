@@ -1,0 +1,192 @@
+{
+  "suiteId": "small",
+  "description": "最小可回归套件，优先覆盖最常见的知识库问答形态。",
+  "documents": [
+    {
+      "key": "product_overview",
+      "path": "eval/corpus/product_overview.md",
+      "title": "Orion Product Overview",
+      "owner": "eval-small"
+    },
+    {
+      "key": "ops_runbook",
+      "path": "eval/corpus/ops_runbook.md",
+      "title": "Orion Ops Runbook",
+      "owner": "eval-small"
+    }
+  ],
+  "cases": [
+    {
+      "id": "small-summary-core-capabilities",
+      "question": "Orion 的核心能力是什么？",
+      "topK": 3,
+      "docScope": [
+        "product_overview"
+      ],
+      "tags": [
+        "summary",
+        "product"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "文档上传",
+          "混合检索"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "核心能力"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-definition-chunk-metadata",
+      "question": "什么是 chunk metadata？",
+      "topK": 3,
+      "docScope": [
+        "product_overview"
+      ],
+      "tags": [
+        "definition",
+        "metadata"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "结构化信息",
+          "层级路径"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "术语定义"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-structure-section-location",
+      "question": "系统边界在哪个小节？",
+      "topK": 3,
+      "docScope": [
+        "product_overview"
+      ],
+      "tags": [
+        "structure",
+        "product"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "系统边界",
+          "小节"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "系统边界"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-procedure-startup-step-2",
+      "question": "服务启动步骤的第2步是什么？",
+      "topK": 3,
+      "docScope": [
+        "ops_runbook"
+      ],
+      "tags": [
+        "procedure",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "docker compose up --build -d"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Ops Runbook",
+            "heading": "服务启动步骤"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Ops Runbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-trigger-threshold",
+      "question": "什么情况下会触发故障响应？",
+      "topK": 3,
+      "docScope": [
+        "ops_runbook"
+      ],
+      "tags": [
+        "troubleshooting",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "五分钟",
+          "5%"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Ops Runbook",
+            "heading": "故障触发条件"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Ops Runbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-escalation-window",
+      "question": "多久内无法恢复就需要升级？",
+      "topK": 3,
+      "docScope": [
+        "ops_runbook"
+      ],
+      "tags": [
+        "troubleshooting",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "十五分钟"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Ops Runbook",
+            "heading": "升级规则"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Ops Runbook"
+          }
+        ]
+      }
+    }
+  ]
+}

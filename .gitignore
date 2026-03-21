@@ -1,4 +1,4 @@
-.env
+﻿.env
 __pycache__/
 *.pyc
 build/
@@ -8,3 +8,6 @@ cmake-build-*/
 .DS_Store
 
 uploads/
+AGENT_GUIDE.md
+
+eval/reports/

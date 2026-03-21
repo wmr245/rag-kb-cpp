@@ -7,7 +7,7 @@ from app.services.document_service import (
     update_task_status,
 )
 from app.services.embedding_service import embed_texts
-from app.services.file_service import chunk_text, read_text_file
+from app.services.file_service import read_chunks_with_meta
 
 
 def run_ingest_job(
@@ -30,14 +30,14 @@ def run_ingest_job(
         update_task_status(task_id, "running", 10, "")
         update_doc_status(doc_id, "processing")
 
-        text = read_text_file(source_path)
-        chunks = chunk_text(text, chunk_size=700, overlap=100)
-
+        chunks = read_chunks_with_meta(source_path, chunk_size=700, overlap=100)
         if not chunks:
             raise ValueError("document is empty after parsing")
 
+        texts = [item["text"] for item in chunks]
+
         update_task_status(task_id, "running", 40, "")
-        embeddings = embed_texts(chunks)
+        embeddings = embed_texts(texts)
 
         update_task_status(task_id, "running", 80, "")
         insert_chunks(doc_id, chunks, embeddings)

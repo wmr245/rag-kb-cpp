@@ -1,4 +1,5 @@
 CREATE EXTENSION IF NOT EXISTS vector;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 CREATE TABLE IF NOT EXISTS docs (
   id BIGSERIAL PRIMARY KEY,
@@ -25,6 +26,10 @@ CREATE TABLE IF NOT EXISTS chunks (
   chunk_index INT NOT NULL,
   text TEXT NOT NULL,
   page INT,
+  heading TEXT,
+  section_path TEXT,
+  chunk_type VARCHAR(32),
+  source_type VARCHAR(32),
   embedding VECTOR(1536),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (doc_id, chunk_index)
@@ -48,6 +53,21 @@ ON docs(owner, created_at DESC);
 
 CREATE INDEX IF NOT EXISTS idx_chunks_doc_id
 ON chunks(doc_id);
+
+CREATE INDEX IF NOT EXISTS idx_chunks_doc_id_chunk_type
+ON chunks(doc_id, chunk_type);
+
+CREATE INDEX IF NOT EXISTS idx_chunks_text_trgm
+ON chunks USING gin (text gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS idx_chunks_heading_trgm
+ON chunks USING gin (heading gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS idx_chunks_section_path_trgm
+ON chunks USING gin (section_path gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS idx_docs_title_trgm
+ON docs USING gin (title gin_trgm_ops);
 
 CREATE INDEX IF NOT EXISTS idx_tasks_status_updated_at
 ON tasks(status, updated_at DESC);

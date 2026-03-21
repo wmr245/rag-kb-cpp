@@ -1,0 +1,357 @@
+{
+  "suiteId": "medium",
+  "description": "扩展到更常见的内部知识库场景，包括 API 参考和团队规则。",
+  "documents": [
+    {
+      "key": "product_overview",
+      "path": "eval/corpus/product_overview.md",
+      "title": "Orion Product Overview",
+      "owner": "eval-small"
+    },
+    {
+      "key": "ops_runbook",
+      "path": "eval/corpus/ops_runbook.md",
+      "title": "Orion Ops Runbook",
+      "owner": "eval-small"
+    },
+    {
+      "key": "api_reference",
+      "path": "eval/corpus/api_reference.md",
+      "title": "Orion API Reference",
+      "owner": "eval-medium"
+    },
+    {
+      "key": "team_handbook",
+      "path": "eval/corpus/team_handbook.txt",
+      "title": "Orion Team Handbook",
+      "owner": "eval-medium"
+    }
+  ],
+  "cases": [
+    {
+      "id": "small-summary-core-capabilities",
+      "question": "Orion 的核心能力是什么？",
+      "topK": 3,
+      "docScope": [
+        "product_overview"
+      ],
+      "tags": [
+        "summary",
+        "product"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "文档上传",
+          "混合检索"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "核心能力"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-definition-chunk-metadata",
+      "question": "什么是 chunk metadata？",
+      "topK": 3,
+      "docScope": [
+        "product_overview"
+      ],
+      "tags": [
+        "definition",
+        "metadata"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "结构化信息",
+          "层级路径"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "术语定义"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-structure-section-location",
+      "question": "系统边界在哪个小节？",
+      "topK": 3,
+      "docScope": [
+        "product_overview"
+      ],
+      "tags": [
+        "structure",
+        "product"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "系统边界",
+          "小节"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "系统边界"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-procedure-startup-step-2",
+      "question": "服务启动步骤的第2步是什么？",
+      "topK": 3,
+      "docScope": [
+        "ops_runbook"
+      ],
+      "tags": [
+        "procedure",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "docker compose up --build -d"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Ops Runbook",
+            "heading": "服务启动步骤"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Ops Runbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-trigger-threshold",
+      "question": "什么情况下会触发故障响应？",
+      "topK": 3,
+      "docScope": [
+        "ops_runbook"
+      ],
+      "tags": [
+        "troubleshooting",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "五分钟",
+          "5%"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Ops Runbook",
+            "heading": "故障触发条件"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Ops Runbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-escalation-window",
+      "question": "多久内无法恢复就需要升级？",
+      "topK": 3,
+      "docScope": [
+        "ops_runbook"
+      ],
+      "tags": [
+        "troubleshooting",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "十五分钟"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Ops Runbook",
+            "heading": "升级规则"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Ops Runbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-api-query-body",
+      "question": "POST /rag/query 的 body 包含哪些字段？",
+      "topK": 3,
+      "tags": [
+        "api",
+        "reference"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "question",
+          "topK",
+          "docScope"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion API Reference",
+            "heading": "查询接口"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion API Reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-api-cache-header",
+      "question": "命中缓存时哪个响应头会返回 hit？",
+      "topK": 3,
+      "tags": [
+        "api",
+        "cache"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "x-cache"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion API Reference",
+            "heading": "缓存行为"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion API Reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-api-health-endpoint",
+      "question": "健康检查接口是什么？",
+      "topK": 3,
+      "tags": [
+        "api",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "/health"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion API Reference",
+            "heading": "健康检查"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion API Reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-handbook-owner",
+      "question": "谁负责维护知识库平台？",
+      "topK": 3,
+      "tags": [
+        "policy",
+        "team"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "平台使能团队"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Team Handbook",
+            "sourceType": "txt"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Team Handbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-handbook-freeze-start",
+      "question": "发布冻结从什么时候开始？",
+      "topK": 3,
+      "tags": [
+        "policy",
+        "team"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "周五 17:00",
+          "每周五 17:00"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Team Handbook",
+            "sourceType": "txt"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Team Handbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-handbook-hotfix-approval",
+      "question": "紧急 hotfix 需要谁审批？",
+      "topK": 3,
+      "tags": [
+        "policy",
+        "team"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "事故负责人"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Team Handbook",
+            "sourceType": "txt"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Team Handbook"
+          }
+        ]
+      }
+    }
+  ]
+}

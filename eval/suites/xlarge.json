@@ -1,0 +1,331 @@
+{
+  "suiteId": "xlarge",
+  "description": "基于公开官方长文档样本的扩展套件，覆盖 RFC 与 GovInfo 报告。",
+  "documents": [
+    {
+      "key": "rfc9000",
+      "path": "eval/corpus_external/rfc9000.txt",
+      "title": "RFC 9000 QUIC Transport",
+      "owner": "eval-xlarge"
+    },
+    {
+      "key": "rfc9110",
+      "path": "eval/corpus_external/rfc9110.txt",
+      "title": "RFC 9110 HTTP Semantics",
+      "owner": "eval-xlarge"
+    },
+    {
+      "key": "rfc8446",
+      "path": "eval/corpus_external/rfc8446.txt",
+      "title": "RFC 8446 TLS 1.3",
+      "owner": "eval-xlarge"
+    },
+    {
+      "key": "rfc9293",
+      "path": "eval/corpus_external/rfc9293.txt",
+      "title": "RFC 9293 TCP",
+      "owner": "eval-xlarge"
+    },
+    {
+      "key": "eric_ed483001",
+      "path": "eval/corpus_external/eric_ed483001.pdf",
+      "title": "ERIC ED483001 Title I Schools",
+      "owner": "eval-xlarge"
+    }
+  ],
+  "cases": [
+    {
+      "id": "xlarge-rfc9000-title",
+      "question": "RFC 9000 定义的是哪一种传输？",
+      "topK": 3,
+      "docScope": [
+        "rfc9000"
+      ],
+      "tags": [
+        "external",
+        "rfc",
+        "transport"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "UDP-Based Multiplexed and Secure Transport",
+          "UDP",
+          "secure transport"
+        ],
+        "retrievalAny": [
+          {
+            "title": "RFC 9000 QUIC Transport"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "RFC 9000 QUIC Transport"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlarge-rfc9000-streams",
+      "question": "QUIC 为应用提供什么样的 streams？",
+      "topK": 3,
+      "docScope": [
+        "rfc9000"
+      ],
+      "tags": [
+        "external",
+        "rfc",
+        "transport"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "flow-controlled streams",
+          "flow-controlled"
+        ],
+        "retrievalAny": [
+          {
+            "title": "RFC 9000 QUIC Transport"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "RFC 9000 QUIC Transport"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlarge-rfc9110-protocol-type",
+      "question": "RFC 9110 说 HTTP 是什么类型的协议？",
+      "topK": 3,
+      "docScope": [
+        "rfc9110"
+      ],
+      "tags": [
+        "external",
+        "rfc",
+        "http"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "stateless application-level protocol",
+          "stateless",
+          "application-level protocol"
+        ],
+        "retrievalAny": [
+          {
+            "title": "RFC 9110 HTTP Semantics"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "RFC 9110 HTTP Semantics"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlarge-rfc9110-uri-schemes",
+      "question": "RFC 9110 定义了哪两个 URI schemes？",
+      "topK": 3,
+      "docScope": [
+        "rfc9110"
+      ],
+      "tags": [
+        "external",
+        "rfc",
+        "http"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "http",
+          "https"
+        ],
+        "retrievalAny": [
+          {
+            "title": "RFC 9110 HTTP Semantics"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "RFC 9110 HTTP Semantics"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlarge-rfc8446-version",
+      "question": "RFC 8446 指定的是哪个 TLS 版本？",
+      "topK": 3,
+      "docScope": [
+        "rfc8446"
+      ],
+      "tags": [
+        "external",
+        "rfc",
+        "security"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "1.3",
+          "TLS 1.3"
+        ],
+        "retrievalAny": [
+          {
+            "title": "RFC 8446 TLS 1.3"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "RFC 8446 TLS 1.3"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlarge-rfc8446-threats",
+      "question": "TLS 1.3 设计用来防止哪些威胁？",
+      "topK": 3,
+      "docScope": [
+        "rfc8446"
+      ],
+      "tags": [
+        "external",
+        "rfc",
+        "security"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "eavesdropping",
+          "tampering",
+          "message forgery"
+        ],
+        "retrievalAny": [
+          {
+            "title": "RFC 8446 TLS 1.3"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "RFC 8446 TLS 1.3"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlarge-rfc9293-protocol",
+      "question": "RFC 9293 规范的是哪个协议？",
+      "topK": 3,
+      "docScope": [
+        "rfc9293"
+      ],
+      "tags": [
+        "external",
+        "rfc",
+        "transport"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "Transmission Control Protocol",
+          "TCP"
+        ],
+        "retrievalAny": [
+          {
+            "title": "RFC 9293 TCP"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "RFC 9293 TCP"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlarge-rfc9293-obsoletes",
+      "question": "RFC 9293 取代了哪份早期 TCP RFC？",
+      "topK": 3,
+      "docScope": [
+        "rfc9293"
+      ],
+      "tags": [
+        "external",
+        "rfc",
+        "transport"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "RFC 793",
+          "793"
+        ],
+        "retrievalAny": [
+          {
+            "title": "RFC 9293 TCP"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "RFC 9293 TCP"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlarge-eric-project",
+      "question": "这份 ERIC 报告研究的是哪个项目的实施？",
+      "topK": 3,
+      "docScope": [
+        "eric_ed483001"
+      ],
+      "tags": [
+        "external",
+        "govinfo",
+        "education"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "Title I program",
+          "Title I"
+        ],
+        "retrievalAny": [
+          {
+            "title": "ERIC ED483001 Title I Schools"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "ERIC ED483001 Title I Schools"
+          }
+        ]
+      }
+    },
+    {
+      "id": "xlarge-eric-years",
+      "question": "这份 ERIC 报告考察了哪些年份？",
+      "topK": 3,
+      "docScope": [
+        "eric_ed483001"
+      ],
+      "tags": [
+        "external",
+        "govinfo",
+        "education"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "1998-99",
+          "2000-01"
+        ],
+        "retrievalAny": [
+          {
+            "title": "ERIC ED483001 Title I Schools"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "ERIC ED483001 Title I Schools"
+          }
+        ]
+      }
+    }
+  ]
+}

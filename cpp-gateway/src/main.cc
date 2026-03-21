@@ -345,9 +345,24 @@ int main() {
         },
         {drogon::Get});
 
+    size_t maxBodySize = 20 * 1024 * 1024;
+    if (const char *envBodySizeMb = std::getenv("GATEWAY_MAX_BODY_SIZE_MB")) {
+        try {
+            int parsed = std::stoi(envBodySizeMb);
+            if (parsed > 0) {
+                maxBodySize = static_cast<size_t>(parsed) * 1024 * 1024;
+            }
+        } catch (const std::exception &) {
+            maxBodySize = 20 * 1024 * 1024;
+        }
+    }
+
+    drogon::app().setClientMaxBodySize(maxBodySize);
+
     LOG_INFO << "gateway starting on port=" << gatewayPort
              << " aiBaseUrl=" << aiBaseUrl
-             << " uploadDir=" << uploadDir;
+             << " uploadDir=" << uploadDir
+             << " maxBodySize=" << maxBodySize;
 
     drogon::app().addListener("0.0.0.0", gatewayPort).setThreadNum(1).run();
     return 0;

@@ -1,5 +1,5 @@
 import uuid
-from typing import List
+from typing import Any, List
 
 from app.core.logging_config import logger
 from app.db.postgres import get_conn
@@ -85,7 +85,7 @@ def update_doc_status(doc_id: int, status: str):
         conn.commit()
 
 
-def insert_chunks(doc_id: int, chunks: List[str], embeddings: List[List[float]]):
+def insert_chunks(doc_id: int, chunks: List[Any], embeddings: List[List[float]]):
     if len(chunks) != len(embeddings):
         raise ValueError("chunks and embeddings length mismatch")
 
@@ -98,13 +98,52 @@ def insert_chunks(doc_id: int, chunks: List[str], embeddings: List[List[float]])
     with get_conn() as conn:
         with conn.cursor() as cur:
             cur.execute("DELETE FROM chunks WHERE doc_id = %s", (doc_id,))
+
             for idx, (chunk, embedding) in enumerate(zip(chunks, embeddings)):
+                if isinstance(chunk, dict):
+                    text = (chunk.get("text") or "").strip()
+                    page = chunk.get("page") or 1
+                    heading = (chunk.get("heading") or "").strip() or None
+                    section_path = (chunk.get("section_path") or "").strip() or None
+                    chunk_type = (chunk.get("chunk_type") or "").strip() or None
+                    source_type = (chunk.get("source_type") or "").strip() or None
+                else:
+                    text = str(chunk).strip()
+                    page = 1
+                    heading = None
+                    section_path = None
+                    chunk_type = None
+                    source_type = None
+
+                if not text:
+                    continue
+
                 cur.execute(
                     """
-                    INSERT INTO chunks (doc_id, chunk_index, text, page, embedding)
-                    VALUES (%s, %s, %s, %s, %s::vector)
+                    INSERT INTO chunks (
+                        doc_id,
+                        chunk_index,
+                        text,
+                        page,
+                        heading,
+                        section_path,
+                        chunk_type,
+                        source_type,
+                        embedding
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s::vector)
                     """,
-                    (doc_id, idx, chunk, 1, embedding),
+                    (
+                        doc_id,
+                        idx,
+                        text,
+                        page,
+                        heading,
+                        section_path,
+                        chunk_type,
+                        source_type,
+                        embedding,
+                    ),
                 )
         conn.commit()
 

@@ -1,12 +1,11 @@
 import json
-import os
 import time
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Request, Response
 from fastapi.encoders import jsonable_encoder
 
-from app.core.config import QUERY_CACHE_TTL_SEC
+from app.core.config import EMBEDDING_MODEL, LLM_MODEL, QUERY_CACHE_TTL_SEC
 from app.core.logging_config import logger
 from app.models.schemas import (
     IngestRequest,
@@ -14,14 +13,15 @@ from app.models.schemas import (
     InternalUploadResponse,
     QueryRequest,
     QueryResponse,
+    RetrievedItem,
     TaskStatusResponse,
 )
 from app.services.cache_service import build_query_cache_key, get_kb_cache_version
 from app.services.document_service import create_doc_and_task, load_task
 from app.services.embedding_service import embed_query
 from app.services.ingest_service import run_ingest_job
-from app.services.llm_service import generate_answer
-from app.services.retrieval_service import search_chunks
+from app.services.llm_service import build_refusal_answer, generate_answer, is_refusal_answer
+from app.services.retrieval_service import assess_answerability, build_answer_citations, search_chunks
 from app.utils.trace import get_trace_id
 
 router = APIRouter()
@@ -70,8 +70,8 @@ async def internal_query(req: QueryRequest, request: Request, response: Response
         question=question,
         doc_scope=doc_scope,
         top_k=top_k,
-        embed_model="text-embedding-v2",
-        gen_model=os.getenv("CHAT_MODEL", "current-llm"),
+        embed_model=EMBEDDING_MODEL,
+        gen_model=LLM_MODEL,
         kb_version=kb_version,
     )
 
@@ -80,6 +80,22 @@ async def internal_query(req: QueryRequest, request: Request, response: Response
             cached = await redis_cli.get(cache_key)
             if cached:
                 resp_body = json.loads(cached)
+                resp_body.setdefault("refused", False)
+                resp_body.setdefault("refusalReason", None)
+                resp_body.setdefault("evidenceScore", None)
+
+                if resp_body.get("refused"):
+                    resp_body["citations"] = []
+                elif resp_body.get("items"):
+                    cached_items = [RetrievedItem(**item) for item in resp_body["items"]]
+                    resp_body["citations"] = jsonable_encoder(
+                        build_answer_citations(
+                            question=resp_body.get("question", question),
+                            items=cached_items,
+                            answer=resp_body.get("answer", ""),
+                        )
+                    )
+
                 resp_body["latencyMs"] = max(
                     1,
                     int((time.perf_counter() - total_started_at) * 1000),
@@ -89,11 +105,13 @@ async def internal_query(req: QueryRequest, request: Request, response: Response
                 response.headers["x-kb-version"] = str(kb_version)
 
                 logger.info(
-                    "internal_query cache_hit trace_id=%s kb_version=%s key_suffix=%s latency_ms=%s",
+                    "internal_query cache_hit trace_id=%s kb_version=%s key_suffix=%s latency_ms=%s citation_count=%s refused=%s",
                     trace_id,
                     kb_version,
                     cache_key[-12:],
                     resp_body["latencyMs"],
+                    len(resp_body.get("citations") or []),
+                    resp_body.get("refused", False),
                 )
 
                 return QueryResponse(**resp_body)
@@ -110,28 +128,51 @@ async def internal_query(req: QueryRequest, request: Request, response: Response
         embed_ms = int((time.perf_counter() - embed_started_at) * 1000)
 
         retrieve_started_at = time.perf_counter()
-        items = search_chunks(question_embedding, doc_scope, top_k)
+        items = search_chunks(question, question_embedding, doc_scope, top_k)
         retrieve_ms = int((time.perf_counter() - retrieve_started_at) * 1000)
 
-        generate_started_at = time.perf_counter()
-        answer = generate_answer(question, items)
-        generate_ms = int((time.perf_counter() - generate_started_at) * 1000)
+        decision = assess_answerability(question, items)
+        evidence_score = float(decision.get("evidenceScore") or 0.0)
+        refused = bool(decision.get("shouldRefuse"))
+        refusal_reason = str(decision.get("reason") or "") or None
 
+        generate_ms = 0
+        if refused:
+            answer = build_refusal_answer(refusal_reason or "low_retrieval_confidence")
+        else:
+            generate_started_at = time.perf_counter()
+            answer = generate_answer(question, items, evidence_score=evidence_score)
+            generate_ms = int((time.perf_counter() - generate_started_at) * 1000)
+
+            if is_refusal_answer(answer):
+                refused = True
+                refusal_reason = "model_insufficient_evidence"
+                answer = build_refusal_answer(refusal_reason)
+
+        citations = [] if refused else build_answer_citations(question=question, items=items, answer=answer)
         total_ms = int((time.perf_counter() - total_started_at) * 1000)
 
         response_obj = QueryResponse(
             question=question,
             answer=answer,
+            refused=refused,
+            refusalReason=refusal_reason,
+            evidenceScore=evidence_score,
             items=items,
+            citations=citations,
             latencyMs=total_ms,
         )
 
         response_data = jsonable_encoder(response_obj)
 
         logger.info(
-            "internal_query success trace_id=%s result_count=%s embed_ms=%s retrieve_ms=%s generate_ms=%s total_ms=%s",
+            "internal_query success trace_id=%s result_count=%s citation_count=%s refused=%s refusal_reason=%s evidence_score=%s embed_ms=%s retrieve_ms=%s generate_ms=%s total_ms=%s",
             trace_id,
             len(items),
+            len(citations),
+            refused,
+            refusal_reason,
+            evidence_score,
             embed_ms,
             retrieve_ms,
             generate_ms,
@@ -182,8 +223,14 @@ def internal_docs_upload(
     if not source_path.exists():
         raise HTTPException(status_code=400, detail=f"sourcePath not found: {req.sourcePath}")
 
-    if source_path.suffix.lower() not in [".md", ".txt"]:
-        raise HTTPException(status_code=400, detail="only .md and .txt are supported for now")
+    allowed_exts = {".md", ".txt", ".pdf", ".docx"}
+    ext = source_path.suffix.lower()
+
+    if ext not in allowed_exts:
+        raise HTTPException(
+            status_code=400,
+            detail=f"unsupported file type: {ext}, supported: {', '.join(sorted(allowed_exts))}",
+        )
 
     doc_id, task_id = create_doc_and_task(
         title=req.title,

@@ -1,0 +1,98 @@
+{
+  "suiteId": "longlite",
+  "description": "低成本长文档抽样套件，使用官方长文档摘录验证关键语义与结构信息。",
+  "documents": [
+    {
+      "key": "quic_excerpt",
+      "path": "eval/corpus_longlite/quic_transport_excerpt.md",
+      "title": "RFC 9000 QUIC Transport Excerpt",
+      "owner": "eval-longlite"
+    },
+    {
+      "key": "http_excerpt",
+      "path": "eval/corpus_longlite/http_semantics_excerpt.md",
+      "title": "RFC 9110 HTTP Semantics Excerpt",
+      "owner": "eval-longlite"
+    },
+    {
+      "key": "tls_excerpt",
+      "path": "eval/corpus_longlite/tls13_excerpt.md",
+      "title": "RFC 8446 TLS 1.3 Excerpt",
+      "owner": "eval-longlite"
+    }
+  ],
+  "cases": [
+    {
+      "id": "longlite-quic-transport-type",
+      "question": "RFC 9000 定义的是哪一种传输？",
+      "topK": 3,
+      "docScope": ["quic_excerpt"],
+      "tags": ["longlite", "rfc", "transport"],
+      "expectations": {
+        "answerContainsAny": ["UDP", "secure transport", "UDP-Based Multiplexed and Secure Transport", "QUIC transport protocol", "QUIC 传输协议"],
+        "retrievalAny": [{"title": "RFC 9000 QUIC Transport Excerpt"}],
+        "citationAny": [{"title": "RFC 9000 QUIC Transport Excerpt"}]
+      }
+    },
+    {
+      "id": "longlite-quic-streams",
+      "question": "QUIC 为应用提供什么样的 streams？",
+      "topK": 3,
+      "docScope": ["quic_excerpt"],
+      "tags": ["longlite", "rfc", "transport"],
+      "expectations": {
+        "answerContainsAny": ["flow-controlled streams", "flow-controlled"],
+        "retrievalAny": [{"title": "RFC 9000 QUIC Transport Excerpt"}],
+        "citationAny": [{"title": "RFC 9000 QUIC Transport Excerpt"}]
+      }
+    },
+    {
+      "id": "longlite-http-protocol-type",
+      "question": "RFC 9110 说 HTTP 是什么类型的协议？",
+      "topK": 3,
+      "docScope": ["http_excerpt"],
+      "tags": ["longlite", "rfc", "http"],
+      "expectations": {
+        "answerContainsAny": ["stateless application-level protocol", "stateless", "application-level protocol", "无状态", "应用层协议", "无状态的应用层协议"],
+        "retrievalAny": [{"title": "RFC 9110 HTTP Semantics Excerpt"}],
+        "citationAny": [{"title": "RFC 9110 HTTP Semantics Excerpt"}]
+      }
+    },
+    {
+      "id": "longlite-http-uri-schemes",
+      "question": "RFC 9110 定义了哪两个 URI schemes？",
+      "topK": 3,
+      "docScope": ["http_excerpt"],
+      "tags": ["longlite", "rfc", "http"],
+      "expectations": {
+        "answerContainsAll": ["http", "https"],
+        "retrievalAny": [{"title": "RFC 9110 HTTP Semantics Excerpt"}],
+        "citationAny": [{"title": "RFC 9110 HTTP Semantics Excerpt"}]
+      }
+    },
+    {
+      "id": "longlite-tls-version",
+      "question": "RFC 8446 指定的是哪个 TLS 版本？",
+      "topK": 3,
+      "docScope": ["tls_excerpt"],
+      "tags": ["longlite", "rfc", "security"],
+      "expectations": {
+        "answerContainsAny": ["1.3", "TLS 1.3"],
+        "retrievalAny": [{"title": "RFC 8446 TLS 1.3 Excerpt"}],
+        "citationAny": [{"title": "RFC 8446 TLS 1.3 Excerpt"}]
+      }
+    },
+    {
+      "id": "longlite-tls-threats",
+      "question": "TLS 1.3 设计用来防止哪些威胁？",
+      "topK": 3,
+      "docScope": ["tls_excerpt"],
+      "tags": ["longlite", "rfc", "security"],
+      "expectations": {
+        "answerContainsAny": ["eavesdropping", "tampering", "message forgery"],
+        "retrievalAny": [{"title": "RFC 8446 TLS 1.3 Excerpt"}],
+        "citationAny": [{"title": "RFC 8446 TLS 1.3 Excerpt"}]
+      }
+    }
+  ]
+}

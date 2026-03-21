@@ -1,0 +1,627 @@
+{
+  "suiteId": "small",
+  "description": "最小可回归套件，优先覆盖最常见的知识库问答形态。",
+  "baseUrl": "http://localhost:8080",
+  "generatedAt": "2026-03-21 14:51:15",
+  "documents": {
+    "product_overview": {
+      "docId": 45,
+      "taskId": "74221990-0afe-4492-90aa-425eca116995",
+      "title": "Orion Product Overview",
+      "path": "eval/corpus/product_overview.md"
+    },
+    "ops_runbook": {
+      "docId": 46,
+      "taskId": "94b98db8-e32d-48b9-b06b-c9e63a997aed",
+      "title": "Orion Ops Runbook",
+      "path": "eval/corpus/ops_runbook.md"
+    }
+  },
+  "totals": {
+    "cases": 6,
+    "passed": 6,
+    "answerAll": 6,
+    "answerAny": 6,
+    "retrieval": 6,
+    "citation": 6
+  },
+  "tagStats": {
+    "definition": {
+      "total": 1,
+      "passed": 1
+    },
+    "metadata": {
+      "total": 1,
+      "passed": 1
+    },
+    "ops": {
+      "total": 3,
+      "passed": 3
+    },
+    "procedure": {
+      "total": 1,
+      "passed": 1
+    },
+    "product": {
+      "total": 2,
+      "passed": 2
+    },
+    "structure": {
+      "total": 1,
+      "passed": 1
+    },
+    "summary": {
+      "total": 1,
+      "passed": 1
+    },
+    "troubleshooting": {
+      "total": 2,
+      "passed": 2
+    }
+  },
+  "results": [
+    {
+      "id": "small-summary-core-capabilities",
+      "question": "Orion 的核心能力是什么？",
+      "tags": [
+        "summary",
+        "product"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "latencyMs": 1474,
+      "answer": "Orion 的核心能力包括：文档上传、异步入库、混合检索和带引用的回答生成。",
+      "topItems": [
+        {
+          "title": "Orion Product Overview",
+          "heading": "核心能力",
+          "sectionPath": "Orion 产品总览 > 核心能力",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 核心能力\n\n核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "产品定位",
+          "sectionPath": "Orion 产品总览 > 产品定位",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 产品定位\n\nOrion 用于统一接入知识库文档，提供检索、引用和问答能力。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "Orion 产品总览",
+          "sectionPath": "Orion 产品总览",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] Orion 产品总览"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Product Overview",
+          "snippet": "[Heading] 核心能力 核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+        }
+      ],
+      "xCache": "miss",
+      "xTraceId": "68b66b8964a437f5f8e976f12c32",
+      "docScope": [
+        45
+      ]
+    },
+    {
+      "id": "small-definition-chunk-metadata",
+      "question": "什么是 chunk metadata？",
+      "tags": [
+        "definition",
+        "metadata"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "latencyMs": 1507,
+      "answer": "chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。",
+      "topItems": [
+        {
+          "title": "Orion Product Overview",
+          "heading": "术语定义",
+          "sectionPath": "Orion 产品总览 > 术语定义",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 术语定义\n\nchunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "核心能力",
+          "sectionPath": "Orion 产品总览 > 核心能力",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 核心能力\n\n核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "适用场景",
+          "sectionPath": "Orion 产品总览 > 适用场景",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 适用场景\n\n适用于内部知识库搜索、客服辅助和交付文档问答。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Product Overview",
+          "snippet": "[Heading] 术语定义 chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
+        }
+      ],
+      "xCache": "miss",
+      "xTraceId": "68b6c3b4c29790492ccfc04c26f6",
+      "docScope": [
+        45
+      ]
+    },
+    {
+      "id": "small-structure-section-location",
+      "question": "系统边界在哪个小节？",
+      "tags": [
+        "structure",
+        "product"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "latencyMs": 1049,
+      "answer": "系统边界在“系统边界”小节。",
+      "topItems": [
+        {
+          "title": "Orion Product Overview",
+          "heading": "系统边界",
+          "sectionPath": "Orion 产品总览 > 系统边界",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 系统边界\n\n系统边界是不处理审批流，也不替代源系统权限校验。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "术语定义",
+          "sectionPath": "Orion 产品总览 > 术语定义",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 术语定义\n\nchunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "适用场景",
+          "sectionPath": "Orion 产品总览 > 适用场景",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 适用场景\n\n适用于内部知识库搜索、客服辅助和交付文档问答。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Product Overview",
+          "snippet": "[Heading] 术语定义 chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
+        }
+      ],
+      "xCache": "miss",
+      "xTraceId": "68b71dd263cd32260c14db90199f",
+      "docScope": [
+        45
+      ]
+    },
+    {
+      "id": "small-procedure-startup-step-2",
+      "question": "服务启动步骤的第2步是什么？",
+      "tags": [
+        "procedure",
+        "ops"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "latencyMs": 1302,
+      "answer": "服务启动步骤的第2步是：执行 `docker compose up --build -d`。",
+      "topItems": [
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "服务启动步骤",
+          "sectionPath": "Orion 运行手册 > 服务启动步骤",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "初步排查",
+          "sectionPath": "Orion 运行手册 > 初步排查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "升级规则",
+          "sectionPath": "Orion 运行手册 > 升级规则",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 升级规则\n\n如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Ops Runbook",
+          "snippet": "[Heading] 服务启动步骤 1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        }
+      ],
+      "xCache": "miss",
+      "xTraceId": "68b75cbc78e8f3b8bbdc93a61cf1",
+      "docScope": [
+        46
+      ]
+    },
+    {
+      "id": "small-trigger-threshold",
+      "question": "什么情况下会触发故障响应？",
+      "tags": [
+        "troubleshooting",
+        "ops"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "latencyMs": 1294,
+      "answer": "当接口 5xx 比例连续五分钟超过 5% 时，会触发故障响应。",
+      "topItems": [
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "故障触发条件",
+          "sectionPath": "Orion 运行手册 > 故障触发条件",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 故障触发条件\n\n当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "升级规则",
+          "sectionPath": "Orion 运行手册 > 升级规则",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 升级规则\n\n如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "初步排查",
+          "sectionPath": "Orion 运行手册 > 初步排查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Ops Runbook",
+          "snippet": "[Heading] 故障触发条件 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。"
+        }
+      ],
+      "xCache": "miss",
+      "xTraceId": "68b7aa95c5174dcb6a4e09cf2dcf",
+      "docScope": [
+        46
+      ]
+    },
+    {
+      "id": "small-escalation-window",
+      "question": "多久内无法恢复就需要升级？",
+      "tags": [
+        "troubleshooting",
+        "ops"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "latencyMs": 1024,
+      "answer": "十五分钟内无法恢复就需要升级。",
+      "topItems": [
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "升级规则",
+          "sectionPath": "Orion 运行手册 > 升级规则",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 升级规则\n\n如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "故障触发条件",
+          "sectionPath": "Orion 运行手册 > 故障触发条件",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 故障触发条件\n\n当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "初步排查",
+          "sectionPath": "Orion 运行手册 > 初步排查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Ops Runbook",
+          "snippet": "[Heading] 升级规则 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。"
+        }
+      ],
+      "xCache": "miss",
+      "xTraceId": "68b7f82a024398603b9068e0d034",
+      "docScope": [
+        46
+      ]
+    }
+  ],
+  "_reportPath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/small-20260321-145115.json",
+  "comparison": {
+    "suiteId": "small",
+    "baselineGeneratedAt": "2026-03-21 14:38:28",
+    "currentGeneratedAt": "2026-03-21 14:51:15",
+    "baselinePath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/small-20260321-143828.json",
+    "currentPath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/small-20260321-145115.json",
+    "totalsDelta": {
+      "passed": 0,
+      "answerAll": 0,
+      "answerAny": 0,
+      "retrieval": 0,
+      "citation": 0
+    },
+    "regressionCount": 0,
+    "improvementCount": 0,
+    "regressions": [],
+    "improvements": [],
+    "changedCases": [
+      {
+        "status": "latency_change",
+        "id": "small-definition-chunk-metadata",
+        "question": "什么是 chunk metadata？",
+        "currentPassed": true,
+        "baselinePassed": true,
+        "currentLatencyMs": 1507,
+        "baselineLatencyMs": 1487,
+        "latencyDeltaMs": 20,
+        "currentChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        },
+        "baselineChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        }
+      },
+      {
+        "status": "latency_change",
+        "id": "small-escalation-window",
+        "question": "多久内无法恢复就需要升级？",
+        "currentPassed": true,
+        "baselinePassed": true,
+        "currentLatencyMs": 1024,
+        "baselineLatencyMs": 1860,
+        "latencyDeltaMs": -836,
+        "currentChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        },
+        "baselineChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        }
+      },
+      {
+        "status": "latency_change",
+        "id": "small-procedure-startup-step-2",
+        "question": "服务启动步骤的第2步是什么？",
+        "currentPassed": true,
+        "baselinePassed": true,
+        "currentLatencyMs": 1302,
+        "baselineLatencyMs": 1244,
+        "latencyDeltaMs": 58,
+        "currentChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        },
+        "baselineChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        }
+      },
+      {
+        "status": "latency_change",
+        "id": "small-structure-section-location",
+        "question": "系统边界在哪个小节？",
+        "currentPassed": true,
+        "baselinePassed": true,
+        "currentLatencyMs": 1049,
+        "baselineLatencyMs": 1266,
+        "latencyDeltaMs": -217,
+        "currentChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        },
+        "baselineChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        }
+      },
+      {
+        "status": "latency_change",
+        "id": "small-summary-core-capabilities",
+        "question": "Orion 的核心能力是什么？",
+        "currentPassed": true,
+        "baselinePassed": true,
+        "currentLatencyMs": 1474,
+        "baselineLatencyMs": 1504,
+        "latencyDeltaMs": -30,
+        "currentChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        },
+        "baselineChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        }
+      },
+      {
+        "status": "latency_change",
+        "id": "small-trigger-threshold",
+        "question": "什么情况下会触发故障响应？",
+        "currentPassed": true,
+        "baselinePassed": true,
+        "currentLatencyMs": 1294,
+        "baselineLatencyMs": 1397,
+        "latencyDeltaMs": -103,
+        "currentChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        },
+        "baselineChecks": {
+          "answerAllOk": true,
+          "answerAnyOk": true,
+          "retrievalOk": true,
+          "citationOk": true
+        }
+      }
+    ],
+    "tagDelta": {
+      "definition": {
+        "current": {
+          "passed": 1,
+          "total": 1
+        },
+        "baseline": {
+          "passed": 1,
+          "total": 1
+        },
+        "passedDelta": 0,
+        "totalDelta": 0
+      },
+      "metadata": {
+        "current": {
+          "passed": 1,
+          "total": 1
+        },
+        "baseline": {
+          "passed": 1,
+          "total": 1
+        },
+        "passedDelta": 0,
+        "totalDelta": 0
+      },
+      "ops": {
+        "current": {
+          "passed": 3,
+          "total": 3
+        },
+        "baseline": {
+          "passed": 3,
+          "total": 3
+        },
+        "passedDelta": 0,
+        "totalDelta": 0
+      },
+      "procedure": {
+        "current": {
+          "passed": 1,
+          "total": 1
+        },
+        "baseline": {
+          "passed": 1,
+          "total": 1
+        },
+        "passedDelta": 0,
+        "totalDelta": 0
+      },
+      "product": {
+        "current": {
+          "passed": 2,
+          "total": 2
+        },
+        "baseline": {
+          "passed": 2,
+          "total": 2
+        },
+        "passedDelta": 0,
+        "totalDelta": 0
+      },
+      "structure": {
+        "current": {
+          "passed": 1,
+          "total": 1
+        },
+        "baseline": {
+          "passed": 1,
+          "total": 1
+        },
+        "passedDelta": 0,
+        "totalDelta": 0
+      },
+      "summary": {
+        "current": {
+          "passed": 1,
+          "total": 1
+        },
+        "baseline": {
+          "passed": 1,
+          "total": 1
+        },
+        "passedDelta": 0,
+        "totalDelta": 0
+      },
+      "troubleshooting": {
+        "current": {
+          "passed": 2,
+          "total": 2
+        },
+        "baseline": {
+          "passed": 2,
+          "total": 2
+        },
+        "passedDelta": 0,
+        "totalDelta": 0
+      }
+    }
+  }
+}

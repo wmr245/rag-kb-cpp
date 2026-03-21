@@ -43,7 +43,7 @@ def build_query_cache_key(
         "topK": top_k,
         "embedModel": embed_model,
         "genModel": gen_model,
-        "retrievalVersion": "pgvector-topk-v1",
+        "retrievalVersion": "hybrid-rerank-v2-refusal-v1",
     }
     raw = json.dumps(
         payload,

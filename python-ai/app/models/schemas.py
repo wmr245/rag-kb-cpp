@@ -19,6 +19,7 @@ class QueryRequest(BaseModel):
 class Citation(BaseModel):
     title: str
     page: Optional[int] = None
+    snippet: Optional[str] = None
 
 
 class RetrievedItem(BaseModel):
@@ -27,13 +28,21 @@ class RetrievedItem(BaseModel):
     chunkIndex: int
     score: float
     text: str
+    heading: Optional[str] = None
+    sectionPath: Optional[str] = None
+    chunkType: Optional[str] = None
+    sourceType: Optional[str] = None
     citation: Citation
 
 
 class QueryResponse(BaseModel):
     question: str
     answer: str
+    refused: bool = False
+    refusalReason: Optional[str] = None
+    evidenceScore: Optional[float] = None
     items: List[RetrievedItem]
+    citations: List[Citation] = Field(default_factory=list)
     latencyMs: int
 
 
