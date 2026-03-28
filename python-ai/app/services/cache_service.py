@@ -1,4 +1,4 @@
-import hashlib
+﻿import hashlib
 import json
 
 import redis as redis_sync
@@ -34,6 +34,7 @@ def build_query_cache_key(
     embed_model: str,
     gen_model: str,
     kb_version: int,
+    rerank_signature: str = "",
 ) -> str:
     payload = {
         "schema": CACHE_SCHEMA_VERSION,
@@ -43,7 +44,8 @@ def build_query_cache_key(
         "topK": top_k,
         "embedModel": embed_model,
         "genModel": gen_model,
-        "retrievalVersion": "hybrid-rerank-v2-refusal-v1",
+        "retrievalVersion": "hybrid-rerank-v5-contextual-chunks",
+        "rerank": rerank_signature or "disabled",
     }
     raw = json.dumps(
         payload,
@@ -83,3 +85,4 @@ def bump_kb_version_sync(
             str(e),
         )
         return None
+

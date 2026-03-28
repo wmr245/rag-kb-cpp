@@ -1,0 +1,60 @@
+﻿{
+  "id": "campus_romance_01",
+  "version": "1.0.0",
+  "title": "雨后的校园物语",
+  "genre": ["romance", "slice_of_life", "mystery"],
+  "tone": ["gentle", "melancholic", "youthful"],
+  "era": "modern",
+  "locale": "boarding_high_school",
+  "author": "project-seed",
+  "tags": ["campus", "rain", "romance"],
+  "worldRules": [
+    "故事主要发生在一所封闭式寄宿高中内",
+    "重要剧情通常围绕放学后和下雨天展开"
+  ],
+  "hardConstraints": [
+    "未解锁秘密不能被角色主动泄露",
+    "第一阶段不进入战斗和数值对抗玩法"
+  ],
+  "socialNorms": [
+    "公开场合表白会引发较强情绪波动",
+    "图书馆和天台更适合私密对话"
+  ],
+  "narrativeBoundaries": [
+    "核心体验是关系推进与情绪互动",
+    "不进入硬核战斗和政治阴谋叙事"
+  ],
+  "factions": [
+    {
+      "id": "student_union",
+      "name": "学生会",
+      "description": "掌握大量校内信息流。"
+    }
+  ],
+  "locations": [
+    {
+      "id": "library",
+      "name": "图书馆",
+      "description": "安静、偏私密，适合慢节奏对话和秘密交换。",
+      "tags": ["quiet", "study", "romance"],
+      "sceneHints": ["rain", "after_school", "shared_book"]
+    },
+    {
+      "id": "rooftop",
+      "name": "教学楼天台",
+      "description": "黄昏时风很大，适合摊牌、误会与告白。",
+      "tags": ["sunset", "private", "emotion"],
+      "sceneHints": ["sunset", "confession", "misunderstanding"]
+    }
+  ],
+  "eventSeeds": [
+    "雨天借伞",
+    "失踪的情书",
+    "黄昏天台的误会"
+  ],
+  "defaultScenePatterns": [
+    "放学后在私密地点的慢节奏对话",
+    "因误会而产生的情绪波动"
+  ],
+  "mapAssets": []
+}

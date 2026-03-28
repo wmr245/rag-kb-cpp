@@ -1,8 +1,10 @@
-from app.core.config import EMBEDDING_DIM
+﻿from app.core.config import EMBEDDING_DIM
 from app.core.logging_config import logger
 from app.services.cache_service import bump_kb_version_sync
 from app.services.document_service import (
+    contextualize_chunks,
     insert_chunks,
+    update_doc_catalog,
     update_doc_status,
     update_task_status,
 )
@@ -34,13 +36,21 @@ def run_ingest_job(
         if not chunks:
             raise ValueError("document is empty after parsing")
 
-        texts = [item["text"] for item in chunks]
+        chunks = contextualize_chunks(title=title, chunks=chunks)
+        texts = [item.get("context_text") or item["text"] for item in chunks]
 
         update_task_status(task_id, "running", 40, "")
         embeddings = embed_texts(texts)
 
         update_task_status(task_id, "running", 80, "")
         insert_chunks(doc_id, chunks, embeddings)
+        update_doc_catalog(
+            doc_id=doc_id,
+            title=title,
+            source_path=source_path,
+            chunks=chunks,
+            embeddings=embeddings,
+        )
 
         update_task_status(task_id, "success", 100, "")
         update_doc_status(doc_id, "ready")

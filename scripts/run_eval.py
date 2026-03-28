@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 import argparse
 import json
 import shutil
@@ -60,24 +60,31 @@ def load_suite(suite_name: str) -> Dict[str, Any]:
     suite_path = DEFAULT_SUITE_DIR / f'{suite_name}.json'
     if not suite_path.exists():
         raise FileNotFoundError(f'suite not found: {suite_path}')
-    return json.loads(suite_path.read_text(encoding='utf-8'))
+    return json.loads(suite_path.read_text(encoding='utf-8-sig'))
 
 
 def load_report(report_path: str | Path) -> Dict[str, Any]:
     path = Path(report_path).expanduser().resolve()
     if not path.exists():
         raise FileNotFoundError(f'report not found: {path}')
-    return json.loads(path.read_text(encoding='utf-8'))
+    return json.loads(path.read_text(encoding='utf-8-sig'))
+
+
+def _normalize_match_text(text: str) -> str:
+    normalized = ' '.join((text or '').lower().split())
+    for token in [' ', '，', ',', '。', '.', '：', ':', '；', ';', '？', '?', '！', '!', '、', '（', '）', '(', ')']:
+        normalized = normalized.replace(token, '')
+    return normalized
 
 
 def contains_all(text: str, phrases: Iterable[str]) -> bool:
-    normalized = (text or '').lower()
-    return all((phrase or '').lower() in normalized for phrase in phrases)
+    normalized = _normalize_match_text(text)
+    return all(_normalize_match_text(phrase) in normalized for phrase in phrases)
 
 
 def contains_any(text: str, phrases: Iterable[str]) -> bool:
-    normalized = (text or '').lower()
-    return any((phrase or '').lower() in normalized for phrase in phrases)
+    normalized = _normalize_match_text(text)
+    return any(_normalize_match_text(phrase) in normalized for phrase in phrases)
 
 
 def match_fields(candidate: Dict[str, Any], matcher: Dict[str, Any]) -> bool:
@@ -104,6 +111,10 @@ def item_candidate(item: Dict[str, Any]) -> Dict[str, Any]:
         'sectionPath': item.get('sectionPath', ''),
         'chunkType': item.get('chunkType', ''),
         'sourceType': item.get('sourceType', ''),
+        'score': item.get('score'),
+        'localScore': item.get('localScore'),
+        'rerankScore': item.get('rerankScore'),
+        'blendedScore': item.get('blendedScore'),
         'text': item.get('text', ''),
     }
 
@@ -115,11 +126,34 @@ def citation_candidate(citation: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _extract_active_intents(intent: Dict[str, Any]) -> List[str]:
+    return [key for key, enabled in (intent or {}).items() if enabled]
+
+
+def _decision_summary_lines(decision_summary: Dict[str, Any]) -> List[str]:
+    if not decision_summary:
+        return []
+
+    lines: List[str] = []
+    headline = decision_summary.get('headline')
+    if headline:
+        lines.append(str(headline))
+
+    for section_name in ['planner', 'routing', 'retrieval', 'answerability', 'citation']:
+        section = decision_summary.get(section_name) or {}
+        summary = section.get('summary')
+        if summary:
+            lines.append(f"{section_name}: {summary}")
+    return lines
+
+
 def evaluate_case(case: Dict[str, Any], payload: Dict[str, Any]) -> Dict[str, Any]:
     expectations = case.get('expectations') or {}
     answer = payload.get('answer', '')
     items = payload.get('items') or []
     citations = payload.get('citations') or []
+    query_debug = payload.get('queryDebug') or {}
+    decision_summary = query_debug.get('decisionSummary') or {}
 
     answer_all_ok = contains_all(answer, expectations.get('answerContainsAll', []))
     answer_any_required = expectations.get('answerContainsAny', [])
@@ -129,19 +163,61 @@ def evaluate_case(case: Dict[str, Any], payload: Dict[str, Any]) -> Dict[str, An
     citation_candidates = [citation_candidate(citation) for citation in citations]
 
     retrieval_ok = any_match(item_candidates, expectations.get('retrievalAny', []))
+    top_item_ok = any_match(item_candidates[:1], expectations.get('topItemAny', []))
     citation_ok = any_match(citation_candidates, expectations.get('citationAny', []))
 
-    passed = answer_all_ok and answer_any_ok and retrieval_ok and citation_ok
+    intent = query_debug.get('intent') or {}
+    required_intents = expectations.get('intentContainsAll', [])
+    forbidden_intents = expectations.get('intentContainsNone', [])
+    intent_all_ok = all(bool(intent.get(name)) for name in required_intents)
+    intent_none_ok = all(not bool(intent.get(name)) for name in forbidden_intents)
+
+    expect_refused = expectations.get('expectRefused')
+    refusal_ok = True if expect_refused is None else bool(payload.get('refused')) == bool(expect_refused)
+
+    expected_citation_count = expectations.get('citationCount')
+    citation_count_ok = True if expected_citation_count is None else len(citations) == int(expected_citation_count)
+
+    passed = answer_all_ok and answer_any_ok and retrieval_ok and top_item_ok and citation_ok and intent_all_ok and intent_none_ok and refusal_ok and citation_count_ok
     return {
         'passed': passed,
         'answerAllOk': answer_all_ok,
         'answerAnyOk': answer_any_ok,
         'retrievalOk': retrieval_ok,
+        'topItemOk': top_item_ok,
         'citationOk': citation_ok,
+        'intentAllOk': intent_all_ok,
+        'intentNoneOk': intent_none_ok,
+        'refusalOk': refusal_ok,
+        'citationCountOk': citation_count_ok,
+        'hasRefusalExpectation': expect_refused is not None,
         'latencyMs': payload.get('latencyMs'),
         'answer': answer,
+        'refused': bool(payload.get('refused')),
+        'refusalReason': payload.get('refusalReason'),
+        'evidenceScore': payload.get('evidenceScore'),
         'topItems': item_candidates[:3],
         'citations': citation_candidates,
+        'resolvedDocScope': payload.get('resolvedDocScope', []),
+        'routedDocs': payload.get('routedDocs', []),
+        'queryDebug': {
+            'plannerVersion': query_debug.get('plannerVersion'),
+            'normalizedQuestion': query_debug.get('normalizedQuestion'),
+            'focusQuestion': query_debug.get('focusQuestion'),
+            'decomposition': query_debug.get('decomposition', []),
+            'intent': query_debug.get('intent', {}),
+            'routeQueries': query_debug.get('routeQueries', []),
+            'retrievalQueries': query_debug.get('retrievalQueries', []),
+            'routeRuns': query_debug.get('routeRuns', []),
+            'retrievalRuns': query_debug.get('retrievalRuns', []),
+            'attributionHints': query_debug.get('attributionHints', []),
+            'queryVectorCount': query_debug.get('queryVectorCount', 0),
+            'rerank': query_debug.get('rerank'),
+            'timingsMs': query_debug.get('timingsMs', {}),
+            'decisionSummary': decision_summary,
+        },
+        'decisionSummary': decision_summary,
+        'decisionSummaryText': _decision_summary_lines(decision_summary),
     }
 
 
@@ -180,7 +256,14 @@ def upload_documents(base_url: str, documents: List[Dict[str, Any]], timeout: in
 
 def run_case(base_url: str, case: Dict[str, Any], uploaded: Dict[str, Dict[str, Any]], default_scope: List[int], request_timeout_sec: int) -> Dict[str, Any]:
     scope_keys = case.get('docScope') or []
-    doc_scope = [uploaded[key]['docId'] for key in scope_keys] if scope_keys else list(default_scope)
+    use_default_scope = case.get('useDefaultScope', True)
+    if scope_keys:
+        doc_scope = [uploaded[key]['docId'] for key in scope_keys]
+    elif use_default_scope:
+        doc_scope = list(default_scope)
+    else:
+        doc_scope = []
+
     query_body = json.dumps(
         {
             'question': case['question'],
@@ -212,6 +295,79 @@ def summarize_tag_stats(results: List[Dict[str, Any]]) -> Dict[str, Dict[str, in
             if result['passed']:
                 stats[tag]['passed'] += 1
     return dict(sorted(stats.items()))
+
+
+def summarize_debug_stats(results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    planner_versions: Dict[str, int] = defaultdict(int)
+    intent_counts: Dict[str, int] = defaultdict(int)
+    routing_modes: Dict[str, int] = defaultdict(int)
+    refusal_reasons: Dict[str, int] = defaultdict(int)
+    decomposition_cases = 0
+    auto_routed_cases = 0
+    refused_cases = 0
+    cases_with_decision_summary = 0
+    rerank_enabled_cases = 0
+    rerank_applied_cases = 0
+    rerank_fallback_cases = 0
+    rerank_reordered_cases = 0
+    attribution_hint_cases = 0
+    rerank_providers: Dict[str, int] = defaultdict(int)
+
+    for result in results:
+        query_debug = result.get('queryDebug') or {}
+        version = query_debug.get('plannerVersion') or 'unknown'
+        planner_versions[version] += 1
+
+        for intent_name in _extract_active_intents(query_debug.get('intent', {})):
+            intent_counts[intent_name] += 1
+
+        if query_debug.get('decomposition'):
+            decomposition_cases += 1
+        if result.get('routedDocs'):
+            auto_routed_cases += 1
+            routing_modes['auto'] += 1
+        elif result.get('docScope'):
+            routing_modes['explicit_scope'] += 1
+        else:
+            routing_modes['global_search'] += 1
+
+        if result.get('refused'):
+            refused_cases += 1
+            refusal_reasons[result.get('refusalReason') or 'unknown'] += 1
+
+        if result.get('decisionSummary'):
+            cases_with_decision_summary += 1
+
+        rerank = query_debug.get('rerank') or {}
+        if rerank.get('enabled'):
+            rerank_enabled_cases += 1
+            provider = rerank.get('provider') or 'generic'
+            rerank_providers[provider] += 1
+        if int(rerank.get('appliedCount') or 0) > 0:
+            rerank_applied_cases += 1
+        if rerank.get('fallback'):
+            rerank_fallback_cases += 1
+        if rerank.get('orderingChanged'):
+            rerank_reordered_cases += 1
+        if query_debug.get('attributionHints'):
+            attribution_hint_cases += 1
+
+    return {
+        'plannerVersions': dict(sorted(planner_versions.items())),
+        'intentCounts': dict(sorted(intent_counts.items())),
+        'routingModes': dict(sorted(routing_modes.items())),
+        'refusalReasons': dict(sorted(refusal_reasons.items())),
+        'casesWithDecomposition': decomposition_cases,
+        'casesWithAutoRouting': auto_routed_cases,
+        'refusedCases': refused_cases,
+        'casesWithDecisionSummary': cases_with_decision_summary,
+        'casesWithRerankEnabled': rerank_enabled_cases,
+        'casesWithRerankApplied': rerank_applied_cases,
+        'casesWithRerankFallback': rerank_fallback_cases,
+        'casesWithRerankReorderedTopItems': rerank_reordered_cases,
+        'casesWithAttributionHints': attribution_hint_cases,
+        'rerankProviders': dict(sorted(rerank_providers.items())),
+    }
 
 
 def default_report_path(suite_id: str) -> Path:
@@ -247,6 +403,199 @@ def resolve_compare_target(compare_to: str | None, compare_to_baseline: bool, su
             raise FileNotFoundError(f'baseline report not found: {path}')
         return path
     return None
+
+
+def _preview_list(values: List[str], limit: int = 3) -> str:
+    cleaned = [str(value) for value in values if value]
+    if not cleaned:
+        return 'none'
+    return ' | '.join(cleaned[:limit])
+
+
+def _top_item_labels(result: Dict[str, Any]) -> List[str]:
+    labels: List[str] = []
+    for item in (result.get('topItems') or [])[:3]:
+        title = item.get('title') or ''
+        anchor = item.get('heading') or item.get('sectionPath') or item.get('chunkType') or 'chunk'
+        labels.append(f"{title}/{anchor}")
+    return labels
+
+
+def _routed_doc_labels(result: Dict[str, Any]) -> List[str]:
+    labels: List[str] = []
+    for row in (result.get('routedDocs') or [])[:3]:
+        title = row.get('title') or ''
+        reason = row.get('reason') or ''
+        labels.append(f"{title}{(':' + reason) if reason else ''}")
+    return labels
+
+
+def _route_run_labels(result: Dict[str, Any]) -> List[str]:
+    labels: List[str] = []
+    for run in (result.get('queryDebug') or {}).get('routeRuns', [])[:2]:
+        query = run.get('query') or ''
+        docs = []
+        for row in (run.get('topDocs') or [])[:2]:
+            docs.append(f"{row.get('title') or ''}:{row.get('reason') or ''}".rstrip(':'))
+        labels.append(f"{query}=>{_preview_list(docs, 2)}")
+    return labels
+
+
+def _retrieval_run_labels(result: Dict[str, Any]) -> List[str]:
+    labels: List[str] = []
+    for run in (result.get('queryDebug') or {}).get('retrievalRuns', [])[:2]:
+        query = run.get('query') or ''
+        local_items = []
+        for row in (run.get('localTopItems') or [])[:1]:
+            local_items.append(f"{row.get('title') or ''}/{row.get('heading') or row.get('sectionPath') or 'chunk'}")
+        final_items = []
+        for row in (run.get('finalTopItems') or [])[:1]:
+            final_items.append(f"{row.get('title') or ''}/{row.get('heading') or row.get('sectionPath') or 'chunk'}")
+        labels.append(f"{query}=>local:{_preview_list(local_items, 1)}=>final:{_preview_list(final_items, 1)}")
+    return labels
+
+
+def _citation_labels(result: Dict[str, Any]) -> List[str]:
+    labels: List[str] = []
+    for citation in (result.get('citations') or [])[:3]:
+        title = citation.get('title') or ''
+        snippet = citation.get('snippet') or ''
+        snippet = snippet[:48].strip()
+        labels.append(f"{title}{(':' + snippet) if snippet else ''}")
+    return labels
+
+
+def _append_reason(details: Dict[str, List[str]], area: str, message: str) -> None:
+    bucket = details.setdefault(area, [])
+    if message not in bucket:
+        bucket.append(message)
+
+
+def _analyze_case_difference(current: Dict[str, Any], baseline: Dict[str, Any]) -> Dict[str, Any]:
+    details: Dict[str, List[str]] = {}
+
+    cur_debug = current.get('queryDebug') or {}
+    base_debug = baseline.get('queryDebug') or {}
+
+    cur_intents = sorted(_extract_active_intents(cur_debug.get('intent', {})))
+    base_intents = sorted(_extract_active_intents(base_debug.get('intent', {})))
+    if cur_intents != base_intents:
+        _append_reason(details, 'planner', f"intent {base_intents or ['general']} -> {cur_intents or ['general']}")
+
+    cur_focus = cur_debug.get('focusQuestion') or ''
+    base_focus = base_debug.get('focusQuestion') or ''
+    if cur_focus != base_focus:
+        _append_reason(details, 'planner', f"focus {_preview_list([base_focus], 1)} -> {_preview_list([cur_focus], 1)}")
+
+    cur_decomp = cur_debug.get('decomposition') or []
+    base_decomp = base_debug.get('decomposition') or []
+    if cur_decomp != base_decomp:
+        _append_reason(details, 'planner', f"decomposition {_preview_list(base_decomp)} -> {_preview_list(cur_decomp)}")
+
+    cur_route_queries = cur_debug.get('routeQueries') or []
+    base_route_queries = base_debug.get('routeQueries') or []
+    if cur_route_queries != base_route_queries:
+        _append_reason(details, 'planner', f"routeQueries {_preview_list(base_route_queries, 2)} -> {_preview_list(cur_route_queries, 2)}")
+
+    cur_retrieval_queries = cur_debug.get('retrievalQueries') or []
+    base_retrieval_queries = base_debug.get('retrievalQueries') or []
+    if cur_retrieval_queries != base_retrieval_queries:
+        _append_reason(details, 'planner', f"retrievalQueries {_preview_list(base_retrieval_queries, 2)} -> {_preview_list(cur_retrieval_queries, 2)}")
+
+    cur_rerank = cur_debug.get('rerank') or {}
+    base_rerank = base_debug.get('rerank') or {}
+    if bool(cur_rerank.get('enabled')) != bool(base_rerank.get('enabled')):
+        _append_reason(details, 'rerank', f"enabled {bool(base_rerank.get('enabled'))} -> {bool(cur_rerank.get('enabled'))}")
+    if (cur_rerank.get('provider') or '') != (base_rerank.get('provider') or ''):
+        _append_reason(details, 'rerank', f"provider {_preview_list([base_rerank.get('provider') or 'none'], 1)} -> {_preview_list([cur_rerank.get('provider') or 'none'], 1)}")
+    if (cur_rerank.get('model') or '') != (base_rerank.get('model') or ''):
+        _append_reason(details, 'rerank', f"model {_preview_list([base_rerank.get('model') or 'none'], 1)} -> {_preview_list([cur_rerank.get('model') or 'none'], 1)}")
+    if bool(cur_rerank.get('fallback')) != bool(base_rerank.get('fallback')):
+        _append_reason(details, 'rerank', f"fallback {bool(base_rerank.get('fallback'))} -> {bool(cur_rerank.get('fallback'))}")
+    if int(cur_rerank.get('appliedCount') or 0) != int(base_rerank.get('appliedCount') or 0):
+        _append_reason(details, 'rerank', f"appliedCount {int(base_rerank.get('appliedCount') or 0)} -> {int(cur_rerank.get('appliedCount') or 0)}")
+
+    cur_routed = _routed_doc_labels(current)
+    base_routed = _routed_doc_labels(baseline)
+    if cur_routed != base_routed:
+        _append_reason(details, 'routing', f"routedDocs {_preview_list(base_routed)} -> {_preview_list(cur_routed)}")
+
+    cur_route_runs = _route_run_labels(current)
+    base_route_runs = _route_run_labels(baseline)
+    if cur_route_runs != base_route_runs:
+        _append_reason(details, 'routing', f"routeRuns {_preview_list(base_route_runs, 2)} -> {_preview_list(cur_route_runs, 2)}")
+
+    cur_retrieval_ok = bool(current.get('retrievalOk'))
+    base_retrieval_ok = bool(baseline.get('retrievalOk'))
+    if cur_retrieval_ok != base_retrieval_ok:
+        _append_reason(details, 'retrieval', f"retrievalOk {base_retrieval_ok} -> {cur_retrieval_ok}")
+
+    cur_items = _top_item_labels(current)
+    base_items = _top_item_labels(baseline)
+    if cur_items != base_items:
+        _append_reason(details, 'retrieval', f"topItems {_preview_list(base_items)} -> {_preview_list(cur_items)}")
+
+    cur_retrieval_runs = _retrieval_run_labels(current)
+    base_retrieval_runs = _retrieval_run_labels(baseline)
+    if cur_retrieval_runs != base_retrieval_runs:
+        _append_reason(details, 'retrieval', f"retrievalRuns {_preview_list(base_retrieval_runs, 2)} -> {_preview_list(cur_retrieval_runs, 2)}")
+
+    cur_refused = bool(current.get('refused'))
+    base_refused = bool(baseline.get('refused'))
+    if cur_refused != base_refused:
+        _append_reason(details, 'answerability', f"refused {base_refused} -> {cur_refused}")
+
+    cur_reason = current.get('refusalReason') or ''
+    base_reason = baseline.get('refusalReason') or ''
+    if cur_reason != base_reason:
+        _append_reason(details, 'answerability', f"refusalReason {_preview_list([base_reason], 1)} -> {_preview_list([cur_reason], 1)}")
+
+    cur_evidence = current.get('evidenceScore')
+    base_evidence = baseline.get('evidenceScore')
+    if cur_evidence is not None or base_evidence is not None:
+        cur_value = float(cur_evidence or 0.0)
+        base_value = float(base_evidence or 0.0)
+        if abs(cur_value - base_value) >= 0.03:
+            _append_reason(details, 'answerability', f"evidenceScore {base_value:.3f} -> {cur_value:.3f}")
+
+    cur_refusal_ok = bool(current.get('refusalOk', True))
+    base_refusal_ok = bool(baseline.get('refusalOk', True))
+    if cur_refusal_ok != base_refusal_ok:
+        _append_reason(details, 'answerability', f"refusalOk {base_refusal_ok} -> {cur_refusal_ok}")
+
+    cur_top_item_ok = bool(current.get('topItemOk'))
+    base_top_item_ok = bool(baseline.get('topItemOk'))
+    if cur_top_item_ok != base_top_item_ok:
+        _append_reason(details, 'retrieval', f"topItemOk {base_top_item_ok} -> {cur_top_item_ok}")
+
+    cur_citation_ok = bool(current.get('citationOk'))
+    base_citation_ok = bool(baseline.get('citationOk'))
+    if cur_citation_ok != base_citation_ok:
+        _append_reason(details, 'citation', f"citationOk {base_citation_ok} -> {cur_citation_ok}")
+
+    cur_citations = _citation_labels(current)
+    base_citations = _citation_labels(baseline)
+    if cur_citations != base_citations:
+        _append_reason(details, 'citation', f"citations {_preview_list(base_citations)} -> {_preview_list(cur_citations)}")
+
+    if not details:
+        _append_reason(details, 'result', 'pass/fail changed without a more specific observable delta')
+
+    areas = list(details.keys())
+    summary_parts = [f"{area}: {messages[0]}" for area, messages in details.items()]
+    return {
+        'areas': areas,
+        'summary': ' ; '.join(summary_parts[:3]),
+        'details': details,
+    }
+
+
+def _reason_bucket_counts(cases: List[Dict[str, Any]]) -> Dict[str, int]:
+    counts: Dict[str, int] = defaultdict(int)
+    for case in cases:
+        for area in case.get('reasonAreas', []):
+            counts[area] += 1
+    return dict(sorted(counts.items()))
 
 
 def promote_baseline(report_path: Path, suite_id: str) -> Path:
@@ -288,6 +637,7 @@ def build_comparison(current: Dict[str, Any], baseline: Dict[str, Any]) -> Dict[
         cur_passed = bool(cur.get('passed'))
         base_passed = bool(base.get('passed'))
         delta = _safe_int(cur.get('latencyMs')) - _safe_int(base.get('latencyMs'))
+        reason_analysis = _analyze_case_difference(cur, base)
         changed = {
             'id': case_id,
             'question': cur.get('question') or base.get('question'),
@@ -300,14 +650,25 @@ def build_comparison(current: Dict[str, Any], baseline: Dict[str, Any]) -> Dict[
                 'answerAllOk': bool(cur.get('answerAllOk')),
                 'answerAnyOk': bool(cur.get('answerAnyOk')),
                 'retrievalOk': bool(cur.get('retrievalOk')),
+                'topItemOk': bool(cur.get('topItemOk')),
                 'citationOk': bool(cur.get('citationOk')),
+                'intentAllOk': bool(cur.get('intentAllOk', True)),
+                'intentNoneOk': bool(cur.get('intentNoneOk', True)),
+                'refusalOk': bool(cur.get('refusalOk', True)),
             },
             'baselineChecks': {
                 'answerAllOk': bool(base.get('answerAllOk')),
                 'answerAnyOk': bool(base.get('answerAnyOk')),
                 'retrievalOk': bool(base.get('retrievalOk')),
+                'topItemOk': bool(base.get('topItemOk')),
                 'citationOk': bool(base.get('citationOk')),
+                'intentAllOk': bool(base.get('intentAllOk', True)),
+                'intentNoneOk': bool(base.get('intentNoneOk', True)),
+                'refusalOk': bool(base.get('refusalOk', True)),
             },
+            'reasonAreas': reason_analysis['areas'],
+            'reasonSummary': reason_analysis['summary'],
+            'reasonDetails': reason_analysis['details'],
         }
 
         if base_passed and not cur_passed:
@@ -321,7 +682,7 @@ def build_comparison(current: Dict[str, Any], baseline: Dict[str, Any]) -> Dict[
 
     current_totals = current.get('totals', {})
     baseline_totals = baseline.get('totals', {})
-    metrics = ['passed', 'answerAll', 'answerAny', 'retrieval', 'citation']
+    metrics = ['passed', 'answerAll', 'answerAny', 'retrieval', 'citation', 'refusalPassed']
     totals_delta = {
         metric: _safe_int(current_totals.get(metric)) - _safe_int(baseline_totals.get(metric))
         for metric in metrics
@@ -339,6 +700,8 @@ def build_comparison(current: Dict[str, Any], baseline: Dict[str, Any]) -> Dict[
             'totalDelta': _safe_int(cur.get('total')) - _safe_int(base.get('total')),
         }
 
+    changed_cases = [case for case in unchanged if case['status'] == 'latency_change']
+
     return {
         'suiteId': current_suite,
         'baselineGeneratedAt': baseline.get('generatedAt'),
@@ -350,8 +713,11 @@ def build_comparison(current: Dict[str, Any], baseline: Dict[str, Any]) -> Dict[
         'improvementCount': len(improvements),
         'regressions': regressions,
         'improvements': improvements,
-        'changedCases': [case for case in unchanged if case['status'] == 'latency_change'],
+        'changedCases': changed_cases,
         'tagDelta': tag_delta,
+        'regressionReasonBuckets': _reason_bucket_counts(regressions),
+        'improvementReasonBuckets': _reason_bucket_counts(improvements),
+        'changedReasonBuckets': _reason_bucket_counts(changed_cases),
     }
 
 
@@ -361,15 +727,33 @@ def format_comparison_lines(comparison: Dict[str, Any]) -> List[str]:
     lines.append('[compare] totals ' + ' '.join(f"{metric}={delta:+d}" for metric, delta in totals_delta.items()))
     lines.append(f"[compare] regressions={comparison['regressionCount']} improvements={comparison['improvementCount']} changed={len(comparison['changedCases'])}")
 
+    if comparison['regressionReasonBuckets']:
+        lines.append('[compare] regressionReasons ' + json.dumps(comparison['regressionReasonBuckets'], ensure_ascii=False))
+    if comparison['improvementReasonBuckets']:
+        lines.append('[compare] improvementReasons ' + json.dumps(comparison['improvementReasonBuckets'], ensure_ascii=False))
+
     if comparison['regressions']:
         lines.append('[compare] regressions:')
         for case in comparison['regressions'][:10]:
-            lines.append(f"  - {case['id']} status={case['status']} baseline={case.get('baselinePassed')} current={case.get('currentPassed')} latencyDeltaMs={case.get('latencyDeltaMs', 0):+d}")
+            lines.append(
+                f"  - {case['id']} status={case['status']} baseline={case.get('baselinePassed')} current={case.get('currentPassed')} "
+                f"latencyDeltaMs={case.get('latencyDeltaMs', 0):+d} areas={','.join(case.get('reasonAreas', [])) or 'none'}"
+            )
+            if case.get('reasonSummary'):
+                lines.append(f"    reason: {case['reasonSummary']}")
 
     if comparison['improvements']:
         lines.append('[compare] improvements:')
         for case in comparison['improvements'][:10]:
-            lines.append(f"  - {case['id']} status={case['status']} baseline={case.get('baselinePassed')} current={case.get('currentPassed')} latencyDeltaMs={case.get('latencyDeltaMs', 0):+d}")
+            lines.append(
+                f"  - {case['id']} status={case['status']} baseline={case.get('baselinePassed')} current={case.get('currentPassed')} "
+                f"latencyDeltaMs={case.get('latencyDeltaMs', 0):+d} areas={','.join(case.get('reasonAreas', [])) or 'none'}"
+            )
+            if case.get('reasonSummary'):
+                lines.append(f"    reason: {case['reasonSummary']}")
+
+    if comparison['changedReasonBuckets']:
+        lines.append('[compare] changeReasons ' + json.dumps(comparison['changedReasonBuckets'], ensure_ascii=False))
 
     interesting_tags = [(tag, delta) for tag, delta in comparison['tagDelta'].items() if delta['passedDelta'] != 0 or delta['totalDelta'] != 0]
     if interesting_tags:
@@ -393,7 +777,7 @@ def write_report(report: Dict[str, Any], report_path: Path) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser(description='Run layered RAG evaluation suites')
     parser.add_argument('--base-url', default='http://localhost:8080')
-    parser.add_argument('--suite', default='small', choices=['small', 'medium', 'large', 'longlite', 'xlarge'])
+    parser.add_argument('--suite', default='small', choices=['small', 'medium', 'large', 'longlite', 'xlarge', 'query', 'rerank'])
     parser.add_argument('--timeout', type=int, default=120)
     parser.add_argument('--poll-interval', type=float, default=2.0)
     parser.add_argument('--report-out', help='optional path for JSON report output')
@@ -426,6 +810,8 @@ def main() -> int:
     answer_any_pass = 0
     retrieval_pass = 0
     citation_pass = 0
+    refusal_total_checks = 0
+    refusal_pass = 0
 
     for index, case in enumerate(cases, start=1):
         evaluation = run_case(base_url, case, uploaded, default_scope, args.request_timeout)
@@ -438,13 +824,19 @@ def main() -> int:
         if not evaluation['passed']:
             print(f"  question: {case['question']}")
             print(f"  answer: {evaluation['answer']}")
+            print(f"  refused: {evaluation['refused']} reason={evaluation['refusalReason']} evidenceScore={evaluation['evidenceScore']}")
             print(f"  topItems: {json.dumps(evaluation['topItems'], ensure_ascii=False)}")
             print(f"  citations: {json.dumps(evaluation['citations'], ensure_ascii=False)}")
+            print(f"  routedDocs: {json.dumps(evaluation['routedDocs'], ensure_ascii=False)}")
+            print(f"  decisionSummary: {json.dumps(evaluation['decisionSummary'], ensure_ascii=False)}")
+            print(f"  queryDebug: {json.dumps(evaluation['queryDebug'], ensure_ascii=False)}")
 
         answer_all_pass += int(evaluation['answerAllOk'])
         answer_any_pass += int(evaluation['answerAnyOk'])
         retrieval_pass += int(evaluation['retrievalOk'])
         citation_pass += int(evaluation['citationOk'])
+        refusal_total_checks += int(evaluation['hasRefusalExpectation'])
+        refusal_pass += int(evaluation['refusalOk']) if evaluation['hasRefusalExpectation'] else 0
 
         results.append(
             {
@@ -458,9 +850,21 @@ def main() -> int:
     total_cases = len(results)
     passed_cases = sum(1 for result in results if result['passed'])
     tag_stats = summarize_tag_stats(results)
+    debug_stats = summarize_debug_stats(results)
 
     print(f"[summary] passed={passed_cases}/{total_cases}")
     print(f"[summary] answerAll={answer_all_pass}/{total_cases} answerAny={answer_any_pass}/{total_cases} retrieval={retrieval_pass}/{total_cases} citation={citation_pass}/{total_cases}")
+    if refusal_total_checks:
+        print(f"[summary] refusal={refusal_pass}/{refusal_total_checks}")
+    print(
+        f"[summary] debug plannerVersions={json.dumps(debug_stats['plannerVersions'], ensure_ascii=False)} "
+        f"intents={json.dumps(debug_stats['intentCounts'], ensure_ascii=False)} "
+        f"routingModes={json.dumps(debug_stats['routingModes'], ensure_ascii=False)} "
+        f"decompositionCases={debug_stats['casesWithDecomposition']} "
+        f"autoRoutingCases={debug_stats['casesWithAutoRouting']} "
+        f"refusedCases={debug_stats['refusedCases']} "
+        f"decisionSummaryCases={debug_stats['casesWithDecisionSummary']}"
+    )
     if tag_stats:
         print('[summary] tags:')
         for tag, stat in tag_stats.items():
@@ -479,8 +883,11 @@ def main() -> int:
             'answerAny': answer_any_pass,
             'retrieval': retrieval_pass,
             'citation': citation_pass,
+            'refusalChecks': refusal_total_checks,
+            'refusalPassed': refusal_pass,
         },
         'tagStats': tag_stats,
+        'debugSummary': debug_stats,
         'results': results,
     }
 
@@ -514,3 +921,4 @@ def main() -> int:
 
 if __name__ == '__main__':
     sys.exit(main())
+

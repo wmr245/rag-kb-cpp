@@ -187,6 +187,119 @@
           }
         ]
       }
+    },
+    {
+      "id": "small-route-auto-summary",
+      "question": "Orion 的核心能力是什么？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "routing",
+        "summary",
+        "product"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "文档上传",
+          "混合检索"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "核心能力"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-route-auto-procedure",
+      "question": "服务启动步骤的第2步是什么？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "routing",
+        "procedure",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "docker compose up --build -d"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Ops Runbook",
+            "heading": "服务启动步骤"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Ops Runbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-query-paraphrase-summary",
+      "question": "Orion 主要能干嘛？",
+      "topK": 3,
+      "docScope": [
+        "product_overview"
+      ],
+      "tags": [
+        "query",
+        "summary",
+        "product"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "文档上传",
+          "混合检索"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "核心能力"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "small-query-paraphrase-route-procedure",
+      "question": "启动服务第二步要敲什么命令？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "routing",
+        "procedure",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "docker compose up --build -d"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Ops Runbook",
+            "heading": "服务启动步骤"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Ops Runbook"
+          }
+        ]
+      }
     }
   ]
 }

@@ -1,0 +1,218 @@
+{
+  "suiteId": "rerank",
+  "description": "Rerank-focused suite that checks whether the top-ranked chunk improves on semantically close distractors.",
+  "documents": [
+    {
+      "key": "rerank_headers",
+      "path": "eval/corpus/rerank_headers.md",
+      "title": "Aurora Header Notes",
+      "owner": "eval-rerank"
+    },
+    {
+      "key": "rerank_failures",
+      "path": "eval/corpus/rerank_failures.md",
+      "title": "Aurora Failure Playbook",
+      "owner": "eval-rerank"
+    }
+  ],
+  "cases": [
+    {
+      "id": "rerank-header-freshness-field",
+      "question": "Which field tells whether the response is the newest version instead of just showing a cache hit?",
+      "topK": 1,
+      "docScope": [
+        "rerank_headers"
+      ],
+      "tags": [
+        "rerank",
+        "header",
+        "freshness"
+      ],
+      "expectations": {
+        "intentContainsAll": [
+          "api"
+        ],
+        "intentContainsNone": [
+          "procedural"
+        ],
+        "topItemAny": [
+          {
+            "title": "Aurora Header Notes",
+            "heading": "Data Version Field"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rerank-header-trace-not-freshness",
+      "question": "Which header is only for tracing and says nothing about cache hit status or freshness?",
+      "topK": 1,
+      "docScope": [
+        "rerank_headers"
+      ],
+      "tags": [
+        "rerank",
+        "header",
+        "trace"
+      ],
+      "expectations": {
+        "intentContainsAll": [
+          "api"
+        ],
+        "intentContainsNone": [
+          "procedural"
+        ],
+        "topItemAny": [
+          {
+            "title": "Aurora Header Notes",
+            "heading": "Trace Header"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rerank-header-current-snapshot-field",
+      "question": "If I need to compare whether I have the newest snapshot, what field should I check?",
+      "topK": 1,
+      "docScope": [
+        "rerank_headers"
+      ],
+      "tags": [
+        "rerank",
+        "header",
+        "freshness"
+      ],
+      "expectations": {
+        "intentContainsAll": [
+          "api"
+        ],
+        "intentContainsNone": [
+          "procedural"
+        ],
+        "topItemAny": [
+          {
+            "title": "Aurora Header Notes",
+            "heading": "Data Version Field"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rerank-header-trace-across-services",
+      "question": "Which header helps follow a request across services rather than judge freshness?",
+      "topK": 1,
+      "docScope": [
+        "rerank_headers"
+      ],
+      "tags": [
+        "rerank",
+        "header",
+        "trace"
+      ],
+      "expectations": {
+        "intentContainsAll": [
+          "api"
+        ],
+        "intentContainsNone": [
+          "procedural"
+        ],
+        "topItemAny": [
+          {
+            "title": "Aurora Header Notes",
+            "heading": "Trace Header"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rerank-header-version-comparison-signal",
+      "question": "Which field is the right signal for version comparison rather than cache hit reporting?",
+      "topK": 1,
+      "docScope": [
+        "rerank_headers"
+      ],
+      "tags": [
+        "rerank",
+        "header",
+        "freshness"
+      ],
+      "expectations": {
+        "intentContainsAll": [
+          "api"
+        ],
+        "intentContainsNone": [
+          "procedural"
+        ],
+        "topItemAny": [
+          {
+            "title": "Aurora Header Notes",
+            "heading": "Data Version Field"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rerank-failure-fix-request-before-retry",
+      "question": "Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?",
+      "topK": 1,
+      "docScope": [
+        "rerank_failures"
+      ],
+      "tags": [
+        "rerank",
+        "failure",
+        "retry"
+      ],
+      "expectations": {
+        "topItemAny": [
+          {
+            "title": "Aurora Failure Playbook",
+            "heading": "Validation Failure"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rerank-failure-untrusted-source",
+      "question": "Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?",
+      "topK": 1,
+      "docScope": [
+        "rerank_failures"
+      ],
+      "tags": [
+        "rerank",
+        "failure",
+        "auth"
+      ],
+      "expectations": {
+        "topItemAny": [
+          {
+            "title": "Aurora Failure Playbook",
+            "heading": "Signature Failure"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rerank-failure-backoff-retry",
+      "question": "Which failure usually fits backoff retry because the request can still be valid?",
+      "topK": 1,
+      "docScope": [
+        "rerank_failures"
+      ],
+      "tags": [
+        "rerank",
+        "failure",
+        "timeout"
+      ],
+      "expectations": {
+        "topItemAny": [
+          {
+            "title": "Aurora Failure Playbook",
+            "heading": "Downstream Timeout"
+          }
+        ]
+      }
+    }
+  ]
+}

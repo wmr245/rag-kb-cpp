@@ -48,6 +48,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       UPLOAD_DIR: /workspace/uploads
+      GAME_DATA_DIR: ${GAME_DATA_DIR:-/workspace/game-data}
       REDIS_URL: redis://redis:6379/0
       QUERY_CACHE_TTL_SEC: 300
       QUERY_CACHE_PREFIX: rag:query:v1
@@ -63,12 +64,24 @@ services:
       LLM_API_KEY: ${LLM_API_KEY}
       LLM_BASE_URL: ${LLM_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
 
+      RERANK_ENABLED: ${RERANK_ENABLED:-false}
+      RERANK_PROVIDER: ${RERANK_PROVIDER:-dashscope}
+      RERANK_BASE_URL: ${RERANK_BASE_URL:-https://dashscope.aliyuncs.com/compatible-api/v1/reranks}
+      RERANK_API_KEY: ${RERANK_API_KEY}
+      RERANK_MODEL: ${RERANK_MODEL:-qwen3-rerank}
+      RERANK_TOP_N: ${RERANK_TOP_N:-20}
+      RERANK_TIMEOUT_SEC: ${RERANK_TIMEOUT_SEC:-30}
+      RERANK_SCORE_WEIGHT: ${RERANK_SCORE_WEIGHT:-0.65}
+      LOCAL_RERANK_SCORE_WEIGHT: ${LOCAL_RERANK_SCORE_WEIGHT:-0.35}
+      RERANK_INSTRUCT: ${RERANK_INSTRUCT:-Given a web search query, retrieve relevant passages that answer the query.}
+
       PYTHONUNBUFFERED: "1"
     ports:
       - "${AI_SERVICE_PORT:-8000}:8000"
     volumes:
       - ./uploads:/workspace/uploads
       - ./python-ai/app:/app/app
+      - ./game-data:/workspace/game-data
     depends_on:
       postgres:
         condition: service_healthy
@@ -115,6 +128,24 @@ services:
       redis:
         condition: service_healthy
 
+  web-game:
+    build:
+      context: ./web-game
+      dockerfile: Dockerfile
+    container_name: rag_web_game
+    restart: unless-stopped
+    environment:
+      VITE_DEV_PROXY_TARGET: http://ai-service:8000
+    ports:
+      - "${WEB_GAME_PORT:-5173}:5173"
+    volumes:
+      - ./web-game:/workspace/web-game
+      - web_game_node_modules:/workspace/web-game/node_modules
+    depends_on:
+      ai-service:
+        condition: service_healthy
+
 volumes:
   pg_data:
   redis_data:
+  web_game_node_modules:

@@ -24,7 +24,11 @@ def find_latest_report(suite_id: str) -> Path:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description='Promote an evaluation report to the suite baseline alias')
-    parser.add_argument('--suite', required=True, choices=['small', 'medium', 'large', 'longlite', 'xlarge'])
+    parser.add_argument(
+        '--suite',
+        required=True,
+        choices=['small', 'query', 'medium', 'large', 'longlite', 'xlarge', 'rerank'],
+    )
     parser.add_argument('--report', help='specific report path to promote')
     args = parser.parse_args()
 

@@ -1,0 +1,2479 @@
+{
+  "suiteId": "rerank",
+  "description": "Rerank-focused suite that checks whether the top-ranked chunk improves on semantically close distractors.",
+  "baseUrl": "http://localhost:8080",
+  "generatedAt": "2026-03-24 12:06:39",
+  "documents": {
+    "rerank_headers": {
+      "docId": 242,
+      "taskId": "6799ad0c-8e18-442f-be59-e70fb5c464e2",
+      "title": "Aurora Header Notes",
+      "path": "eval/corpus/rerank_headers.md"
+    },
+    "rerank_failures": {
+      "docId": 243,
+      "taskId": "95a17d29-8a13-4971-9552-f17e4b1a3a91",
+      "title": "Aurora Failure Playbook",
+      "path": "eval/corpus/rerank_failures.md"
+    }
+  },
+  "totals": {
+    "cases": 8,
+    "passed": 8,
+    "answerAll": 8,
+    "answerAny": 8,
+    "retrieval": 8,
+    "citation": 8,
+    "refusalChecks": 0,
+    "refusalPassed": 0
+  },
+  "tagStats": {
+    "auth": {
+      "total": 1,
+      "passed": 1
+    },
+    "failure": {
+      "total": 3,
+      "passed": 3
+    },
+    "freshness": {
+      "total": 3,
+      "passed": 3
+    },
+    "header": {
+      "total": 5,
+      "passed": 5
+    },
+    "rerank": {
+      "total": 8,
+      "passed": 8
+    },
+    "retry": {
+      "total": 1,
+      "passed": 1
+    },
+    "timeout": {
+      "total": 1,
+      "passed": 1
+    },
+    "trace": {
+      "total": 2,
+      "passed": 2
+    }
+  },
+  "debugSummary": {
+    "plannerVersions": {
+      "query-plan-v3-observable": 8
+    },
+    "intentCounts": {
+      "api": 6,
+      "multiPart": 1,
+      "procedural": 1
+    },
+    "routingModes": {
+      "explicit_scope": 8
+    },
+    "refusalReasons": {},
+    "casesWithDecomposition": 1,
+    "casesWithAutoRouting": 0,
+    "refusedCases": 0,
+    "casesWithDecisionSummary": 8,
+    "casesWithRerankEnabled": 8,
+    "casesWithRerankApplied": 8,
+    "casesWithRerankFallback": 0,
+    "casesWithRerankReorderedTopItems": 1,
+    "casesWithAttributionHints": 8,
+    "rerankProviders": {
+      "dashscope": 8
+    }
+  },
+  "results": [
+    {
+      "id": "rerank-header-freshness-field",
+      "question": "Which field tells whether the response is the newest version instead of just showing a cache hit?",
+      "tags": [
+        "rerank",
+        "header",
+        "freshness"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "topItemOk": true,
+      "citationOk": true,
+      "intentAllOk": true,
+      "intentNoneOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 5358,
+      "answer": "data-version",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.747632,
+      "topItems": [
+        {
+          "title": "Aurora Header Notes",
+          "heading": "Data Version Field",
+          "sectionPath": "Aurora Header Notes > Data Version Field",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.833888,
+          "localScore": 0.58915,
+          "rerankScore": 0.934901,
+          "blendedScore": 0.833888,
+          "text": "[Heading] Data Version Field\n\nUse `data-version` when you need to decide whether the response is the newest snapshot. This field is the right signal for freshness and version comparison."
+        }
+      ],
+      "citations": [
+        {
+          "title": "Aurora Header Notes",
+          "snippet": "...ading] Data Version Field Use data-version when you need to decide whether the response is the newest snapshot. This field is the right signal for freshness and version comparison."
+        }
+      ],
+      "resolvedDocScope": [
+        242
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Which field tells whether the response is the newest version instead of just showing a cache hit?",
+        "focusQuestion": "data-version freshness field",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": true,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "data-version freshness field",
+          "data-version freshness field field tells whether the response is newest",
+          "Which field tells whether the response is the newest version instead of just showing a cache hit?"
+        ],
+        "retrievalQueries": [
+          "data-version freshness field",
+          "data-version freshness field Which field tells whether the response is the newest version instead of just showing a cache hit? field tells whether the response is newest version api reference",
+          "Which field tells whether the response is the newest version instead of just showing a cache hit?"
+        ],
+        "routeRuns": [],
+        "retrievalRuns": [
+          {
+            "query": "data-version freshness field",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.58915,
+                "rerankScore": null,
+                "blendedScore": 0.58915
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.58915,
+                "rerankScore": 0.934901,
+                "blendedScore": 0.813888
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          },
+          {
+            "query": "data-version freshness field Which field tells whether the response is the newest version instead of just showing a cache hit? field tells whether the response is newest version api reference",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.447897,
+                "rerankScore": null,
+                "blendedScore": 0.447897
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.447897,
+                "rerankScore": 0.921435,
+                "blendedScore": 0.755697
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          }
+        ],
+        "attributionHints": [
+          "planner_focus_query",
+          "retrieval_query_fanout"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 4,
+          "candidateCount": 8,
+          "appliedCount": 8,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 834,
+          "resolvedIntent": {
+            "summary": false,
+            "definition": false,
+            "procedural": false,
+            "structured": false
+          },
+          "localTopItems": [
+            {
+              "chunkId": 6720,
+              "title": "Aurora Header Notes",
+              "heading": "Data Version Field",
+              "sectionPath": "Aurora Header Notes > Data Version Field",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.58915,
+              "rerankScore": null,
+              "blendedScore": 0.58915
+            }
+          ],
+          "finalTopItems": [
+            {
+              "chunkId": 6720,
+              "title": "Aurora Header Notes",
+              "heading": "Data Version Field",
+              "sectionPath": "Aurora Header Notes > Data Version Field",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.58915,
+              "rerankScore": 0.934901,
+              "blendedScore": 0.813888
+            }
+          ],
+          "orderingChanged": false
+        },
+        "timingsMs": {
+          "embed": 3014,
+          "route": 0,
+          "retrieve": 1041,
+          "generate": 1253,
+          "total": 5358
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=api; evidence=0.748 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as api; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=data-version freshness field",
+              "routeQueries=data-version freshness field | data-version freshness field field tells whether the response is newest",
+              "retrievalQueries=data-version freshness field | data-version freshness field Which field tells whether the response is the newest version instead of just showing a cache hit? field tells whether the response is newest version api reference"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[242]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 1 chunk(s); top chunk is Data Version Field from Aurora Header Notes with score 0.834. Cloud rerank re-ordered 8 candidate(s).",
+            "highlights": [
+              "Aurora Header Notes / Data Version Field [section] score=0.834",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=834"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.748).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.748"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+            "highlights": [
+              "Aurora Header Notes p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=api; evidence=0.748 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as api; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=data-version freshness field",
+            "routeQueries=data-version freshness field | data-version freshness field field tells whether the response is newest",
+            "retrievalQueries=data-version freshness field | data-version freshness field Which field tells whether the response is the newest version instead of just showing a cache hit? field tells whether the response is newest version api reference"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[242]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 1 chunk(s); top chunk is Data Version Field from Aurora Header Notes with score 0.834. Cloud rerank re-ordered 8 candidate(s).",
+          "highlights": [
+            "Aurora Header Notes / Data Version Field [section] score=0.834",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=834"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.748).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.748"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+          "highlights": [
+            "Aurora Header Notes p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=api; evidence=0.748 (strong).",
+        "planner: Planner classified the query as api; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 1 chunk(s); top chunk is Data Version Field from Aurora Header Notes with score 0.834. Cloud rerank re-ordered 8 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.748).",
+        "citation: Attached 1 citation(s); lead citation is Aurora Header Notes p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "67805a888bdabe48e39b2c63d16",
+      "docScope": [
+        242
+      ]
+    },
+    {
+      "id": "rerank-header-trace-not-freshness",
+      "question": "Which header is only for tracing and says nothing about cache hit status or freshness?",
+      "tags": [
+        "rerank",
+        "header",
+        "trace"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "topItemOk": true,
+      "citationOk": true,
+      "intentAllOk": true,
+      "intentNoneOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 7519,
+      "answer": "x-trace-id",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.809483,
+      "topItems": [
+        {
+          "title": "Aurora Header Notes",
+          "heading": "Trace Header",
+          "sectionPath": "Aurora Header Notes > Trace Header",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.738455,
+          "localScore": 0.441559,
+          "rerankScore": 0.898322,
+          "blendedScore": 0.738455,
+          "text": "[Heading] Trace Header\n\n`x-trace-id` is only for request tracing. It says nothing about cache hit status or response freshness."
+        }
+      ],
+      "citations": [
+        {
+          "title": "Aurora Header Notes",
+          "snippet": "[Heading] Trace Header x-trace-id is only for request tracing. It says nothing about cache hit status or response freshness."
+        }
+      ],
+      "resolvedDocScope": [
+        242
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Which header is only for tracing and says nothing about cache hit status or freshness?",
+        "focusQuestion": "x-cache 缓存 响应头",
+        "decomposition": [
+          "Which header is only for tracing",
+          "says nothing about cache hit status or freshness"
+        ],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": true,
+          "multiPart": true
+        },
+        "routeQueries": [
+          "x-cache 缓存 响应头",
+          "x-cache 缓存 响应头 header is only for tracing and says",
+          "Which header is only for tracing and says nothing about cache hit status or freshness?",
+          "Which header is only for tracing"
+        ],
+        "retrievalQueries": [
+          "x-cache 缓存 响应头",
+          "x-cache 缓存 响应头 Which header is only for tracing and says nothing about cache hit status or freshness? Which header is only for tracing says nothing about cache hit status or freshness header is only for tracing and says nothing",
+          "Which header is only for tracing and says nothing about cache hit status or freshness?",
+          "Which header is only for tracing",
+          "says nothing about cache hit status or freshness"
+        ],
+        "routeRuns": [],
+        "retrievalRuns": [
+          {
+            "query": "x-cache 缓存 响应头",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6719,
+                "title": "Aurora Header Notes",
+                "heading": "Cache Hit Header",
+                "sectionPath": "Aurora Header Notes > Cache Hit Header",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.404798,
+                "rerankScore": null,
+                "blendedScore": 0.404798
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6719,
+                "title": "Aurora Header Notes",
+                "heading": "Cache Hit Header",
+                "sectionPath": "Aurora Header Notes > Cache Hit Header",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.404798,
+                "rerankScore": 0.860449,
+                "blendedScore": 0.700971
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          },
+          {
+            "query": "x-cache 缓存 响应头 Which header is only for tracing and says nothing about cache hit status or freshness? Which header is only for tracing says nothing about cache hit status or freshness header is only for tracing and says nothing",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6719,
+                "title": "Aurora Header Notes",
+                "heading": "Cache Hit Header",
+                "sectionPath": "Aurora Header Notes > Cache Hit Header",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.462798,
+                "rerankScore": null,
+                "blendedScore": 0.462798
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6721,
+                "title": "Aurora Header Notes",
+                "heading": "Trace Header",
+                "sectionPath": "Aurora Header Notes > Trace Header",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.441559,
+                "rerankScore": 0.898322,
+                "blendedScore": 0.738455
+              }
+            ],
+            "orderingChanged": true,
+            "rerankApplied": true,
+            "rerankFallback": false
+          }
+        ],
+        "attributionHints": [
+          "planner_focus_query",
+          "planner_decomposition",
+          "retrieval_query_fanout",
+          "rerank_reordered_top_items"
+        ],
+        "queryVectorCount": 6,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 4,
+          "candidateCount": 8,
+          "appliedCount": 8,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 1240,
+          "resolvedIntent": {
+            "summary": false,
+            "definition": false,
+            "procedural": false,
+            "structured": false
+          },
+          "localTopItems": [
+            {
+              "chunkId": 6719,
+              "title": "Aurora Header Notes",
+              "heading": "Cache Hit Header",
+              "sectionPath": "Aurora Header Notes > Cache Hit Header",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.404798,
+              "rerankScore": null,
+              "blendedScore": 0.404798
+            }
+          ],
+          "finalTopItems": [
+            {
+              "chunkId": 6719,
+              "title": "Aurora Header Notes",
+              "heading": "Cache Hit Header",
+              "sectionPath": "Aurora Header Notes > Cache Hit Header",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.404798,
+              "rerankScore": 0.860449,
+              "blendedScore": 0.700971
+            }
+          ],
+          "orderingChanged": true
+        },
+        "timingsMs": {
+          "embed": 4650,
+          "route": 0,
+          "retrieve": 1434,
+          "generate": 1420,
+          "total": 7519
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=api, multiPart; evidence=0.809 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as api, multiPart; prepared 4 route queries and 5 retrieval queries.",
+            "highlights": [
+              "focus=x-cache 缓存 响应头",
+              "subqueries=Which header is only for tracing | says nothing about cache hit status or freshness",
+              "routeQueries=x-cache 缓存 响应头 | x-cache 缓存 响应头 header is only for tracing and says",
+              "retrievalQueries=x-cache 缓存 响应头 | x-cache 缓存 响应头 Which header is only for tracing and says nothing about cache hit status or freshness? Which header is only for tracing says nothing about cache hit status or freshness header is only for tracing and says nothing"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[242]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 1 chunk(s); top chunk is Trace Header from Aurora Header Notes with score 0.738. Cloud rerank re-ordered 8 candidate(s).",
+            "highlights": [
+              "Aurora Header Notes / Trace Header [section] score=0.738",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1240"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.809).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.809"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+            "highlights": [
+              "Aurora Header Notes p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=api, multiPart; evidence=0.809 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as api, multiPart; prepared 4 route queries and 5 retrieval queries.",
+          "highlights": [
+            "focus=x-cache 缓存 响应头",
+            "subqueries=Which header is only for tracing | says nothing about cache hit status or freshness",
+            "routeQueries=x-cache 缓存 响应头 | x-cache 缓存 响应头 header is only for tracing and says",
+            "retrievalQueries=x-cache 缓存 响应头 | x-cache 缓存 响应头 Which header is only for tracing and says nothing about cache hit status or freshness? Which header is only for tracing says nothing about cache hit status or freshness header is only for tracing and says nothing"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[242]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 1 chunk(s); top chunk is Trace Header from Aurora Header Notes with score 0.738. Cloud rerank re-ordered 8 candidate(s).",
+          "highlights": [
+            "Aurora Header Notes / Trace Header [section] score=0.738",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1240"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.809).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.809"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+          "highlights": [
+            "Aurora Header Notes p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=api, multiPart; evidence=0.809 (strong).",
+        "planner: Planner classified the query as api, multiPart; prepared 4 route queries and 5 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 1 chunk(s); top chunk is Trace Header from Aurora Header Notes with score 0.738. Cloud rerank re-ordered 8 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.809).",
+        "citation: Attached 1 citation(s); lead citation is Aurora Header Notes p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "679488aed96ec7d1fa3e9db3a8b",
+      "docScope": [
+        242
+      ]
+    },
+    {
+      "id": "rerank-header-current-snapshot-field",
+      "question": "If I need to compare whether I have the newest snapshot, what field should I check?",
+      "tags": [
+        "rerank",
+        "header",
+        "freshness"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "topItemOk": true,
+      "citationOk": true,
+      "intentAllOk": true,
+      "intentNoneOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 6016,
+      "answer": "应检查 `data-version` 字段。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.736831,
+      "topItems": [
+        {
+          "title": "Aurora Header Notes",
+          "heading": "Data Version Field",
+          "sectionPath": "Aurora Header Notes > Data Version Field",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.833575,
+          "localScore": 0.58915,
+          "rerankScore": 0.934419,
+          "blendedScore": 0.833575,
+          "text": "[Heading] Data Version Field\n\nUse `data-version` when you need to decide whether the response is the newest snapshot. This field is the right signal for freshness and version comparison."
+        }
+      ],
+      "citations": [
+        {
+          "title": "Aurora Header Notes",
+          "snippet": "...ading] Data Version Field Use data-version when you need to decide whether the response is the newest snapshot. This field is the right signal for freshness and version comparison."
+        }
+      ],
+      "resolvedDocScope": [
+        242
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "If I need to compare whether I have the newest snapshot, what field should I check?",
+        "focusQuestion": "data-version freshness field",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": true,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "data-version freshness field",
+          "data-version freshness field If need to compare whether have the",
+          "If I need to compare whether I have the newest snapshot, what field should I check?"
+        ],
+        "retrievalQueries": [
+          "data-version freshness field",
+          "data-version freshness field If I need to compare whether I have the newest snapshot, what field should I check? If need to compare whether have the newest api reference",
+          "If I need to compare whether I have the newest snapshot, what field should I check?"
+        ],
+        "routeRuns": [],
+        "retrievalRuns": [
+          {
+            "query": "data-version freshness field",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.58915,
+                "rerankScore": null,
+                "blendedScore": 0.58915
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.58915,
+                "rerankScore": 0.934419,
+                "blendedScore": 0.813575
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          },
+          {
+            "query": "data-version freshness field If I need to compare whether I have the newest snapshot, what field should I check? If need to compare whether have the newest api reference",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.433042,
+                "rerankScore": null,
+                "blendedScore": 0.433042
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.433042,
+                "rerankScore": 0.916898,
+                "blendedScore": 0.747548
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          }
+        ],
+        "attributionHints": [
+          "planner_focus_query",
+          "retrieval_query_fanout"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 4,
+          "candidateCount": 8,
+          "appliedCount": 8,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 1465,
+          "resolvedIntent": {
+            "summary": false,
+            "definition": false,
+            "procedural": false,
+            "structured": false
+          },
+          "localTopItems": [
+            {
+              "chunkId": 6720,
+              "title": "Aurora Header Notes",
+              "heading": "Data Version Field",
+              "sectionPath": "Aurora Header Notes > Data Version Field",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.58915,
+              "rerankScore": null,
+              "blendedScore": 0.58915
+            }
+          ],
+          "finalTopItems": [
+            {
+              "chunkId": 6720,
+              "title": "Aurora Header Notes",
+              "heading": "Data Version Field",
+              "sectionPath": "Aurora Header Notes > Data Version Field",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.58915,
+              "rerankScore": 0.934419,
+              "blendedScore": 0.813575
+            }
+          ],
+          "orderingChanged": false
+        },
+        "timingsMs": {
+          "embed": 2956,
+          "route": 0,
+          "retrieve": 1648,
+          "generate": 1405,
+          "total": 6016
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=api; evidence=0.737 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as api; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=data-version freshness field",
+              "routeQueries=data-version freshness field | data-version freshness field If need to compare whether have the",
+              "retrievalQueries=data-version freshness field | data-version freshness field If I need to compare whether I have the newest snapshot, what field should I check? If need to compare whether have the newest api reference"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[242]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 1 chunk(s); top chunk is Data Version Field from Aurora Header Notes with score 0.834. Cloud rerank re-ordered 8 candidate(s).",
+            "highlights": [
+              "Aurora Header Notes / Data Version Field [section] score=0.834",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1465"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.737).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.737"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+            "highlights": [
+              "Aurora Header Notes p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=api; evidence=0.737 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as api; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=data-version freshness field",
+            "routeQueries=data-version freshness field | data-version freshness field If need to compare whether have the",
+            "retrievalQueries=data-version freshness field | data-version freshness field If I need to compare whether I have the newest snapshot, what field should I check? If need to compare whether have the newest api reference"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[242]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 1 chunk(s); top chunk is Data Version Field from Aurora Header Notes with score 0.834. Cloud rerank re-ordered 8 candidate(s).",
+          "highlights": [
+            "Aurora Header Notes / Data Version Field [section] score=0.834",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1465"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.737).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.737"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+          "highlights": [
+            "Aurora Header Notes p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=api; evidence=0.737 (strong).",
+        "planner: Planner classified the query as api; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 1 chunk(s); top chunk is Data Version Field from Aurora Header Notes with score 0.834. Cloud rerank re-ordered 8 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.737).",
+        "citation: Attached 1 citation(s); lead citation is Aurora Header Notes p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "67b0a30c61bf8c350d8af631eef",
+      "docScope": [
+        242
+      ]
+    },
+    {
+      "id": "rerank-header-trace-across-services",
+      "question": "Which header helps follow a request across services rather than judge freshness?",
+      "tags": [
+        "rerank",
+        "header",
+        "trace"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "topItemOk": true,
+      "citationOk": true,
+      "intentAllOk": true,
+      "intentNoneOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 6501,
+      "answer": "x-trace-id",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.510545,
+      "topItems": [
+        {
+          "title": "Aurora Header Notes",
+          "heading": "Trace Header",
+          "sectionPath": "Aurora Header Notes > Trace Header",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.589037,
+          "localScore": 0.385081,
+          "rerankScore": 0.668091,
+          "blendedScore": 0.589037,
+          "text": "[Heading] Trace Header\n\n`x-trace-id` is only for request tracing. It says nothing about cache hit status or response freshness."
+        }
+      ],
+      "citations": [
+        {
+          "title": "Aurora Header Notes",
+          "snippet": "[Heading] Trace Header x-trace-id is only for request tracing. It says nothing about cache hit status or response freshness."
+        }
+      ],
+      "resolvedDocScope": [
+        242
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Which header helps follow a request across services rather than judge freshness?",
+        "focusQuestion": "",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": true,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "header helps follow request across services rather than",
+          "Which header helps follow a request across services rather than judge freshness?"
+        ],
+        "retrievalQueries": [
+          "Which header helps follow a request across services rather than judge freshness? header helps follow request across services rather than api reference 接口",
+          "Which header helps follow a request across services rather than judge freshness?"
+        ],
+        "routeRuns": [],
+        "retrievalRuns": [
+          {
+            "query": "Which header helps follow a request across services rather than judge freshness? header helps follow request across services rather than api reference 接口",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6721,
+                "title": "Aurora Header Notes",
+                "heading": "Trace Header",
+                "sectionPath": "Aurora Header Notes > Trace Header",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.333332,
+                "rerankScore": null,
+                "blendedScore": 0.333332
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6721,
+                "title": "Aurora Header Notes",
+                "heading": "Trace Header",
+                "sectionPath": "Aurora Header Notes > Trace Header",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.333332,
+                "rerankScore": 0.607565,
+                "blendedScore": 0.511583
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          },
+          {
+            "query": "Which header helps follow a request across services rather than judge freshness?",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6721,
+                "title": "Aurora Header Notes",
+                "heading": "Trace Header",
+                "sectionPath": "Aurora Header Notes > Trace Header",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.385081,
+                "rerankScore": null,
+                "blendedScore": 0.385081
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6721,
+                "title": "Aurora Header Notes",
+                "heading": "Trace Header",
+                "sectionPath": "Aurora Header Notes > Trace Header",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.385081,
+                "rerankScore": 0.668091,
+                "blendedScore": 0.569037
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          }
+        ],
+        "attributionHints": [
+          "retrieval_query_fanout"
+        ],
+        "queryVectorCount": 3,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 4,
+          "candidateCount": 8,
+          "appliedCount": 8,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 1340,
+          "resolvedIntent": {
+            "summary": false,
+            "definition": false,
+            "procedural": false,
+            "structured": false
+          },
+          "localTopItems": [
+            {
+              "chunkId": 6721,
+              "title": "Aurora Header Notes",
+              "heading": "Trace Header",
+              "sectionPath": "Aurora Header Notes > Trace Header",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.333332,
+              "rerankScore": null,
+              "blendedScore": 0.333332
+            }
+          ],
+          "finalTopItems": [
+            {
+              "chunkId": 6721,
+              "title": "Aurora Header Notes",
+              "heading": "Trace Header",
+              "sectionPath": "Aurora Header Notes > Trace Header",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.333332,
+              "rerankScore": 0.607565,
+              "blendedScore": 0.511583
+            }
+          ],
+          "orderingChanged": false
+        },
+        "timingsMs": {
+          "embed": 3252,
+          "route": 0,
+          "retrieve": 1582,
+          "generate": 1661,
+          "total": 6501
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=api; evidence=0.511 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as api; prepared 2 route queries and 2 retrieval queries.",
+            "highlights": [
+              "routeQueries=header helps follow request across services rather than | Which header helps follow a request across services rather than judge freshness?",
+              "retrievalQueries=Which header helps follow a request across services rather than judge freshness? header helps follow request across services rather than api reference 接口 | Which header helps follow a request across services rather than judge freshness?"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[242]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 1 chunk(s); top chunk is Trace Header from Aurora Header Notes with score 0.589. Cloud rerank re-ordered 8 candidate(s).",
+            "highlights": [
+              "Aurora Header Notes / Trace Header [section] score=0.589",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1340"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.511).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.511"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+            "highlights": [
+              "Aurora Header Notes p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=api; evidence=0.511 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as api; prepared 2 route queries and 2 retrieval queries.",
+          "highlights": [
+            "routeQueries=header helps follow request across services rather than | Which header helps follow a request across services rather than judge freshness?",
+            "retrievalQueries=Which header helps follow a request across services rather than judge freshness? header helps follow request across services rather than api reference 接口 | Which header helps follow a request across services rather than judge freshness?"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[242]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 1 chunk(s); top chunk is Trace Header from Aurora Header Notes with score 0.589. Cloud rerank re-ordered 8 candidate(s).",
+          "highlights": [
+            "Aurora Header Notes / Trace Header [section] score=0.589",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1340"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.511).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.511"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+          "highlights": [
+            "Aurora Header Notes p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=api; evidence=0.511 (strong).",
+        "planner: Planner classified the query as api; prepared 2 route queries and 2 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 1 chunk(s); top chunk is Trace Header from Aurora Header Notes with score 0.589. Cloud rerank re-ordered 8 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.511).",
+        "citation: Attached 1 citation(s); lead citation is Aurora Header Notes p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "67c7198d425f2d42dc5adde5fef",
+      "docScope": [
+        242
+      ]
+    },
+    {
+      "id": "rerank-header-version-comparison-signal",
+      "question": "Which field is the right signal for version comparison rather than cache hit reporting?",
+      "tags": [
+        "rerank",
+        "header",
+        "freshness"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "topItemOk": true,
+      "citationOk": true,
+      "intentAllOk": true,
+      "intentNoneOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 12792,
+      "answer": "`data-version`",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.77731,
+      "topItems": [
+        {
+          "title": "Aurora Header Notes",
+          "heading": "Data Version Field",
+          "sectionPath": "Aurora Header Notes > Data Version Field",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.830077,
+          "localScore": 0.58915,
+          "rerankScore": 0.929038,
+          "blendedScore": 0.830077,
+          "text": "[Heading] Data Version Field\n\nUse `data-version` when you need to decide whether the response is the newest snapshot. This field is the right signal for freshness and version comparison."
+        }
+      ],
+      "citations": [
+        {
+          "title": "Aurora Header Notes",
+          "snippet": "...ading] Data Version Field Use data-version when you need to decide whether the response is the newest snapshot. This field is the right signal for freshness and version comparison."
+        }
+      ],
+      "resolvedDocScope": [
+        242
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Which field is the right signal for version comparison rather than cache hit reporting?",
+        "focusQuestion": "data-version freshness field",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": true,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "data-version freshness field",
+          "data-version freshness field field is the right signal for version",
+          "Which field is the right signal for version comparison rather than cache hit reporting?"
+        ],
+        "retrievalQueries": [
+          "data-version freshness field",
+          "data-version freshness field Which field is the right signal for version comparison rather than cache hit reporting? field is the right signal for version comparison api reference",
+          "Which field is the right signal for version comparison rather than cache hit reporting?"
+        ],
+        "routeRuns": [],
+        "retrievalRuns": [
+          {
+            "query": "data-version freshness field",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.58915,
+                "rerankScore": null,
+                "blendedScore": 0.58915
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.58915,
+                "rerankScore": 0.929038,
+                "blendedScore": 0.810077
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          },
+          {
+            "query": "data-version freshness field Which field is the right signal for version comparison rather than cache hit reporting? field is the right signal for version comparison api reference",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.429227,
+                "rerankScore": null,
+                "blendedScore": 0.429227
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6720,
+                "title": "Aurora Header Notes",
+                "heading": "Data Version Field",
+                "sectionPath": "Aurora Header Notes > Data Version Field",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.429227,
+                "rerankScore": 0.92548,
+                "blendedScore": 0.751791
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          }
+        ],
+        "attributionHints": [
+          "planner_focus_query",
+          "retrieval_query_fanout"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 4,
+          "candidateCount": 8,
+          "appliedCount": 8,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 2888,
+          "resolvedIntent": {
+            "summary": false,
+            "definition": false,
+            "procedural": false,
+            "structured": false
+          },
+          "localTopItems": [
+            {
+              "chunkId": 6720,
+              "title": "Aurora Header Notes",
+              "heading": "Data Version Field",
+              "sectionPath": "Aurora Header Notes > Data Version Field",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.58915,
+              "rerankScore": null,
+              "blendedScore": 0.58915
+            }
+          ],
+          "finalTopItems": [
+            {
+              "chunkId": 6720,
+              "title": "Aurora Header Notes",
+              "heading": "Data Version Field",
+              "sectionPath": "Aurora Header Notes > Data Version Field",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.58915,
+              "rerankScore": 0.929038,
+              "blendedScore": 0.810077
+            }
+          ],
+          "orderingChanged": false
+        },
+        "timingsMs": {
+          "embed": 7255,
+          "route": 0,
+          "retrieve": 3123,
+          "generate": 2403,
+          "total": 12792
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=api; evidence=0.777 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as api; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=data-version freshness field",
+              "routeQueries=data-version freshness field | data-version freshness field field is the right signal for version",
+              "retrievalQueries=data-version freshness field | data-version freshness field Which field is the right signal for version comparison rather than cache hit reporting? field is the right signal for version comparison api reference"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[242]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 1 chunk(s); top chunk is Data Version Field from Aurora Header Notes with score 0.830. Cloud rerank re-ordered 8 candidate(s).",
+            "highlights": [
+              "Aurora Header Notes / Data Version Field [section] score=0.830",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=2888"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.777).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.777"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+            "highlights": [
+              "Aurora Header Notes p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=api; evidence=0.777 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as api; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=data-version freshness field",
+            "routeQueries=data-version freshness field | data-version freshness field field is the right signal for version",
+            "retrievalQueries=data-version freshness field | data-version freshness field Which field is the right signal for version comparison rather than cache hit reporting? field is the right signal for version comparison api reference"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[242]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 1 chunk(s); top chunk is Data Version Field from Aurora Header Notes with score 0.830. Cloud rerank re-ordered 8 candidate(s).",
+          "highlights": [
+            "Aurora Header Notes / Data Version Field [section] score=0.830",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=2888"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.777).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.777"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Aurora Header Notes p1.",
+          "highlights": [
+            "Aurora Header Notes p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=api; evidence=0.777 (strong).",
+        "planner: Planner classified the query as api; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 1 chunk(s); top chunk is Data Version Field from Aurora Header Notes with score 0.830. Cloud rerank re-ordered 8 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.777).",
+        "citation: Attached 1 citation(s); lead citation is Aurora Header Notes p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "67df65c14a152ea261119472af6",
+      "docScope": [
+        242
+      ]
+    },
+    {
+      "id": "rerank-failure-fix-request-before-retry",
+      "question": "Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?",
+      "tags": [
+        "rerank",
+        "failure",
+        "retry"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "topItemOk": true,
+      "citationOk": true,
+      "intentAllOk": true,
+      "intentNoneOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 10795,
+      "answer": "Validation Failure",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.796861,
+      "topItems": [
+        {
+          "title": "Aurora Failure Playbook",
+          "heading": "Validation Failure",
+          "sectionPath": "Aurora Failure Playbook > Validation Failure",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.787868,
+          "localScore": 0.437155,
+          "rerankScore": 0.945944,
+          "blendedScore": 0.787868,
+          "text": "[Heading] Validation Failure\n\nReturn `422` when required fields are missing, types are wrong, or the payload format is invalid. The caller should fix the request content before trying again. This is not a backoff retry case."
+        }
+      ],
+      "citations": [
+        {
+          "title": "Aurora Failure Playbook",
+          "snippet": "[Heading] Validation Failure Return 422 when required fields are missing, types are wrong, or the payload format is invalid. The caller should fix the request content before trying..."
+        }
+      ],
+      "resolvedDocScope": [
+        243
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?",
+        "focusQuestion": "",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "failure means the caller should fix request payload",
+          "Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?"
+        ],
+        "retrievalQueries": [
+          "Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry? failure means the caller should fix request payload",
+          "Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?"
+        ],
+        "routeRuns": [],
+        "retrievalRuns": [
+          {
+            "query": "Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry? failure means the caller should fix request payload",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6723,
+                "title": "Aurora Failure Playbook",
+                "heading": "Validation Failure",
+                "sectionPath": "Aurora Failure Playbook > Validation Failure",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.418218,
+                "rerankScore": null,
+                "blendedScore": 0.418218
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6723,
+                "title": "Aurora Failure Playbook",
+                "heading": "Validation Failure",
+                "sectionPath": "Aurora Failure Playbook > Validation Failure",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.418218,
+                "rerankScore": 0.920623,
+                "blendedScore": 0.744781
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          },
+          {
+            "query": "Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6723,
+                "title": "Aurora Failure Playbook",
+                "heading": "Validation Failure",
+                "sectionPath": "Aurora Failure Playbook > Validation Failure",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.437155,
+                "rerankScore": null,
+                "blendedScore": 0.437155
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6723,
+                "title": "Aurora Failure Playbook",
+                "heading": "Validation Failure",
+                "sectionPath": "Aurora Failure Playbook > Validation Failure",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.437155,
+                "rerankScore": 0.945944,
+                "blendedScore": 0.767868
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          }
+        ],
+        "attributionHints": [
+          "retrieval_query_fanout"
+        ],
+        "queryVectorCount": 3,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 4,
+          "candidateCount": 8,
+          "appliedCount": 8,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 3271,
+          "resolvedIntent": {
+            "summary": false,
+            "definition": false,
+            "procedural": false,
+            "structured": false
+          },
+          "localTopItems": [
+            {
+              "chunkId": 6723,
+              "title": "Aurora Failure Playbook",
+              "heading": "Validation Failure",
+              "sectionPath": "Aurora Failure Playbook > Validation Failure",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.418218,
+              "rerankScore": null,
+              "blendedScore": 0.418218
+            }
+          ],
+          "finalTopItems": [
+            {
+              "chunkId": 6723,
+              "title": "Aurora Failure Playbook",
+              "heading": "Validation Failure",
+              "sectionPath": "Aurora Failure Playbook > Validation Failure",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.418218,
+              "rerankScore": 0.920623,
+              "blendedScore": 0.744781
+            }
+          ],
+          "orderingChanged": false
+        },
+        "timingsMs": {
+          "embed": 5376,
+          "route": 0,
+          "retrieve": 3571,
+          "generate": 1837,
+          "total": 10795
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=general; evidence=0.797 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as general; prepared 2 route queries and 2 retrieval queries.",
+            "highlights": [
+              "routeQueries=failure means the caller should fix request payload | Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?",
+              "retrievalQueries=Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry? failure means the caller should fix request payload | Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[243]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 1 chunk(s); top chunk is Validation Failure from Aurora Failure Playbook with score 0.788. Cloud rerank re-ordered 8 candidate(s).",
+            "highlights": [
+              "Aurora Failure Playbook / Validation Failure [section] score=0.788",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=3271"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.797).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.797"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Aurora Failure Playbook p1.",
+            "highlights": [
+              "Aurora Failure Playbook p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=general; evidence=0.797 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as general; prepared 2 route queries and 2 retrieval queries.",
+          "highlights": [
+            "routeQueries=failure means the caller should fix request payload | Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?",
+            "retrievalQueries=Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry? failure means the caller should fix request payload | Which failure means the caller should fix the request payload before trying again, rather than doing backoff retry?"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[243]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 1 chunk(s); top chunk is Validation Failure from Aurora Failure Playbook with score 0.788. Cloud rerank re-ordered 8 candidate(s).",
+          "highlights": [
+            "Aurora Failure Playbook / Validation Failure [section] score=0.788",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=3271"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.797).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.797"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Aurora Failure Playbook p1.",
+          "highlights": [
+            "Aurora Failure Playbook p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=general; evidence=0.797 (strong).",
+        "planner: Planner classified the query as general; prepared 2 route queries and 2 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 1 chunk(s); top chunk is Validation Failure from Aurora Failure Playbook with score 0.788. Cloud rerank re-ordered 8 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.797).",
+        "citation: Attached 1 citation(s); lead citation is Aurora Failure Playbook p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "680f1ebcd84258fb042d8a55c1d",
+      "docScope": [
+        243
+      ]
+    },
+    {
+      "id": "rerank-failure-untrusted-source",
+      "question": "Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?",
+      "tags": [
+        "rerank",
+        "failure",
+        "auth"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "topItemOk": true,
+      "citationOk": true,
+      "intentAllOk": true,
+      "intentNoneOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 7730,
+      "answer": "Signature Failure",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.87443,
+      "topItems": [
+        {
+          "title": "Aurora Failure Playbook",
+          "heading": "Signature Failure",
+          "sectionPath": "Aurora Failure Playbook > Signature Failure",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.814002,
+          "localScore": 0.49877,
+          "rerankScore": 0.952973,
+          "blendedScore": 0.814002,
+          "text": "[Heading] Signature Failure\n\nReturn `401` when signature verification fails. This means the request source is not trusted, so the next step is to inspect credentials or the signing process instead of changing business fields."
+        }
+      ],
+      "citations": [
+        {
+          "title": "Aurora Failure Playbook",
+          "snippet": "...n signature verification fails. This means the request source is not trusted, so the next step is to inspect credentials or the signing process instead of changing business fields."
+        }
+      ],
+      "resolvedDocScope": [
+        243
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?",
+        "focusQuestion": "",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": true,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": true,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "failure means the source is not trusted so",
+          "Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?"
+        ],
+        "retrievalQueries": [
+          "Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields? failure means the source is not trusted so ops runbook 运维",
+          "Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?"
+        ],
+        "routeRuns": [],
+        "retrievalRuns": [
+          {
+            "query": "Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields? failure means the source is not trusted so ops runbook 运维",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": true,
+              "structured": false,
+              "temporal": false,
+              "threshold": false,
+              "api": true,
+              "multiPart": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6725,
+                "title": "Aurora Failure Playbook",
+                "heading": "Signature Failure",
+                "sectionPath": "Aurora Failure Playbook > Signature Failure",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.475858,
+                "rerankScore": null,
+                "blendedScore": 0.475858
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6725,
+                "title": "Aurora Failure Playbook",
+                "heading": "Signature Failure",
+                "sectionPath": "Aurora Failure Playbook > Signature Failure",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.475858,
+                "rerankScore": 0.94148,
+                "blendedScore": 0.778512
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          },
+          {
+            "query": "Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": true,
+              "structured": false,
+              "temporal": false,
+              "threshold": false,
+              "api": true,
+              "multiPart": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6725,
+                "title": "Aurora Failure Playbook",
+                "heading": "Signature Failure",
+                "sectionPath": "Aurora Failure Playbook > Signature Failure",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.49877,
+                "rerankScore": null,
+                "blendedScore": 0.49877
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6725,
+                "title": "Aurora Failure Playbook",
+                "heading": "Signature Failure",
+                "sectionPath": "Aurora Failure Playbook > Signature Failure",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.49877,
+                "rerankScore": 0.952973,
+                "blendedScore": 0.794002
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          }
+        ],
+        "attributionHints": [
+          "retrieval_query_fanout"
+        ],
+        "queryVectorCount": 3,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 4,
+          "candidateCount": 8,
+          "appliedCount": 8,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 1254,
+          "resolvedIntent": {
+            "summary": false,
+            "definition": false,
+            "procedural": true,
+            "structured": false,
+            "temporal": false,
+            "threshold": false,
+            "api": true,
+            "multiPart": false
+          },
+          "localTopItems": [
+            {
+              "chunkId": 6725,
+              "title": "Aurora Failure Playbook",
+              "heading": "Signature Failure",
+              "sectionPath": "Aurora Failure Playbook > Signature Failure",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.475858,
+              "rerankScore": null,
+              "blendedScore": 0.475858
+            }
+          ],
+          "finalTopItems": [
+            {
+              "chunkId": 6725,
+              "title": "Aurora Failure Playbook",
+              "heading": "Signature Failure",
+              "sectionPath": "Aurora Failure Playbook > Signature Failure",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.475858,
+              "rerankScore": 0.94148,
+              "blendedScore": 0.778512
+            }
+          ],
+          "orderingChanged": false
+        },
+        "timingsMs": {
+          "embed": 5426,
+          "route": 0,
+          "retrieve": 1473,
+          "generate": 816,
+          "total": 7730
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=procedural, api; evidence=0.874 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as procedural, api; prepared 2 route queries and 2 retrieval queries.",
+            "highlights": [
+              "routeQueries=failure means the source is not trusted so | Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?",
+              "retrievalQueries=Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields? failure means the source is not trusted so ops runbook 运维 | Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[243]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 1 chunk(s); top chunk is Signature Failure from Aurora Failure Playbook with score 0.814. Cloud rerank re-ordered 8 candidate(s).",
+            "highlights": [
+              "Aurora Failure Playbook / Signature Failure [section] score=0.814",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1254"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.874).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.874"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Aurora Failure Playbook p1.",
+            "highlights": [
+              "Aurora Failure Playbook p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=procedural, api; evidence=0.874 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as procedural, api; prepared 2 route queries and 2 retrieval queries.",
+          "highlights": [
+            "routeQueries=failure means the source is not trusted so | Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?",
+            "retrievalQueries=Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields? failure means the source is not trusted so ops runbook 运维 | Which failure means the source is not trusted, so the next step is checking credentials or signing instead of changing business fields?"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[243]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 1 chunk(s); top chunk is Signature Failure from Aurora Failure Playbook with score 0.814. Cloud rerank re-ordered 8 candidate(s).",
+          "highlights": [
+            "Aurora Failure Playbook / Signature Failure [section] score=0.814",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1254"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.874).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.874"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Aurora Failure Playbook p1.",
+          "highlights": [
+            "Aurora Failure Playbook p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=procedural, api; evidence=0.874 (strong).",
+        "planner: Planner classified the query as procedural, api; prepared 2 route queries and 2 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 1 chunk(s); top chunk is Signature Failure from Aurora Failure Playbook with score 0.814. Cloud rerank re-ordered 8 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.874).",
+        "citation: Attached 1 citation(s); lead citation is Aurora Failure Playbook p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "68376a03dd6465df72536164600",
+      "docScope": [
+        243
+      ]
+    },
+    {
+      "id": "rerank-failure-backoff-retry",
+      "question": "Which failure usually fits backoff retry because the request can still be valid?",
+      "tags": [
+        "rerank",
+        "failure",
+        "timeout"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "topItemOk": true,
+      "citationOk": true,
+      "intentAllOk": true,
+      "intentNoneOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 5465,
+      "answer": "Downstream Timeout",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.835804,
+      "topItems": [
+        {
+          "title": "Aurora Failure Playbook",
+          "heading": "Downstream Timeout",
+          "sectionPath": "Aurora Failure Playbook > Downstream Timeout",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.786816,
+          "localScore": 0.423391,
+          "rerankScore": 0.951737,
+          "blendedScore": 0.786816,
+          "text": "[Heading] Downstream Timeout\n\nReturn `504` when a dependency does not finish in time. The request itself can still be valid, so this case usually fits backoff retry."
+        }
+      ],
+      "citations": [
+        {
+          "title": "Aurora Failure Playbook",
+          "snippet": "[Heading] Downstream Timeout Return 504 when a dependency does not finish in time. The request itself can still be valid, so this case usually fits backoff retry."
+        }
+      ],
+      "resolvedDocScope": [
+        243
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Which failure usually fits backoff retry because the request can still be valid?",
+        "focusQuestion": "",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "failure usually fits backoff retry because the request",
+          "Which failure usually fits backoff retry because the request can still be valid?"
+        ],
+        "retrievalQueries": [
+          "Which failure usually fits backoff retry because the request can still be valid? failure usually fits backoff retry because the request",
+          "Which failure usually fits backoff retry because the request can still be valid?"
+        ],
+        "routeRuns": [],
+        "retrievalRuns": [
+          {
+            "query": "Which failure usually fits backoff retry because the request can still be valid? failure usually fits backoff retry because the request",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6724,
+                "title": "Aurora Failure Playbook",
+                "heading": "Downstream Timeout",
+                "sectionPath": "Aurora Failure Playbook > Downstream Timeout",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.374381,
+                "rerankScore": null,
+                "blendedScore": 0.374381
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6724,
+                "title": "Aurora Failure Playbook",
+                "heading": "Downstream Timeout",
+                "sectionPath": "Aurora Failure Playbook > Downstream Timeout",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.374381,
+                "rerankScore": 0.940539,
+                "blendedScore": 0.742384
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          },
+          {
+            "query": "Which failure usually fits backoff retry because the request can still be valid?",
+            "resolvedIntent": {
+              "summary": false,
+              "definition": false,
+              "procedural": false,
+              "structured": false
+            },
+            "localTopItems": [
+              {
+                "chunkId": 6724,
+                "title": "Aurora Failure Playbook",
+                "heading": "Downstream Timeout",
+                "sectionPath": "Aurora Failure Playbook > Downstream Timeout",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.423391,
+                "rerankScore": null,
+                "blendedScore": 0.423391
+              }
+            ],
+            "finalTopItems": [
+              {
+                "chunkId": 6724,
+                "title": "Aurora Failure Playbook",
+                "heading": "Downstream Timeout",
+                "sectionPath": "Aurora Failure Playbook > Downstream Timeout",
+                "chunkType": "section",
+                "sourceType": "md",
+                "localScore": 0.423391,
+                "rerankScore": 0.951737,
+                "blendedScore": 0.766816
+              }
+            ],
+            "orderingChanged": false,
+            "rerankApplied": true,
+            "rerankFallback": false
+          }
+        ],
+        "attributionHints": [
+          "retrieval_query_fanout"
+        ],
+        "queryVectorCount": 3,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 4,
+          "candidateCount": 8,
+          "appliedCount": 8,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 1582,
+          "resolvedIntent": {
+            "summary": false,
+            "definition": false,
+            "procedural": false,
+            "structured": false
+          },
+          "localTopItems": [
+            {
+              "chunkId": 6724,
+              "title": "Aurora Failure Playbook",
+              "heading": "Downstream Timeout",
+              "sectionPath": "Aurora Failure Playbook > Downstream Timeout",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.374381,
+              "rerankScore": null,
+              "blendedScore": 0.374381
+            }
+          ],
+          "finalTopItems": [
+            {
+              "chunkId": 6724,
+              "title": "Aurora Failure Playbook",
+              "heading": "Downstream Timeout",
+              "sectionPath": "Aurora Failure Playbook > Downstream Timeout",
+              "chunkType": "section",
+              "sourceType": "md",
+              "localScore": 0.374381,
+              "rerankScore": 0.940539,
+              "blendedScore": 0.742384
+            }
+          ],
+          "orderingChanged": false
+        },
+        "timingsMs": {
+          "embed": 1892,
+          "route": 0,
+          "retrieve": 1732,
+          "generate": 1832,
+          "total": 5465
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=general; evidence=0.836 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as general; prepared 2 route queries and 2 retrieval queries.",
+            "highlights": [
+              "routeQueries=failure usually fits backoff retry because the request | Which failure usually fits backoff retry because the request can still be valid?",
+              "retrievalQueries=Which failure usually fits backoff retry because the request can still be valid? failure usually fits backoff retry because the request | Which failure usually fits backoff retry because the request can still be valid?"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[243]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 1 chunk(s); top chunk is Downstream Timeout from Aurora Failure Playbook with score 0.787. Cloud rerank re-ordered 8 candidate(s).",
+            "highlights": [
+              "Aurora Failure Playbook / Downstream Timeout [section] score=0.787",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1582"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.836).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.836"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Aurora Failure Playbook p1.",
+            "highlights": [
+              "Aurora Failure Playbook p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=general; evidence=0.836 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as general; prepared 2 route queries and 2 retrieval queries.",
+          "highlights": [
+            "routeQueries=failure usually fits backoff retry because the request | Which failure usually fits backoff retry because the request can still be valid?",
+            "retrievalQueries=Which failure usually fits backoff retry because the request can still be valid? failure usually fits backoff retry because the request | Which failure usually fits backoff retry because the request can still be valid?"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[243]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 1 chunk(s); top chunk is Downstream Timeout from Aurora Failure Playbook with score 0.787. Cloud rerank re-ordered 8 candidate(s).",
+          "highlights": [
+            "Aurora Failure Playbook / Downstream Timeout [section] score=0.787",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1582"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.836).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.836"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Aurora Failure Playbook p1.",
+          "highlights": [
+            "Aurora Failure Playbook p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=general; evidence=0.836 (strong).",
+        "planner: Planner classified the query as general; prepared 2 route queries and 2 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 1 chunk(s); top chunk is Downstream Timeout from Aurora Failure Playbook with score 0.787. Cloud rerank re-ordered 8 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.836).",
+        "citation: Attached 1 citation(s); lead citation is Aurora Failure Playbook p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "685448c7ae5ea1342cd8e4ca4a5",
+      "docScope": [
+        243
+      ]
+    }
+  ],
+  "_reportPath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/rerank-hardcase-20260324-v3.json"
+}

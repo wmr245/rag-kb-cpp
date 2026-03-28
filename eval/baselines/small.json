@@ -2,28 +2,30 @@
   "suiteId": "small",
   "description": "最小可回归套件，优先覆盖最常见的知识库问答形态。",
   "baseUrl": "http://localhost:8080",
-  "generatedAt": "2026-03-21 14:51:15",
+  "generatedAt": "2026-03-24 10:53:42",
   "documents": {
     "product_overview": {
-      "docId": 45,
-      "taskId": "74221990-0afe-4492-90aa-425eca116995",
+      "docId": 216,
+      "taskId": "ec4f6c37-112a-40ee-8cfc-7e040063a304",
       "title": "Orion Product Overview",
       "path": "eval/corpus/product_overview.md"
     },
     "ops_runbook": {
-      "docId": 46,
-      "taskId": "94b98db8-e32d-48b9-b06b-c9e63a997aed",
+      "docId": 217,
+      "taskId": "19d5a2b2-bf15-46d8-b84f-e253cfb939d9",
       "title": "Orion Ops Runbook",
       "path": "eval/corpus/ops_runbook.md"
     }
   },
   "totals": {
-    "cases": 6,
-    "passed": 6,
-    "answerAll": 6,
-    "answerAny": 6,
-    "retrieval": 6,
-    "citation": 6
+    "cases": 10,
+    "passed": 10,
+    "answerAll": 10,
+    "answerAny": 10,
+    "retrieval": 10,
+    "citation": 10,
+    "refusalChecks": 0,
+    "refusalPassed": 0
   },
   "tagStats": {
     "definition": {
@@ -35,28 +37,63 @@
       "passed": 1
     },
     "ops": {
+      "total": 5,
+      "passed": 5
+    },
+    "procedure": {
       "total": 3,
       "passed": 3
     },
-    "procedure": {
-      "total": 1,
-      "passed": 1
-    },
     "product": {
+      "total": 4,
+      "passed": 4
+    },
+    "query": {
       "total": 2,
       "passed": 2
+    },
+    "routing": {
+      "total": 3,
+      "passed": 3
     },
     "structure": {
       "total": 1,
       "passed": 1
     },
     "summary": {
-      "total": 1,
-      "passed": 1
+      "total": 3,
+      "passed": 3
     },
     "troubleshooting": {
       "total": 2,
       "passed": 2
+    }
+  },
+  "debugSummary": {
+    "plannerVersions": {
+      "query-plan-v3-observable": 10
+    },
+    "intentCounts": {
+      "procedural": 3,
+      "structured": 1,
+      "summary": 3,
+      "temporal": 1,
+      "threshold": 1
+    },
+    "routingModes": {
+      "auto": 3,
+      "explicit_scope": 7
+    },
+    "refusalReasons": {},
+    "casesWithDecomposition": 0,
+    "casesWithAutoRouting": 3,
+    "refusedCases": 0,
+    "casesWithDecisionSummary": 10,
+    "casesWithRerankEnabled": 10,
+    "casesWithRerankApplied": 10,
+    "casesWithRerankFallback": 0,
+    "rerankProviders": {
+      "dashscope": 10
     }
   },
   "results": [
@@ -72,8 +109,14 @@
       "answerAnyOk": true,
       "retrievalOk": true,
       "citationOk": true,
-      "latencyMs": 1474,
-      "answer": "Orion 的核心能力包括：文档上传、异步入库、混合检索和带引用的回答生成。",
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 4133,
+      "answer": "Orion 的核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.98221,
       "topItems": [
         {
           "title": "Orion Product Overview",
@@ -81,6 +124,10 @@
           "sectionPath": "Orion 产品总览 > 核心能力",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.906191,
+          "localScore": 0.732126,
+          "rerankScore": 0.969149,
+          "blendedScore": 0.906191,
           "text": "[Heading] 核心能力\n\n核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
         },
         {
@@ -89,27 +136,171 @@
           "sectionPath": "Orion 产品总览 > 产品定位",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.813732,
+          "localScore": 0.486515,
+          "rerankScore": 0.959156,
+          "blendedScore": 0.813732,
           "text": "[Heading] 产品定位\n\nOrion 用于统一接入知识库文档，提供检索、引用和问答能力。"
         },
         {
           "title": "Orion Product Overview",
-          "heading": "Orion 产品总览",
-          "sectionPath": "Orion 产品总览",
+          "heading": "术语定义",
+          "sectionPath": "Orion 产品总览 > 术语定义",
           "chunkType": "section",
           "sourceType": "md",
-          "text": "[Heading] Orion 产品总览"
+          "score": 0.718688,
+          "localScore": 0.445766,
+          "rerankScore": 0.865646,
+          "blendedScore": 0.718688,
+          "text": "[Heading] 术语定义\n\nchunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
         }
       ],
       "citations": [
         {
           "title": "Orion Product Overview",
-          "snippet": "[Heading] 核心能力 核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+          "snippet": "[Heading] 术语定义 chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
         }
       ],
+      "resolvedDocScope": [
+        216
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Orion 的核心能力是什么？",
+        "focusQuestion": "Orion 核心能力",
+        "decomposition": [],
+        "intent": {
+          "summary": true,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "Orion 核心能力",
+          "Orion 核心能力 Orion 的核心能力是什么 product overview 产品概览 核心能力 概览",
+          "Orion 的核心能力是什么？"
+        ],
+        "retrievalQueries": [
+          "Orion 核心能力",
+          "Orion 核心能力 Orion 的核心能力是什么？ Orion 的核心能力是什么 product overview 产品概览 核心能力 概览",
+          "Orion 的核心能力是什么？"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 6,
+          "candidateCount": 12,
+          "appliedCount": 12,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 763
+        },
+        "timingsMs": {
+          "embed": 1968,
+          "route": 0,
+          "retrieve": 875,
+          "generate": 1285,
+          "total": 4133
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=summary; evidence=0.982 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as summary; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=Orion 核心能力",
+              "routeQueries=Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么 product overview 产品概览 核心能力 概览",
+              "retrievalQueries=Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么？ Orion 的核心能力是什么 product overview 产品概览 核心能力 概览"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[216]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 核心能力 from Orion Product Overview with score 0.906. Cloud rerank re-ordered 12 candidate(s).",
+            "highlights": [
+              "Orion Product Overview / 核心能力 [section] score=0.906",
+              "Orion Product Overview / 产品定位 [section] score=0.814",
+              "Orion Product Overview / 术语定义 [section] score=0.719",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=763"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.982).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.982"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+            "highlights": [
+              "Orion Product Overview p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=summary; evidence=0.982 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as summary; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=Orion 核心能力",
+            "routeQueries=Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么 product overview 产品概览 核心能力 概览",
+            "retrievalQueries=Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么？ Orion 的核心能力是什么 product overview 产品概览 核心能力 概览"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[216]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 核心能力 from Orion Product Overview with score 0.906. Cloud rerank re-ordered 12 candidate(s).",
+          "highlights": [
+            "Orion Product Overview / 核心能力 [section] score=0.906",
+            "Orion Product Overview / 产品定位 [section] score=0.814",
+            "Orion Product Overview / 术语定义 [section] score=0.719",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=763"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.982).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.982"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+          "highlights": [
+            "Orion Product Overview p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=summary; evidence=0.982 (strong).",
+        "planner: Planner classified the query as summary; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 核心能力 from Orion Product Overview with score 0.906. Cloud rerank re-ordered 12 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.982).",
+        "citation: Attached 1 citation(s); lead citation is Orion Product Overview p1."
+      ],
       "xCache": "miss",
-      "xTraceId": "68b66b8964a437f5f8e976f12c32",
+      "xTraceId": "2811dc50db4a231473127eb9cbe",
       "docScope": [
-        45
+        216
       ]
     },
     {
@@ -124,8 +315,14 @@
       "answerAnyOk": true,
       "retrievalOk": true,
       "citationOk": true,
-      "latencyMs": 1507,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 3656,
       "answer": "chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.808863,
       "topItems": [
         {
           "title": "Orion Product Overview",
@@ -133,23 +330,35 @@
           "sectionPath": "Orion 产品总览 > 术语定义",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.839505,
+          "localScore": 0.594649,
+          "rerankScore": 0.940581,
+          "blendedScore": 0.839505,
           "text": "[Heading] 术语定义\n\nchunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
         },
         {
           "title": "Orion Product Overview",
-          "heading": "核心能力",
-          "sectionPath": "Orion 产品总览 > 核心能力",
+          "heading": "系统边界",
+          "sectionPath": "Orion 产品总览 > 系统边界",
           "chunkType": "section",
           "sourceType": "md",
-          "text": "[Heading] 核心能力\n\n核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+          "score": 0.465848,
+          "localScore": 0.209975,
+          "rerankScore": 0.572857,
+          "blendedScore": 0.465848,
+          "text": "[Heading] 系统边界\n\n系统边界是不处理审批流，也不替代源系统权限校验。"
         },
         {
           "title": "Orion Product Overview",
-          "heading": "适用场景",
-          "sectionPath": "Orion 产品总览 > 适用场景",
+          "heading": "产品定位",
+          "sectionPath": "Orion 产品总览 > 产品定位",
           "chunkType": "section",
           "sourceType": "md",
-          "text": "[Heading] 适用场景\n\n适用于内部知识库搜索、客服辅助和交付文档问答。"
+          "score": 0.410732,
+          "localScore": 0.217137,
+          "rerankScore": 0.514976,
+          "blendedScore": 0.410732,
+          "text": "[Heading] 产品定位\n\nOrion 用于统一接入知识库文档，提供检索、引用和问答能力。"
         }
       ],
       "citations": [
@@ -158,10 +367,142 @@
           "snippet": "[Heading] 术语定义 chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
         }
       ],
+      "resolvedDocScope": [
+        216
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "什么是 chunk metadata？",
+        "focusQuestion": "",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "chunk metadata 什么是 definition 术语定义",
+          "什么是 chunk metadata？"
+        ],
+        "retrievalQueries": [
+          "什么是 chunk metadata？ chunk metadata 什么是 definition 术语定义",
+          "什么是 chunk metadata？"
+        ],
+        "queryVectorCount": 3,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 6,
+          "candidateCount": 12,
+          "appliedCount": 12,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 704
+        },
+        "timingsMs": {
+          "embed": 1811,
+          "route": 0,
+          "retrieve": 841,
+          "generate": 999,
+          "total": 3656
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=general; evidence=0.809 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as general; prepared 2 route queries and 2 retrieval queries.",
+            "highlights": [
+              "routeQueries=chunk metadata 什么是 definition 术语定义 | 什么是 chunk metadata？",
+              "retrievalQueries=什么是 chunk metadata？ chunk metadata 什么是 definition 术语定义 | 什么是 chunk metadata？"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[216]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 术语定义 from Orion Product Overview with score 0.840. Cloud rerank re-ordered 12 candidate(s).",
+            "highlights": [
+              "Orion Product Overview / 术语定义 [section] score=0.840",
+              "Orion Product Overview / 系统边界 [section] score=0.466",
+              "Orion Product Overview / 产品定位 [section] score=0.411",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=704"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.809).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.809"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+            "highlights": [
+              "Orion Product Overview p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=general; evidence=0.809 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as general; prepared 2 route queries and 2 retrieval queries.",
+          "highlights": [
+            "routeQueries=chunk metadata 什么是 definition 术语定义 | 什么是 chunk metadata？",
+            "retrievalQueries=什么是 chunk metadata？ chunk metadata 什么是 definition 术语定义 | 什么是 chunk metadata？"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[216]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 术语定义 from Orion Product Overview with score 0.840. Cloud rerank re-ordered 12 candidate(s).",
+          "highlights": [
+            "Orion Product Overview / 术语定义 [section] score=0.840",
+            "Orion Product Overview / 系统边界 [section] score=0.466",
+            "Orion Product Overview / 产品定位 [section] score=0.411",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=704"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.809).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.809"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+          "highlights": [
+            "Orion Product Overview p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=general; evidence=0.809 (strong).",
+        "planner: Planner classified the query as general; prepared 2 route queries and 2 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 术语定义 from Orion Product Overview with score 0.840. Cloud rerank re-ordered 12 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.809).",
+        "citation: Attached 1 citation(s); lead citation is Orion Product Overview p1."
+      ],
       "xCache": "miss",
-      "xTraceId": "68b6c3b4c29790492ccfc04c26f6",
+      "xTraceId": "28214b6d15963719cf3307d844c",
       "docScope": [
-        45
+        216
       ]
     },
     {
@@ -176,8 +517,14 @@
       "answerAnyOk": true,
       "retrievalOk": true,
       "citationOk": true,
-      "latencyMs": 1049,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 4188,
       "answer": "系统边界在“系统边界”小节。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.915872,
       "topItems": [
         {
           "title": "Orion Product Overview",
@@ -185,6 +532,10 @@
           "sectionPath": "Orion 产品总览 > 系统边界",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.808636,
+          "localScore": 0.649041,
+          "rerankScore": 0.863803,
+          "blendedScore": 0.808636,
           "text": "[Heading] 系统边界\n\n系统边界是不处理审批流，也不替代源系统权限校验。"
         },
         {
@@ -193,15 +544,23 @@
           "sectionPath": "Orion 产品总览 > 术语定义",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.463519,
+          "localScore": 0.417693,
+          "rerankScore": 0.457426,
+          "blendedScore": 0.463519,
           "text": "[Heading] 术语定义\n\nchunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
         },
         {
           "title": "Orion Product Overview",
-          "heading": "适用场景",
-          "sectionPath": "Orion 产品总览 > 适用场景",
+          "heading": "Orion 产品总览",
+          "sectionPath": "Orion 产品总览",
           "chunkType": "section",
           "sourceType": "md",
-          "text": "[Heading] 适用场景\n\n适用于内部知识库搜索、客服辅助和交付文档问答。"
+          "score": 0.446515,
+          "localScore": 0.414594,
+          "rerankScore": 0.432934,
+          "blendedScore": 0.446515,
+          "text": "[Heading] Orion 产品总览"
         }
       ],
       "citations": [
@@ -210,10 +569,142 @@
           "snippet": "[Heading] 术语定义 chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
         }
       ],
+      "resolvedDocScope": [
+        216
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "系统边界在哪个小节？",
+        "focusQuestion": "",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": true,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "系统边界在哪个小节 标题 小节",
+          "系统边界在哪个小节？"
+        ],
+        "retrievalQueries": [
+          "系统边界在哪个小节？ 系统边界在哪个小节 标题 小节 section",
+          "系统边界在哪个小节？"
+        ],
+        "queryVectorCount": 3,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 6,
+          "candidateCount": 12,
+          "appliedCount": 12,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 1149
+        },
+        "timingsMs": {
+          "embed": 1635,
+          "route": 0,
+          "retrieve": 1255,
+          "generate": 1295,
+          "total": 4188
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=structured; evidence=0.916 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as structured; prepared 2 route queries and 2 retrieval queries.",
+            "highlights": [
+              "routeQueries=系统边界在哪个小节 标题 小节 | 系统边界在哪个小节？",
+              "retrievalQueries=系统边界在哪个小节？ 系统边界在哪个小节 标题 小节 section | 系统边界在哪个小节？"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[216]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 系统边界 from Orion Product Overview with score 0.809. Cloud rerank re-ordered 12 candidate(s).",
+            "highlights": [
+              "Orion Product Overview / 系统边界 [section] score=0.809",
+              "Orion Product Overview / 术语定义 [section] score=0.464",
+              "Orion Product Overview / Orion 产品总览 [section] score=0.447",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1149"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.916).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.916"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+            "highlights": [
+              "Orion Product Overview p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=structured; evidence=0.916 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as structured; prepared 2 route queries and 2 retrieval queries.",
+          "highlights": [
+            "routeQueries=系统边界在哪个小节 标题 小节 | 系统边界在哪个小节？",
+            "retrievalQueries=系统边界在哪个小节？ 系统边界在哪个小节 标题 小节 section | 系统边界在哪个小节？"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[216]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 系统边界 from Orion Product Overview with score 0.809. Cloud rerank re-ordered 12 candidate(s).",
+          "highlights": [
+            "Orion Product Overview / 系统边界 [section] score=0.809",
+            "Orion Product Overview / 术语定义 [section] score=0.464",
+            "Orion Product Overview / Orion 产品总览 [section] score=0.447",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=1149"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.916).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.916"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+          "highlights": [
+            "Orion Product Overview p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=structured; evidence=0.916 (strong).",
+        "planner: Planner classified the query as structured; prepared 2 route queries and 2 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 系统边界 from Orion Product Overview with score 0.809. Cloud rerank re-ordered 12 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.916).",
+        "citation: Attached 1 citation(s); lead citation is Orion Product Overview p1."
+      ],
       "xCache": "miss",
-      "xTraceId": "68b71dd263cd32260c14db90199f",
+      "xTraceId": "282ef357b9412adb90982996e06",
       "docScope": [
-        45
+        216
       ]
     },
     {
@@ -228,8 +719,14 @@
       "answerAnyOk": true,
       "retrievalOk": true,
       "citationOk": true,
-      "latencyMs": 1302,
-      "answer": "服务启动步骤的第2步是：执行 `docker compose up --build -d`。",
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 5167,
+      "answer": "执行 docker compose up --build -d。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.907936,
       "topItems": [
         {
           "title": "Orion Ops Runbook",
@@ -237,6 +734,10 @@
           "sectionPath": "Orion 运行手册 > 服务启动步骤",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.796965,
+          "localScore": 0.513775,
+          "rerankScore": 0.918683,
+          "blendedScore": 0.796965,
           "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
         },
         {
@@ -245,15 +746,23 @@
           "sectionPath": "Orion 运行手册 > 初步排查",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.558731,
+          "localScore": 0.373909,
+          "rerankScore": 0.627481,
+          "blendedScore": 0.558731,
           "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
         },
         {
           "title": "Orion Ops Runbook",
-          "heading": "升级规则",
-          "sectionPath": "Orion 运行手册 > 升级规则",
+          "heading": "Orion 运行手册",
+          "sectionPath": "Orion 运行手册",
           "chunkType": "section",
           "sourceType": "md",
-          "text": "[Heading] 升级规则\n\n如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。"
+          "score": 0.471565,
+          "localScore": 0.275239,
+          "rerankScore": 0.546509,
+          "blendedScore": 0.471565,
+          "text": "[Heading] Orion 运行手册"
         }
       ],
       "citations": [
@@ -262,10 +771,146 @@
           "snippet": "[Heading] 服务启动步骤 1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。"
         }
       ],
+      "resolvedDocScope": [
+        217
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "服务启动步骤的第2步是什么？",
+        "focusQuestion": "服务启动步骤 第2步 命令",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": true,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "服务启动步骤 第2步 命令",
+          "服务启动步骤 第2步 命令 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤",
+          "服务启动步骤的第2步是什么？"
+        ],
+        "retrievalQueries": [
+          "服务启动步骤 第2步 命令",
+          "服务启动步骤 第2步 命令 服务启动步骤的第2步是什么？ 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤 命令",
+          "服务启动步骤的第2步是什么？"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 5,
+          "candidateCount": 10,
+          "appliedCount": 10,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 672
+        },
+        "timingsMs": {
+          "embed": 3261,
+          "route": 0,
+          "retrieve": 823,
+          "generate": 1078,
+          "total": 5167
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=procedural; evidence=0.908 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as procedural; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=服务启动步骤 第2步 命令",
+              "routeQueries=服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤",
+              "retrievalQueries=服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第2步是什么？ 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤 命令"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[217]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 服务启动步骤 from Orion Ops Runbook with score 0.797. Cloud rerank re-ordered 10 candidate(s).",
+            "highlights": [
+              "Orion Ops Runbook / 服务启动步骤 [section] score=0.797",
+              "Orion Ops Runbook / 初步排查 [section] score=0.559",
+              "Orion Ops Runbook / Orion 运行手册 [section] score=0.472",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=672"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.908).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.908"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+            "highlights": [
+              "Orion Ops Runbook p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=procedural; evidence=0.908 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as procedural; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=服务启动步骤 第2步 命令",
+            "routeQueries=服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤",
+            "retrievalQueries=服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第2步是什么？ 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤 命令"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[217]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 服务启动步骤 from Orion Ops Runbook with score 0.797. Cloud rerank re-ordered 10 candidate(s).",
+          "highlights": [
+            "Orion Ops Runbook / 服务启动步骤 [section] score=0.797",
+            "Orion Ops Runbook / 初步排查 [section] score=0.559",
+            "Orion Ops Runbook / Orion 运行手册 [section] score=0.472",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=672"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.908).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.908"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+          "highlights": [
+            "Orion Ops Runbook p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=procedural; evidence=0.908 (strong).",
+        "planner: Planner classified the query as procedural; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 服务启动步骤 from Orion Ops Runbook with score 0.797. Cloud rerank re-ordered 10 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.908).",
+        "citation: Attached 1 citation(s); lead citation is Orion Ops Runbook p1."
+      ],
       "xCache": "miss",
-      "xTraceId": "68b75cbc78e8f3b8bbdc93a61cf1",
+      "xTraceId": "283e94fd0d8548b71801f00bb68",
       "docScope": [
-        46
+        217
       ]
     },
     {
@@ -280,8 +925,14 @@
       "answerAnyOk": true,
       "retrievalOk": true,
       "citationOk": true,
-      "latencyMs": 1294,
-      "answer": "当接口 5xx 比例连续五分钟超过 5% 时，会触发故障响应。",
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 4396,
+      "answer": "当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.83292,
       "topItems": [
         {
           "title": "Orion Ops Runbook",
@@ -289,6 +940,10 @@
           "sectionPath": "Orion 运行手册 > 故障触发条件",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.867039,
+          "localScore": 0.692249,
+          "rerankScore": 0.930388,
+          "blendedScore": 0.867039,
           "text": "[Heading] 故障触发条件\n\n当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。"
         },
         {
@@ -297,6 +952,10 @@
           "sectionPath": "Orion 运行手册 > 升级规则",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.347332,
+          "localScore": 0.190853,
+          "rerankScore": 0.40082,
+          "blendedScore": 0.347332,
           "text": "[Heading] 升级规则\n\n如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。"
         },
         {
@@ -305,19 +964,159 @@
           "sectionPath": "Orion 运行手册 > 初步排查",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.328704,
+          "localScore": 0.15642,
+          "rerankScore": 0.390703,
+          "blendedScore": 0.328704,
           "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
         }
       ],
       "citations": [
         {
           "title": "Orion Ops Runbook",
-          "snippet": "[Heading] 故障触发条件 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。"
+          "snippet": "[Heading] 初步排查 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。"
         }
       ],
+      "resolvedDocScope": [
+        217
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "什么情况下会触发故障响应？",
+        "focusQuestion": "故障触发条件",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": true,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "故障触发条件",
+          "故障触发条件 什么情况下会触发故障响应 触发条件 阈值",
+          "什么情况下会触发故障响应？"
+        ],
+        "retrievalQueries": [
+          "故障触发条件",
+          "故障触发条件 什么情况下会触发故障响应？ 什么情况下会触发故障响应 触发条件 阈值",
+          "什么情况下会触发故障响应？"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 5,
+          "candidateCount": 10,
+          "appliedCount": 10,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 793
+        },
+        "timingsMs": {
+          "embed": 1981,
+          "route": 0,
+          "retrieve": 890,
+          "generate": 1520,
+          "total": 4396
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=threshold; evidence=0.833 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as threshold; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=故障触发条件",
+              "routeQueries=故障触发条件 | 故障触发条件 什么情况下会触发故障响应 触发条件 阈值",
+              "retrievalQueries=故障触发条件 | 故障触发条件 什么情况下会触发故障响应？ 什么情况下会触发故障响应 触发条件 阈值"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[217]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 故障触发条件 from Orion Ops Runbook with score 0.867. Cloud rerank re-ordered 10 candidate(s).",
+            "highlights": [
+              "Orion Ops Runbook / 故障触发条件 [section] score=0.867",
+              "Orion Ops Runbook / 升级规则 [section] score=0.347",
+              "Orion Ops Runbook / 初步排查 [section] score=0.329",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=793"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.833).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.833"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+            "highlights": [
+              "Orion Ops Runbook p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=threshold; evidence=0.833 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as threshold; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=故障触发条件",
+            "routeQueries=故障触发条件 | 故障触发条件 什么情况下会触发故障响应 触发条件 阈值",
+            "retrievalQueries=故障触发条件 | 故障触发条件 什么情况下会触发故障响应？ 什么情况下会触发故障响应 触发条件 阈值"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[217]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 故障触发条件 from Orion Ops Runbook with score 0.867. Cloud rerank re-ordered 10 candidate(s).",
+          "highlights": [
+            "Orion Ops Runbook / 故障触发条件 [section] score=0.867",
+            "Orion Ops Runbook / 升级规则 [section] score=0.347",
+            "Orion Ops Runbook / 初步排查 [section] score=0.329",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=793"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.833).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.833"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+          "highlights": [
+            "Orion Ops Runbook p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=threshold; evidence=0.833 (strong).",
+        "planner: Planner classified the query as threshold; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 故障触发条件 from Orion Ops Runbook with score 0.867. Cloud rerank re-ordered 10 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.833).",
+        "citation: Attached 1 citation(s); lead citation is Orion Ops Runbook p1."
+      ],
       "xCache": "miss",
-      "xTraceId": "68b7aa95c5174dcb6a4e09cf2dcf",
+      "xTraceId": "2851de671a1f78f0a53577194fa",
       "docScope": [
-        46
+        217
       ]
     },
     {
@@ -332,8 +1131,14 @@
       "answerAnyOk": true,
       "retrievalOk": true,
       "citationOk": true,
-      "latencyMs": 1024,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 3891,
       "answer": "十五分钟内无法恢复就需要升级。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.744768,
       "topItems": [
         {
           "title": "Orion Ops Runbook",
@@ -341,15 +1146,457 @@
           "sectionPath": "Orion 运行手册 > 升级规则",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.796227,
+          "localScore": 0.467675,
+          "rerankScore": 0.942371,
+          "blendedScore": 0.796227,
           "text": "[Heading] 升级规则\n\n如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。"
         },
         {
           "title": "Orion Ops Runbook",
-          "heading": "故障触发条件",
-          "sectionPath": "Orion 运行手册 > 故障触发条件",
+          "heading": "Orion 运行手册",
+          "sectionPath": "Orion 运行手册",
           "chunkType": "section",
           "sourceType": "md",
-          "text": "[Heading] 故障触发条件\n\n当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。"
+          "score": 0.319216,
+          "localScore": 0.113286,
+          "rerankScore": 0.430102,
+          "blendedScore": 0.319216,
+          "text": "[Heading] Orion 运行手册"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "服务启动步骤",
+          "sectionPath": "Orion 运行手册 > 服务启动步骤",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.318617,
+          "localScore": 0.128759,
+          "rerankScore": 0.420848,
+          "blendedScore": 0.318617,
+          "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Ops Runbook",
+          "snippet": "[Heading] 服务启动步骤 1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        }
+      ],
+      "resolvedDocScope": [
+        217
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "多久内无法恢复就需要升级？",
+        "focusQuestion": "升级规则 时间窗口",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": true,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "升级规则 时间窗口",
+          "升级规则 时间窗口 多久内无法恢复就需要升级 时间窗口 时限",
+          "多久内无法恢复就需要升级？"
+        ],
+        "retrievalQueries": [
+          "升级规则 时间窗口",
+          "升级规则 时间窗口 多久内无法恢复就需要升级？ 多久内无法恢复就需要升级 时间窗口 时限",
+          "多久内无法恢复就需要升级？"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 5,
+          "candidateCount": 10,
+          "appliedCount": 10,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 699
+        },
+        "timingsMs": {
+          "embed": 2054,
+          "route": 0,
+          "retrieve": 799,
+          "generate": 1033,
+          "total": 3891
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=temporal; evidence=0.745 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as temporal; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=升级规则 时间窗口",
+              "routeQueries=升级规则 时间窗口 | 升级规则 时间窗口 多久内无法恢复就需要升级 时间窗口 时限",
+              "retrievalQueries=升级规则 时间窗口 | 升级规则 时间窗口 多久内无法恢复就需要升级？ 多久内无法恢复就需要升级 时间窗口 时限"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[217]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 升级规则 from Orion Ops Runbook with score 0.796. Cloud rerank re-ordered 10 candidate(s).",
+            "highlights": [
+              "Orion Ops Runbook / 升级规则 [section] score=0.796",
+              "Orion Ops Runbook / Orion 运行手册 [section] score=0.319",
+              "Orion Ops Runbook / 服务启动步骤 [section] score=0.319",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=699"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.745).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.745"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+            "highlights": [
+              "Orion Ops Runbook p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=temporal; evidence=0.745 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as temporal; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=升级规则 时间窗口",
+            "routeQueries=升级规则 时间窗口 | 升级规则 时间窗口 多久内无法恢复就需要升级 时间窗口 时限",
+            "retrievalQueries=升级规则 时间窗口 | 升级规则 时间窗口 多久内无法恢复就需要升级？ 多久内无法恢复就需要升级 时间窗口 时限"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[217]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 升级规则 from Orion Ops Runbook with score 0.796. Cloud rerank re-ordered 10 candidate(s).",
+          "highlights": [
+            "Orion Ops Runbook / 升级规则 [section] score=0.796",
+            "Orion Ops Runbook / Orion 运行手册 [section] score=0.319",
+            "Orion Ops Runbook / 服务启动步骤 [section] score=0.319",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=699"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.745).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.745"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+          "highlights": [
+            "Orion Ops Runbook p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=temporal; evidence=0.745 (strong).",
+        "planner: Planner classified the query as temporal; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 升级规则 from Orion Ops Runbook with score 0.796. Cloud rerank re-ordered 10 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.745).",
+        "citation: Attached 1 citation(s); lead citation is Orion Ops Runbook p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "2862472f310371c6ab37420757e",
+      "docScope": [
+        217
+      ]
+    },
+    {
+      "id": "small-route-auto-summary",
+      "question": "Orion 的核心能力是什么？",
+      "tags": [
+        "routing",
+        "summary",
+        "product"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 4170,
+      "answer": "Orion 的核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.961545,
+      "topItems": [
+        {
+          "title": "Orion Product Overview",
+          "heading": "核心能力",
+          "sectionPath": "Orion 产品总览 > 核心能力",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.875802,
+          "localScore": 0.644273,
+          "rerankScore": 0.969702,
+          "blendedScore": 0.875802,
+          "text": "[Heading] 核心能力\n\n核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "核心能力",
+          "sectionPath": "Orion 产品总览 > 核心能力",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.875802,
+          "localScore": 0.644273,
+          "rerankScore": 0.969702,
+          "blendedScore": 0.875802,
+          "text": "[Heading] 核心能力\n\n核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "产品定位",
+          "sectionPath": "Orion 产品总览 > 产品定位",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.811024,
+          "localScore": 0.473127,
+          "rerankScore": 0.962199,
+          "blendedScore": 0.811024,
+          "text": "[Heading] 产品定位\n\nOrion 用于统一接入知识库文档，提供检索、引用和问答能力。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Product Overview",
+          "snippet": "[Heading] 产品定位 Orion 用于统一接入知识库文档，提供检索、引用和问答能力。"
+        }
+      ],
+      "resolvedDocScope": [
+        103,
+        87
+      ],
+      "routedDocs": [
+        {
+          "docId": 103,
+          "title": "Orion Product Overview",
+          "score": 0.794603,
+          "summary": "Orion 用于统一接入知识库文档，提供检索、引用和问答能力。 核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。 系统边界是不处理审批流，也不替代源系统权限校验。 chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。 适用于内部知识库搜索、客服辅助和交付文档问答。",
+          "keywords": "Orion 产品总览, 产品定位, 核心能力, 系统边界, 术语定义, 适用场景, orion, chunk, product, overview, metadata",
+          "sourceType": "md",
+          "reason": "vector+keyword+domain"
+        },
+        {
+          "docId": 87,
+          "title": "Orion Product Overview",
+          "score": 0.744473,
+          "summary": "Orion 用于统一接入知识库文档，提供检索、引用和问答能力。 核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。 系统边界是不处理审批流，也不替代源系统权限校验。 chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。 适用于内部知识库搜索、客服辅助和交付文档问答。",
+          "keywords": "Orion 产品总览, 产品定位, 核心能力, 系统边界, 术语定义, 适用场景, orion, chunk, product, overview, metadata",
+          "sourceType": "md",
+          "reason": "vector+keyword+domain+definition"
+        }
+      ],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Orion 的核心能力是什么？",
+        "focusQuestion": "Orion 核心能力",
+        "decomposition": [],
+        "intent": {
+          "summary": true,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "Orion 核心能力",
+          "Orion 核心能力 Orion 的核心能力是什么 product overview 产品概览 核心能力 概览",
+          "Orion 的核心能力是什么？"
+        ],
+        "retrievalQueries": [
+          "Orion 核心能力",
+          "Orion 核心能力 Orion 的核心能力是什么？ Orion 的核心能力是什么 product overview 产品概览 核心能力 概览",
+          "Orion 的核心能力是什么？"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 12,
+          "candidateCount": 24,
+          "appliedCount": 24,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 755
+        },
+        "timingsMs": {
+          "embed": 1628,
+          "route": 255,
+          "retrieve": 908,
+          "generate": 1374,
+          "total": 4170
+        },
+        "decisionSummary": {
+          "headline": "Answered after auto-routed; planner intent=summary; evidence=0.962 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as summary; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=Orion 核心能力",
+              "routeQueries=Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么 product overview 产品概览 核心能力 概览",
+              "retrievalQueries=Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么？ Orion 的核心能力是什么 product overview 产品概览 核心能力 概览"
+            ]
+          },
+          "routing": {
+            "summary": "Auto-routed to 2 document(s); top candidate is Orion Product Overview.",
+            "highlights": [
+              "Orion Product Overview (score=0.795, reason=vector+keyword+domain)",
+              "Orion Product Overview (score=0.744, reason=vector+keyword+domain+definition)"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 核心能力 from Orion Product Overview with score 0.876. Cloud rerank re-ordered 24 candidate(s).",
+            "highlights": [
+              "Orion Product Overview / 核心能力 [section] score=0.876",
+              "Orion Product Overview / 核心能力 [section] score=0.876",
+              "Orion Product Overview / 产品定位 [section] score=0.811",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=755"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.962).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.962"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+            "highlights": [
+              "Orion Product Overview p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after auto-routed; planner intent=summary; evidence=0.962 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as summary; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=Orion 核心能力",
+            "routeQueries=Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么 product overview 产品概览 核心能力 概览",
+            "retrievalQueries=Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么？ Orion 的核心能力是什么 product overview 产品概览 核心能力 概览"
+          ]
+        },
+        "routing": {
+          "summary": "Auto-routed to 2 document(s); top candidate is Orion Product Overview.",
+          "highlights": [
+            "Orion Product Overview (score=0.795, reason=vector+keyword+domain)",
+            "Orion Product Overview (score=0.744, reason=vector+keyword+domain+definition)"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 核心能力 from Orion Product Overview with score 0.876. Cloud rerank re-ordered 24 candidate(s).",
+          "highlights": [
+            "Orion Product Overview / 核心能力 [section] score=0.876",
+            "Orion Product Overview / 核心能力 [section] score=0.876",
+            "Orion Product Overview / 产品定位 [section] score=0.811",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=755"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.962).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.962"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+          "highlights": [
+            "Orion Product Overview p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after auto-routed; planner intent=summary; evidence=0.962 (strong).",
+        "planner: Planner classified the query as summary; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Auto-routed to 2 document(s); top candidate is Orion Product Overview.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 核心能力 from Orion Product Overview with score 0.876. Cloud rerank re-ordered 24 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.962).",
+        "citation: Attached 1 citation(s); lead citation is Orion Product Overview p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "2870cfe68f5ef540e94efff5ab2",
+      "docScope": []
+    },
+    {
+      "id": "small-route-auto-procedure",
+      "question": "服务启动步骤的第2步是什么？",
+      "tags": [
+        "routing",
+        "procedure",
+        "ops"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 4280,
+      "answer": "执行 docker compose up --build -d。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.907879,
+      "topItems": [
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "服务启动步骤",
+          "sectionPath": "Orion 运行手册 > 服务启动步骤",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.796881,
+          "localScore": 0.625364,
+          "rerankScore": 0.858467,
+          "blendedScore": 0.796881,
+          "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "服务启动步骤",
+          "sectionPath": "Orion 运行手册 > 服务启动步骤",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.796881,
+          "localScore": 0.625364,
+          "rerankScore": 0.858467,
+          "blendedScore": 0.796881,
+          "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
         },
         {
           "title": "Orion Ops Runbook",
@@ -357,40 +1604,661 @@
           "sectionPath": "Orion 运行手册 > 初步排查",
           "chunkType": "section",
           "sourceType": "md",
+          "score": 0.540469,
+          "localScore": 0.33751,
+          "rerankScore": 0.618985,
+          "blendedScore": 0.540469,
           "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
         }
       ],
       "citations": [
         {
           "title": "Orion Ops Runbook",
-          "snippet": "[Heading] 升级规则 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。"
+          "snippet": "[Heading] 服务启动步骤 1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。"
         }
       ],
+      "resolvedDocScope": [
+        113,
+        83
+      ],
+      "routedDocs": [
+        {
+          "docId": 113,
+          "title": "Orion Ops Runbook",
+          "score": 0.578285,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector+domain+procedural"
+        },
+        {
+          "docId": 83,
+          "title": "Orion Ops Runbook",
+          "score": 0.487979,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector+keyword+domain+procedural"
+        }
+      ],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "服务启动步骤的第2步是什么？",
+        "focusQuestion": "服务启动步骤 第2步 命令",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": true,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "服务启动步骤 第2步 命令",
+          "服务启动步骤 第2步 命令 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤",
+          "服务启动步骤的第2步是什么？"
+        ],
+        "retrievalQueries": [
+          "服务启动步骤 第2步 命令",
+          "服务启动步骤 第2步 命令 服务启动步骤的第2步是什么？ 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤 命令",
+          "服务启动步骤的第2步是什么？"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 10,
+          "candidateCount": 20,
+          "appliedCount": 20,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 777
+        },
+        "timingsMs": {
+          "embed": 1915,
+          "route": 365,
+          "retrieve": 941,
+          "generate": 1054,
+          "total": 4280
+        },
+        "decisionSummary": {
+          "headline": "Answered after auto-routed; planner intent=procedural; evidence=0.908 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as procedural; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=服务启动步骤 第2步 命令",
+              "routeQueries=服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤",
+              "retrievalQueries=服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第2步是什么？ 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤 命令"
+            ]
+          },
+          "routing": {
+            "summary": "Auto-routed to 2 document(s); top candidate is Orion Ops Runbook.",
+            "highlights": [
+              "Orion Ops Runbook (score=0.578, reason=vector+domain+procedural)",
+              "Orion Ops Runbook (score=0.488, reason=vector+keyword+domain+procedural)"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 服务启动步骤 from Orion Ops Runbook with score 0.797. Cloud rerank re-ordered 20 candidate(s).",
+            "highlights": [
+              "Orion Ops Runbook / 服务启动步骤 [section] score=0.797",
+              "Orion Ops Runbook / 服务启动步骤 [section] score=0.797",
+              "Orion Ops Runbook / 初步排查 [section] score=0.540",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=777"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.908).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.908"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+            "highlights": [
+              "Orion Ops Runbook p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after auto-routed; planner intent=procedural; evidence=0.908 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as procedural; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=服务启动步骤 第2步 命令",
+            "routeQueries=服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤",
+            "retrievalQueries=服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第2步是什么？ 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤 命令"
+          ]
+        },
+        "routing": {
+          "summary": "Auto-routed to 2 document(s); top candidate is Orion Ops Runbook.",
+          "highlights": [
+            "Orion Ops Runbook (score=0.578, reason=vector+domain+procedural)",
+            "Orion Ops Runbook (score=0.488, reason=vector+keyword+domain+procedural)"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 服务启动步骤 from Orion Ops Runbook with score 0.797. Cloud rerank re-ordered 20 candidate(s).",
+          "highlights": [
+            "Orion Ops Runbook / 服务启动步骤 [section] score=0.797",
+            "Orion Ops Runbook / 服务启动步骤 [section] score=0.797",
+            "Orion Ops Runbook / 初步排查 [section] score=0.540",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=777"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.908).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.908"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+          "highlights": [
+            "Orion Ops Runbook p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after auto-routed; planner intent=procedural; evidence=0.908 (strong).",
+        "planner: Planner classified the query as procedural; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Auto-routed to 2 document(s); top candidate is Orion Ops Runbook.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 服务启动步骤 from Orion Ops Runbook with score 0.797. Cloud rerank re-ordered 20 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.908).",
+        "citation: Attached 1 citation(s); lead citation is Orion Ops Runbook p1."
+      ],
       "xCache": "miss",
-      "xTraceId": "68b7f82a024398603b9068e0d034",
+      "xTraceId": "2880622db348802cadc63939713",
+      "docScope": []
+    },
+    {
+      "id": "small-query-paraphrase-summary",
+      "question": "Orion 主要能干嘛？",
+      "tags": [
+        "query",
+        "summary",
+        "product"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 5029,
+      "answer": "Orion 主要能进行文档上传、异步入库、混合检索和带引用的回答生成；同时用于统一接入知识库文档，提供检索、引用和问答能力。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.779543,
+      "topItems": [
+        {
+          "title": "Orion Product Overview",
+          "heading": "核心能力",
+          "sectionPath": "Orion 产品总览 > 核心能力",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.906191,
+          "localScore": 0.732126,
+          "rerankScore": 0.969149,
+          "blendedScore": 0.906191,
+          "text": "[Heading] 核心能力\n\n核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "产品定位",
+          "sectionPath": "Orion 产品总览 > 产品定位",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.808734,
+          "localScore": 0.498269,
+          "rerankScore": 0.945138,
+          "blendedScore": 0.808734,
+          "text": "[Heading] 产品定位\n\nOrion 用于统一接入知识库文档，提供检索、引用和问答能力。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "系统边界",
+          "sectionPath": "Orion 产品总览 > 系统边界",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.703248,
+          "localScore": 0.413304,
+          "rerankScore": 0.828603,
+          "blendedScore": 0.703248,
+          "text": "[Heading] 系统边界\n\n系统边界是不处理审批流，也不替代源系统权限校验。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Product Overview",
+          "snippet": "[Heading] 产品定位 Orion 用于统一接入知识库文档，提供检索、引用和问答能力。"
+        }
+      ],
+      "resolvedDocScope": [
+        216
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Orion 主要能干嘛？",
+        "focusQuestion": "Orion 核心能力",
+        "decomposition": [],
+        "intent": {
+          "summary": true,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "Orion 核心能力",
+          "Orion 核心能力 Orion 主要能干嘛 product overview 产品概览 核心能力 概览",
+          "Orion 主要能干嘛？"
+        ],
+        "retrievalQueries": [
+          "Orion 核心能力",
+          "Orion 核心能力 Orion 主要能干嘛？ Orion 主要能干嘛 product overview 产品概览 核心能力 概览",
+          "Orion 主要能干嘛？"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 6,
+          "candidateCount": 12,
+          "appliedCount": 12,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 697
+        },
+        "timingsMs": {
+          "embed": 1881,
+          "route": 0,
+          "retrieve": 795,
+          "generate": 2331,
+          "total": 5029
+        },
+        "decisionSummary": {
+          "headline": "Answered after explicit scope; planner intent=summary; evidence=0.780 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as summary; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=Orion 核心能力",
+              "routeQueries=Orion 核心能力 | Orion 核心能力 Orion 主要能干嘛 product overview 产品概览 核心能力 概览",
+              "retrievalQueries=Orion 核心能力 | Orion 核心能力 Orion 主要能干嘛？ Orion 主要能干嘛 product overview 产品概览 核心能力 概览"
+            ]
+          },
+          "routing": {
+            "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+            "highlights": [
+              "requestedDocScope=[216]"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 核心能力 from Orion Product Overview with score 0.906. Cloud rerank re-ordered 12 candidate(s).",
+            "highlights": [
+              "Orion Product Overview / 核心能力 [section] score=0.906",
+              "Orion Product Overview / 产品定位 [section] score=0.809",
+              "Orion Product Overview / 系统边界 [section] score=0.703",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=697"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.780).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.780"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+            "highlights": [
+              "Orion Product Overview p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after explicit scope; planner intent=summary; evidence=0.780 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as summary; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=Orion 核心能力",
+            "routeQueries=Orion 核心能力 | Orion 核心能力 Orion 主要能干嘛 product overview 产品概览 核心能力 概览",
+            "retrievalQueries=Orion 核心能力 | Orion 核心能力 Orion 主要能干嘛？ Orion 主要能干嘛 product overview 产品概览 核心能力 概览"
+          ]
+        },
+        "routing": {
+          "summary": "Used explicit docScope with 1 document(s); automatic routing was skipped.",
+          "highlights": [
+            "requestedDocScope=[216]"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 核心能力 from Orion Product Overview with score 0.906. Cloud rerank re-ordered 12 candidate(s).",
+          "highlights": [
+            "Orion Product Overview / 核心能力 [section] score=0.906",
+            "Orion Product Overview / 产品定位 [section] score=0.809",
+            "Orion Product Overview / 系统边界 [section] score=0.703",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=697"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.780).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.780"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Product Overview p1.",
+          "highlights": [
+            "Orion Product Overview p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after explicit scope; planner intent=summary; evidence=0.780 (strong).",
+        "planner: Planner classified the query as summary; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Used explicit docScope with 1 document(s); automatic routing was skipped.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 核心能力 from Orion Product Overview with score 0.906. Cloud rerank re-ordered 12 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.780).",
+        "citation: Attached 1 citation(s); lead citation is Orion Product Overview p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "28905da8c9ee68270619e86f5a3",
       "docScope": [
-        46
+        216
       ]
+    },
+    {
+      "id": "small-query-paraphrase-route-procedure",
+      "question": "启动服务第二步要敲什么命令？",
+      "tags": [
+        "query",
+        "routing",
+        "procedure",
+        "ops"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 4408,
+      "answer": "执行 docker compose up --build -d。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.6903,
+      "topItems": [
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "服务启动步骤",
+          "sectionPath": "Orion 运行手册 > 服务启动步骤",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.780984,
+          "localScore": 0.612172,
+          "rerankScore": 0.841114,
+          "blendedScore": 0.780984,
+          "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "服务启动步骤",
+          "sectionPath": "Orion 运行手册 > 服务启动步骤",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.780984,
+          "localScore": 0.612172,
+          "rerankScore": 0.841114,
+          "blendedScore": 0.780984,
+          "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "初步排查",
+          "sectionPath": "Orion 运行手册 > 初步排查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "score": 0.509539,
+          "localScore": 0.342482,
+          "rerankScore": 0.568724,
+          "blendedScore": 0.509539,
+          "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Ops Runbook",
+          "snippet": "[Heading] 服务启动步骤 1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        }
+      ],
+      "resolvedDocScope": [
+        113,
+        111
+      ],
+      "routedDocs": [
+        {
+          "docId": 113,
+          "title": "Orion Ops Runbook",
+          "score": 0.555185,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector+domain+procedural"
+        },
+        {
+          "docId": 111,
+          "title": "Orion Ops Runbook",
+          "score": 0.518798,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector+keyword+domain+procedural"
+        }
+      ],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "启动服务第二步要敲什么命令？",
+        "focusQuestion": "服务启动步骤 第二步 命令",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": true,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "服务启动步骤 第二步 命令",
+          "服务启动步骤 第二步 命令 启动服务第二步要敲什么命令 ops runbook 运维 流程 步骤",
+          "启动服务第二步要敲什么命令？"
+        ],
+        "retrievalQueries": [
+          "服务启动步骤 第二步 命令",
+          "服务启动步骤 第二步 命令 启动服务第二步要敲什么命令？ 启动服务第二步要敲什么命令 ops runbook 运维 流程 步骤 命令",
+          "启动服务第二步要敲什么命令？"
+        ],
+        "queryVectorCount": 4,
+        "rerank": {
+          "enabled": true,
+          "provider": "dashscope",
+          "model": "qwen3-rerank",
+          "callCount": 2,
+          "requestedTopN": 10,
+          "candidateCount": 20,
+          "appliedCount": 20,
+          "fallback": false,
+          "fallbackReason": null,
+          "latencyMs": 750
+        },
+        "timingsMs": {
+          "embed": 1950,
+          "route": 487,
+          "retrieve": 980,
+          "generate": 983,
+          "total": 4408
+        },
+        "decisionSummary": {
+          "headline": "Answered after auto-routed; planner intent=procedural; evidence=0.690 (strong).",
+          "planner": {
+            "summary": "Planner classified the query as procedural; prepared 3 route queries and 3 retrieval queries.",
+            "highlights": [
+              "focus=服务启动步骤 第二步 命令",
+              "routeQueries=服务启动步骤 第二步 命令 | 服务启动步骤 第二步 命令 启动服务第二步要敲什么命令 ops runbook 运维 流程 步骤",
+              "retrievalQueries=服务启动步骤 第二步 命令 | 服务启动步骤 第二步 命令 启动服务第二步要敲什么命令？ 启动服务第二步要敲什么命令 ops runbook 运维 流程 步骤 命令"
+            ]
+          },
+          "routing": {
+            "summary": "Auto-routed to 2 document(s); top candidate is Orion Ops Runbook.",
+            "highlights": [
+              "Orion Ops Runbook (score=0.555, reason=vector+domain+procedural)",
+              "Orion Ops Runbook (score=0.519, reason=vector+keyword+domain+procedural)"
+            ]
+          },
+          "retrieval": {
+            "summary": "Retrieved 3 chunk(s); top chunk is 服务启动步骤 from Orion Ops Runbook with score 0.781. Cloud rerank re-ordered 20 candidate(s).",
+            "highlights": [
+              "Orion Ops Runbook / 服务启动步骤 [section] score=0.781",
+              "Orion Ops Runbook / 服务启动步骤 [section] score=0.781",
+              "Orion Ops Runbook / 初步排查 [section] score=0.510",
+              "rerank=dashscope/qwen3-rerank calls=2 latencyMs=750"
+            ]
+          },
+          "answerability": {
+            "summary": "Answer generation proceeded with strong evidence (score=0.690).",
+            "highlights": [
+              "refused=false",
+              "evidenceScore=0.690"
+            ]
+          },
+          "citation": {
+            "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+            "highlights": [
+              "Orion Ops Runbook p1"
+            ]
+          }
+        }
+      },
+      "decisionSummary": {
+        "headline": "Answered after auto-routed; planner intent=procedural; evidence=0.690 (strong).",
+        "planner": {
+          "summary": "Planner classified the query as procedural; prepared 3 route queries and 3 retrieval queries.",
+          "highlights": [
+            "focus=服务启动步骤 第二步 命令",
+            "routeQueries=服务启动步骤 第二步 命令 | 服务启动步骤 第二步 命令 启动服务第二步要敲什么命令 ops runbook 运维 流程 步骤",
+            "retrievalQueries=服务启动步骤 第二步 命令 | 服务启动步骤 第二步 命令 启动服务第二步要敲什么命令？ 启动服务第二步要敲什么命令 ops runbook 运维 流程 步骤 命令"
+          ]
+        },
+        "routing": {
+          "summary": "Auto-routed to 2 document(s); top candidate is Orion Ops Runbook.",
+          "highlights": [
+            "Orion Ops Runbook (score=0.555, reason=vector+domain+procedural)",
+            "Orion Ops Runbook (score=0.519, reason=vector+keyword+domain+procedural)"
+          ]
+        },
+        "retrieval": {
+          "summary": "Retrieved 3 chunk(s); top chunk is 服务启动步骤 from Orion Ops Runbook with score 0.781. Cloud rerank re-ordered 20 candidate(s).",
+          "highlights": [
+            "Orion Ops Runbook / 服务启动步骤 [section] score=0.781",
+            "Orion Ops Runbook / 服务启动步骤 [section] score=0.781",
+            "Orion Ops Runbook / 初步排查 [section] score=0.510",
+            "rerank=dashscope/qwen3-rerank calls=2 latencyMs=750"
+          ]
+        },
+        "answerability": {
+          "summary": "Answer generation proceeded with strong evidence (score=0.690).",
+          "highlights": [
+            "refused=false",
+            "evidenceScore=0.690"
+          ]
+        },
+        "citation": {
+          "summary": "Attached 1 citation(s); lead citation is Orion Ops Runbook p1.",
+          "highlights": [
+            "Orion Ops Runbook p1"
+          ]
+        }
+      },
+      "decisionSummaryText": [
+        "Answered after auto-routed; planner intent=procedural; evidence=0.690 (strong).",
+        "planner: Planner classified the query as procedural; prepared 3 route queries and 3 retrieval queries.",
+        "routing: Auto-routed to 2 document(s); top candidate is Orion Ops Runbook.",
+        "retrieval: Retrieved 3 chunk(s); top chunk is 服务启动步骤 from Orion Ops Runbook with score 0.781. Cloud rerank re-ordered 20 candidate(s).",
+        "answerability: Answer generation proceeded with strong evidence (score=0.690).",
+        "citation: Attached 1 citation(s); lead citation is Orion Ops Runbook p1."
+      ],
+      "xCache": "miss",
+      "xTraceId": "28a3223164b7a704e178d9cf469",
+      "docScope": []
     }
   ],
-  "_reportPath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/small-20260321-145115.json",
+  "_reportPath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/small-20260324-105342.json",
   "comparison": {
     "suiteId": "small",
-    "baselineGeneratedAt": "2026-03-21 14:38:28",
-    "currentGeneratedAt": "2026-03-21 14:51:15",
-    "baselinePath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/small-20260321-143828.json",
-    "currentPath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/small-20260321-145115.json",
+    "baselineGeneratedAt": "2026-03-21 14:51:15",
+    "currentGeneratedAt": "2026-03-24 10:53:42",
+    "baselinePath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/baselines/small.json",
+    "currentPath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/small-20260324-105342.json",
     "totalsDelta": {
-      "passed": 0,
-      "answerAll": 0,
-      "answerAny": 0,
-      "retrieval": 0,
-      "citation": 0
+      "passed": 4,
+      "answerAll": 4,
+      "answerAny": 4,
+      "retrieval": 4,
+      "citation": 4,
+      "refusalPassed": 0
     },
     "regressionCount": 0,
-    "improvementCount": 0,
+    "improvementCount": 4,
     "regressions": [],
-    "improvements": [],
+    "improvements": [
+      {
+        "id": "small-query-paraphrase-route-procedure",
+        "status": "added",
+        "currentPassed": true,
+        "baselinePassed": null
+      },
+      {
+        "id": "small-query-paraphrase-summary",
+        "status": "added",
+        "currentPassed": true,
+        "baselinePassed": null
+      },
+      {
+        "id": "small-route-auto-procedure",
+        "status": "added",
+        "currentPassed": true,
+        "baselinePassed": null
+      },
+      {
+        "id": "small-route-auto-summary",
+        "status": "added",
+        "currentPassed": true,
+        "baselinePassed": null
+      }
+    ],
     "changedCases": [
       {
         "status": "latency_change",
@@ -398,20 +2266,47 @@
         "question": "什么是 chunk metadata？",
         "currentPassed": true,
         "baselinePassed": true,
-        "currentLatencyMs": 1507,
-        "baselineLatencyMs": 1487,
-        "latencyDeltaMs": 20,
+        "currentLatencyMs": 3656,
+        "baselineLatencyMs": 1507,
+        "latencyDeltaMs": 2149,
         "currentChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
         },
         "baselineChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
+        },
+        "reasonAreas": [
+          "planner",
+          "rerank",
+          "retrieval",
+          "answerability"
+        ],
+        "reasonSummary": "planner: routeQueries none -> chunk metadata 什么是 definition 术语定义 | 什么是 chunk metadata？ ; rerank: enabled False -> True ; retrieval: topItems Orion Product Overview/术语定义 | Orion Product Overview/核心能力 | Orion Product Overview/适用场景 -> Orion Product Overview/术语定义 | Orion Product Overview/系统边界 | Orion Product Overview/产品定位",
+        "reasonDetails": {
+          "planner": [
+            "routeQueries none -> chunk metadata 什么是 definition 术语定义 | 什么是 chunk metadata？",
+            "retrievalQueries none -> 什么是 chunk metadata？ chunk metadata 什么是 definition 术语定义 | 什么是 chunk metadata？"
+          ],
+          "rerank": [
+            "enabled False -> True",
+            "provider none -> dashscope",
+            "model none -> qwen3-rerank",
+            "appliedCount 0 -> 12"
+          ],
+          "retrieval": [
+            "topItems Orion Product Overview/术语定义 | Orion Product Overview/核心能力 | Orion Product Overview/适用场景 -> Orion Product Overview/术语定义 | Orion Product Overview/系统边界 | Orion Product Overview/产品定位"
+          ],
+          "answerability": [
+            "evidenceScore 0.000 -> 0.809"
+          ]
         }
       },
       {
@@ -420,20 +2315,53 @@
         "question": "多久内无法恢复就需要升级？",
         "currentPassed": true,
         "baselinePassed": true,
-        "currentLatencyMs": 1024,
-        "baselineLatencyMs": 1860,
-        "latencyDeltaMs": -836,
+        "currentLatencyMs": 3891,
+        "baselineLatencyMs": 1024,
+        "latencyDeltaMs": 2867,
         "currentChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
         },
         "baselineChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
+        },
+        "reasonAreas": [
+          "planner",
+          "rerank",
+          "retrieval",
+          "answerability",
+          "citation"
+        ],
+        "reasonSummary": "planner: intent ['general'] -> ['temporal'] ; rerank: enabled False -> True ; retrieval: topItems Orion Ops Runbook/升级规则 | Orion Ops Runbook/故障触发条件 | Orion Ops Runbook/初步排查 -> Orion Ops Runbook/升级规则 | Orion Ops Runbook/Orion 运行手册 | Orion Ops Runbook/服务启动步骤",
+        "reasonDetails": {
+          "planner": [
+            "intent ['general'] -> ['temporal']",
+            "focus none -> 升级规则 时间窗口",
+            "routeQueries none -> 升级规则 时间窗口 | 升级规则 时间窗口 多久内无法恢复就需要升级 时间窗口 时限",
+            "retrievalQueries none -> 升级规则 时间窗口 | 升级规则 时间窗口 多久内无法恢复就需要升级？ 多久内无法恢复就需要升级 时间窗口 时限"
+          ],
+          "rerank": [
+            "enabled False -> True",
+            "provider none -> dashscope",
+            "model none -> qwen3-rerank",
+            "appliedCount 0 -> 10"
+          ],
+          "retrieval": [
+            "topItems Orion Ops Runbook/升级规则 | Orion Ops Runbook/故障触发条件 | Orion Ops Runbook/初步排查 -> Orion Ops Runbook/升级规则 | Orion Ops Runbook/Orion 运行手册 | Orion Ops Runbook/服务启动步骤"
+          ],
+          "answerability": [
+            "evidenceScore 0.000 -> 0.745"
+          ],
+          "citation": [
+            "citations Orion Ops Runbook:[Heading] 升级规则 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。 -> Orion Ops Runbook:[Heading] 服务启动步骤 1. 检查 .env 配置。 2. 执行 docker com"
+          ]
         }
       },
       {
@@ -442,20 +2370,49 @@
         "question": "服务启动步骤的第2步是什么？",
         "currentPassed": true,
         "baselinePassed": true,
-        "currentLatencyMs": 1302,
-        "baselineLatencyMs": 1244,
-        "latencyDeltaMs": 58,
+        "currentLatencyMs": 5167,
+        "baselineLatencyMs": 1302,
+        "latencyDeltaMs": 3865,
         "currentChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
         },
         "baselineChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
+        },
+        "reasonAreas": [
+          "planner",
+          "rerank",
+          "retrieval",
+          "answerability"
+        ],
+        "reasonSummary": "planner: intent ['general'] -> ['procedural'] ; rerank: enabled False -> True ; retrieval: topItems Orion Ops Runbook/服务启动步骤 | Orion Ops Runbook/初步排查 | Orion Ops Runbook/升级规则 -> Orion Ops Runbook/服务启动步骤 | Orion Ops Runbook/初步排查 | Orion Ops Runbook/Orion 运行手册",
+        "reasonDetails": {
+          "planner": [
+            "intent ['general'] -> ['procedural']",
+            "focus none -> 服务启动步骤 第2步 命令",
+            "routeQueries none -> 服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤",
+            "retrievalQueries none -> 服务启动步骤 第2步 命令 | 服务启动步骤 第2步 命令 服务启动步骤的第2步是什么？ 服务启动步骤的第 步是什么 ops runbook 运维 流程 步骤 命令"
+          ],
+          "rerank": [
+            "enabled False -> True",
+            "provider none -> dashscope",
+            "model none -> qwen3-rerank",
+            "appliedCount 0 -> 10"
+          ],
+          "retrieval": [
+            "topItems Orion Ops Runbook/服务启动步骤 | Orion Ops Runbook/初步排查 | Orion Ops Runbook/升级规则 -> Orion Ops Runbook/服务启动步骤 | Orion Ops Runbook/初步排查 | Orion Ops Runbook/Orion 运行手册"
+          ],
+          "answerability": [
+            "evidenceScore 0.000 -> 0.908"
+          ]
         }
       },
       {
@@ -464,20 +2421,48 @@
         "question": "系统边界在哪个小节？",
         "currentPassed": true,
         "baselinePassed": true,
-        "currentLatencyMs": 1049,
-        "baselineLatencyMs": 1266,
-        "latencyDeltaMs": -217,
+        "currentLatencyMs": 4188,
+        "baselineLatencyMs": 1049,
+        "latencyDeltaMs": 3139,
         "currentChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
         },
         "baselineChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
+        },
+        "reasonAreas": [
+          "planner",
+          "rerank",
+          "retrieval",
+          "answerability"
+        ],
+        "reasonSummary": "planner: intent ['general'] -> ['structured'] ; rerank: enabled False -> True ; retrieval: topItems Orion Product Overview/系统边界 | Orion Product Overview/术语定义 | Orion Product Overview/适用场景 -> Orion Product Overview/系统边界 | Orion Product Overview/术语定义 | Orion Product Overview/Orion 产品总览",
+        "reasonDetails": {
+          "planner": [
+            "intent ['general'] -> ['structured']",
+            "routeQueries none -> 系统边界在哪个小节 标题 小节 | 系统边界在哪个小节？",
+            "retrievalQueries none -> 系统边界在哪个小节？ 系统边界在哪个小节 标题 小节 section | 系统边界在哪个小节？"
+          ],
+          "rerank": [
+            "enabled False -> True",
+            "provider none -> dashscope",
+            "model none -> qwen3-rerank",
+            "appliedCount 0 -> 12"
+          ],
+          "retrieval": [
+            "topItems Orion Product Overview/系统边界 | Orion Product Overview/术语定义 | Orion Product Overview/适用场景 -> Orion Product Overview/系统边界 | Orion Product Overview/术语定义 | Orion Product Overview/Orion 产品总览"
+          ],
+          "answerability": [
+            "evidenceScore 0.000 -> 0.916"
+          ]
         }
       },
       {
@@ -486,20 +2471,53 @@
         "question": "Orion 的核心能力是什么？",
         "currentPassed": true,
         "baselinePassed": true,
-        "currentLatencyMs": 1474,
-        "baselineLatencyMs": 1504,
-        "latencyDeltaMs": -30,
+        "currentLatencyMs": 4133,
+        "baselineLatencyMs": 1474,
+        "latencyDeltaMs": 2659,
         "currentChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
         },
         "baselineChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
+        },
+        "reasonAreas": [
+          "planner",
+          "rerank",
+          "retrieval",
+          "answerability",
+          "citation"
+        ],
+        "reasonSummary": "planner: intent ['general'] -> ['summary'] ; rerank: enabled False -> True ; retrieval: topItems Orion Product Overview/核心能力 | Orion Product Overview/产品定位 | Orion Product Overview/Orion 产品总览 -> Orion Product Overview/核心能力 | Orion Product Overview/产品定位 | Orion Product Overview/术语定义",
+        "reasonDetails": {
+          "planner": [
+            "intent ['general'] -> ['summary']",
+            "focus none -> Orion 核心能力",
+            "routeQueries none -> Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么 product overview 产品概览 核心能力 概览",
+            "retrievalQueries none -> Orion 核心能力 | Orion 核心能力 Orion 的核心能力是什么？ Orion 的核心能力是什么 product overview 产品概览 核心能力 概览"
+          ],
+          "rerank": [
+            "enabled False -> True",
+            "provider none -> dashscope",
+            "model none -> qwen3-rerank",
+            "appliedCount 0 -> 12"
+          ],
+          "retrieval": [
+            "topItems Orion Product Overview/核心能力 | Orion Product Overview/产品定位 | Orion Product Overview/Orion 产品总览 -> Orion Product Overview/核心能力 | Orion Product Overview/产品定位 | Orion Product Overview/术语定义"
+          ],
+          "answerability": [
+            "evidenceScore 0.000 -> 0.982"
+          ],
+          "citation": [
+            "citations Orion Product Overview:[Heading] 核心能力 核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。 -> Orion Product Overview:[Heading] 术语定义 chunk metadata 是描述 chunk 标题、层级路径、"
+          ]
         }
       },
       {
@@ -508,20 +2526,49 @@
         "question": "什么情况下会触发故障响应？",
         "currentPassed": true,
         "baselinePassed": true,
-        "currentLatencyMs": 1294,
-        "baselineLatencyMs": 1397,
-        "latencyDeltaMs": -103,
+        "currentLatencyMs": 4396,
+        "baselineLatencyMs": 1294,
+        "latencyDeltaMs": 3102,
         "currentChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
         },
         "baselineChecks": {
           "answerAllOk": true,
           "answerAnyOk": true,
           "retrievalOk": true,
-          "citationOk": true
+          "citationOk": true,
+          "refusalOk": true
+        },
+        "reasonAreas": [
+          "planner",
+          "rerank",
+          "answerability",
+          "citation"
+        ],
+        "reasonSummary": "planner: intent ['general'] -> ['threshold'] ; rerank: enabled False -> True ; answerability: evidenceScore 0.000 -> 0.833",
+        "reasonDetails": {
+          "planner": [
+            "intent ['general'] -> ['threshold']",
+            "focus none -> 故障触发条件",
+            "routeQueries none -> 故障触发条件 | 故障触发条件 什么情况下会触发故障响应 触发条件 阈值",
+            "retrievalQueries none -> 故障触发条件 | 故障触发条件 什么情况下会触发故障响应？ 什么情况下会触发故障响应 触发条件 阈值"
+          ],
+          "rerank": [
+            "enabled False -> True",
+            "provider none -> dashscope",
+            "model none -> qwen3-rerank",
+            "appliedCount 0 -> 10"
+          ],
+          "answerability": [
+            "evidenceScore 0.000 -> 0.833"
+          ],
+          "citation": [
+            "citations Orion Ops Runbook:[Heading] 故障触发条件 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 -> Orion Ops Runbook:[Heading] 初步排查 1. 先看 gateway 健康状态。 2. 再检查 ai-ser"
+          ]
         }
       }
     ],
@@ -552,39 +2599,63 @@
       },
       "ops": {
         "current": {
-          "passed": 3,
-          "total": 3
+          "passed": 5,
+          "total": 5
         },
         "baseline": {
           "passed": 3,
           "total": 3
         },
-        "passedDelta": 0,
-        "totalDelta": 0
+        "passedDelta": 2,
+        "totalDelta": 2
       },
       "procedure": {
         "current": {
-          "passed": 1,
-          "total": 1
+          "passed": 3,
+          "total": 3
         },
         "baseline": {
           "passed": 1,
           "total": 1
         },
-        "passedDelta": 0,
-        "totalDelta": 0
+        "passedDelta": 2,
+        "totalDelta": 2
       },
       "product": {
+        "current": {
+          "passed": 4,
+          "total": 4
+        },
+        "baseline": {
+          "passed": 2,
+          "total": 2
+        },
+        "passedDelta": 2,
+        "totalDelta": 2
+      },
+      "query": {
         "current": {
           "passed": 2,
           "total": 2
         },
         "baseline": {
-          "passed": 2,
-          "total": 2
+          "passed": 0,
+          "total": 0
         },
-        "passedDelta": 0,
-        "totalDelta": 0
+        "passedDelta": 2,
+        "totalDelta": 2
+      },
+      "routing": {
+        "current": {
+          "passed": 3,
+          "total": 3
+        },
+        "baseline": {
+          "passed": 0,
+          "total": 0
+        },
+        "passedDelta": 3,
+        "totalDelta": 3
       },
       "structure": {
         "current": {
@@ -600,15 +2671,15 @@
       },
       "summary": {
         "current": {
-          "passed": 1,
-          "total": 1
+          "passed": 3,
+          "total": 3
         },
         "baseline": {
           "passed": 1,
           "total": 1
         },
-        "passedDelta": 0,
-        "totalDelta": 0
+        "passedDelta": 2,
+        "totalDelta": 2
       },
       "troubleshooting": {
         "current": {
@@ -622,6 +2693,15 @@
         "passedDelta": 0,
         "totalDelta": 0
       }
+    },
+    "regressionReasonBuckets": {},
+    "improvementReasonBuckets": {},
+    "changedReasonBuckets": {
+      "answerability": 6,
+      "citation": 3,
+      "planner": 6,
+      "rerank": 6,
+      "retrieval": 5
     }
   }
 }

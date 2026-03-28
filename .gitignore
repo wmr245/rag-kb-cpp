@@ -1,4 +1,4 @@
-﻿.env
+.env
 __pycache__/
 *.pyc
 build/
@@ -8,6 +8,12 @@ cmake-build-*/
 .DS_Store
 
 uploads/
+game-data/
 AGENT_GUIDE.md
 
+web-game/node_modules/
+web-game/dist/
+web-game/tmp_utf8_check.txt
+
 eval/reports/
+guidance/

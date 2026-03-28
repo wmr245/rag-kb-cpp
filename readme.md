@@ -57,6 +57,7 @@
   - 文档入库与任务状态管理
   - 文档解析、切块、Embedding 调用
   - 混合检索、规则重排、引用生成
+  - Optional cloud rerank with automatic fallback
   - 基于证据评分决定回答或拒答
   - 使用 Redis 做查询缓存
 - `postgres`
@@ -89,6 +90,7 @@ Client
   -> Redis 查缓存
   -> Embedding 问题
   -> pgvector 向量召回 + 关键词召回
+  -> optional cloud rerank
   -> 候选合并与规则重排
   -> 证据评估
   -> LLM 生成答案或拒答
@@ -100,6 +102,7 @@ Client
 - `txt / md / pdf / docx` 文档读取
 - 段落级切块与 overlap
 - Markdown 标题感知切块
+- Optional cloud rerank API integration with automatic fallback
 - PDF 分页提取与按页保留 citation 信息
 - PostgreSQL + pgvector + pg_trgm 的混合检索
 - 基于向量分数、关键词召回、metadata、标题命中、结构顺序的重排
@@ -108,6 +111,15 @@ Client
 - Redis 查询缓存
 - 异步任务状态查询
 - 网关层 trace id 与上游耗时透传
+
+## 云端 Rerank 当前状态
+
+- 已完成 DashScope `qwen3-rerank` 接入，当前接法是“本地规则重排后，对 top N candidate chunks 调云端 rerank，再融合分数”。
+- 云端 rerank 失败时会自动回退到本地排序，不阻断主链路；状态会写入 `queryDebug.rerank`、`decisionSummary.retrieval` 和 eval compare。
+- 在通用回归集上，`small=10/10`、`query=8/8`、`medium=17/17`，开启云端 rerank 后未出现 regression，但这些套件本身已经较强，因此没有体现通过率提升。
+- 在专项 `rerank` 套件上，最初的结果为：`no-rerank 5/8`，`with-rerank 7/8`，证明云端 rerank 对“词面接近但语义目标不同”的 top1 排序有实际收益。
+- 随后又补了一轮 query hard-case 收口和 retrieval observability，最终专项 `rerank` 套件达到 `8/8`，`header` 子集达到 `5/5`，当前这一轮已经可以视为收口状态。
+- 这说明现在的收益不再只是“API 已接通”，而是已经形成“query planning + local retrieval + cloud rerank + hard-case eval”这一套完整闭环。
 
 ## 技术栈
 
@@ -168,6 +180,17 @@ LLM_PROVIDER=openai_compatible
 LLM_API_KEY=your_llm_api_key
 LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_MODEL=qwen-plus
+
+RERANK_ENABLED=false
+RERANK_PROVIDER=dashscope
+RERANK_BASE_URL=https://dashscope.aliyuncs.com/compatible-api/v1/reranks
+RERANK_API_KEY=your_rerank_api_key
+RERANK_MODEL=qwen3-rerank
+RERANK_TOP_N=20
+RERANK_TIMEOUT_SEC=30
+RERANK_SCORE_WEIGHT=0.65
+LOCAL_RERANK_SCORE_WEIGHT=0.35
+RERANK_INSTRUCT=Given a web search query, retrieve relevant passages that answer the query.
 ```
 
 说明：
@@ -209,6 +232,17 @@ LLM_PROVIDER=openai_compatible
 LLM_API_KEY=your_llm_api_key
 LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 LLM_MODEL=qwen-plus
+
+RERANK_ENABLED=false
+RERANK_PROVIDER=dashscope
+RERANK_BASE_URL=https://dashscope.aliyuncs.com/compatible-api/v1/reranks
+RERANK_API_KEY=your_rerank_api_key
+RERANK_MODEL=qwen3-rerank
+RERANK_TOP_N=20
+RERANK_TIMEOUT_SEC=30
+RERANK_SCORE_WEIGHT=0.65
+LOCAL_RERANK_SCORE_WEIGHT=0.35
+RERANK_INSTRUCT=Given a web search query, retrieve relevant passages that answer the query.
 ```
 
 说明：
@@ -299,9 +333,35 @@ python scripts/smoke_test.py   --file ./test.md   --question "这份文档主要
 
 ```bash
 python scripts/run_eval.py --suite small
+python scripts/run_eval.py --suite query
 python scripts/run_eval.py --suite medium
 python scripts/run_eval.py --suite longlite
 ```
+
+Cloud rerank rollout checklist:
+
+```bash
+python scripts/run_eval.py --suite small --compare-to-baseline
+python scripts/run_eval.py --suite query --compare-to-baseline
+python scripts/run_eval.py --suite medium --compare-to-baseline
+```
+
+针对云端 rerank 是否真的带来 top1 排序收益，建议再跑专项套件：
+
+```bash
+# baseline
+python scripts/run_eval.py --suite rerank --report-out eval/reports/rerank-expanded-no-rerank.json --request-timeout 90
+
+# with cloud rerank
+python scripts/run_eval.py --suite rerank --report-out eval/reports/rerank-expanded-with-rerank.json --compare-to eval/reports/rerank-expanded-no-rerank.json --request-timeout 90
+```
+
+当前仓库里可以直接参考这三份专项结果：
+
+- `rerank-expanded-no-rerank.json`: `5/8`
+- `rerank-expanded-with-rerank.json`: `7/8`
+- `rerank-hardcase-20260324-v3.json`: `8/8`
+- `header` 子集最终达到：`5/5`
 
 如果需要阶段性验证更大样本，再额外运行：
 
@@ -346,8 +406,14 @@ curl -X POST http://localhost:8080/rag/query   -H "Content-Type: application/jso
 - `refused`：是否因证据不足而拒答
 - `refusalReason`：拒答原因
 - `evidenceScore`：当前证据强度
-- `items`：命中的 chunks
+- `queryDebug.rerank`：cloud rerank 的 provider / model / candidate count / applied count / fallback / latency，以及 local/final top items
+- `items`：命中的 chunks，包含 `localScore` / `rerankScore` / `blendedScore`
 - `citations`：引用信息
+- `queryDebug`：query planner 的 focus / intent / decomposition / queries / timings
+- `queryDebug.routeRuns`：每条 route query 的 top docs 调试快照
+- `queryDebug.retrievalRuns`：每条 retrieval query 的 local/final top items 调试快照
+- `queryDebug.attributionHints`：当前 case 的轻量归因提示
+- `queryDebug.decisionSummary`：按 planner / routing / retrieval / answerability / citation 汇总的诊断视图
 - `latencyMs`：总耗时
 
 真实工作示例：

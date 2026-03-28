@@ -352,6 +352,139 @@
           }
         ]
       }
+    },
+    {
+      "id": "medium-query-api-cache-header-mixed",
+      "question": "缓存打中的时候哪个响应头会变成 hit？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "api",
+        "cache",
+        "routing"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "x-cache"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion API Reference",
+            "heading": "缓存行为"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion API Reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-query-api-health-mixed",
+      "question": "health check endpoint 是哪个？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "api",
+        "ops",
+        "routing"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "/health"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion API Reference",
+            "heading": "健康检查"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion API Reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-query-team-freeze-window",
+      "question": "发布冻结什么时候开始，什么时候结束？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "decomposition",
+        "policy",
+        "team"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "周五 17:00",
+          "周一 10:00"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Team Handbook",
+            "sourceType": "txt"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Team Handbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-query-team-onboarding-order",
+      "question": "新同学先看什么，再看什么？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "decomposition",
+        "team",
+        "onboarding"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "产品总览",
+          "API 参考"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Team Handbook",
+            "sourceType": "txt"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Team Handbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "medium-query-refusal-unknown-policy",
+      "question": "这套资料里有 GPU 温度监控策略吗？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "refusal",
+        "guardrail"
+      ],
+      "expectations": {
+        "expectRefused": true,
+        "citationCount": 0,
+        "answerContainsAny": [
+          "还不能可靠回答",
+          "关联度不够"
+        ]
+      }
     }
   ]
 }

@@ -1,0 +1,1025 @@
+{
+  "suiteId": "query",
+  "description": "面向 query handling 的专项套件，覆盖 rewrite、mixed query、decomposition 和 refusal。",
+  "baseUrl": "http://localhost:8080",
+  "generatedAt": "2026-03-22 17:01:23",
+  "documents": {
+    "product_overview": {
+      "docId": 128,
+      "taskId": "d6782e4c-ec98-413b-91f3-73cffb5eff91",
+      "title": "Orion Product Overview",
+      "path": "eval/corpus/product_overview.md"
+    },
+    "ops_runbook": {
+      "docId": 130,
+      "taskId": "c6e48446-b93a-4ee0-b0a3-f348950cf986",
+      "title": "Orion Ops Runbook",
+      "path": "eval/corpus/ops_runbook.md"
+    },
+    "api_reference": {
+      "docId": 132,
+      "taskId": "218a5132-971e-4326-846f-694a92300b3b",
+      "title": "Orion API Reference",
+      "path": "eval/corpus/api_reference.md"
+    },
+    "team_handbook": {
+      "docId": 134,
+      "taskId": "cb7939c5-cb68-45f4-ac1e-4ce3c21a982c",
+      "title": "Orion Team Handbook",
+      "path": "eval/corpus/team_handbook.txt"
+    }
+  },
+  "totals": {
+    "cases": 8,
+    "passed": 8,
+    "answerAll": 8,
+    "answerAny": 8,
+    "retrieval": 8,
+    "citation": 8,
+    "refusalChecks": 1,
+    "refusalPassed": 1
+  },
+  "tagStats": {
+    "api": {
+      "total": 2,
+      "passed": 2
+    },
+    "cache": {
+      "total": 1,
+      "passed": 1
+    },
+    "decomposition": {
+      "total": 2,
+      "passed": 2
+    },
+    "definition": {
+      "total": 1,
+      "passed": 1
+    },
+    "guardrail": {
+      "total": 1,
+      "passed": 1
+    },
+    "metadata": {
+      "total": 1,
+      "passed": 1
+    },
+    "onboarding": {
+      "total": 1,
+      "passed": 1
+    },
+    "ops": {
+      "total": 2,
+      "passed": 2
+    },
+    "policy": {
+      "total": 1,
+      "passed": 1
+    },
+    "procedure": {
+      "total": 1,
+      "passed": 1
+    },
+    "product": {
+      "total": 1,
+      "passed": 1
+    },
+    "query": {
+      "total": 8,
+      "passed": 8
+    },
+    "refusal": {
+      "total": 1,
+      "passed": 1
+    },
+    "routing": {
+      "total": 3,
+      "passed": 3
+    },
+    "summary": {
+      "total": 1,
+      "passed": 1
+    },
+    "team": {
+      "total": 2,
+      "passed": 2
+    }
+  },
+  "debugSummary": {
+    "plannerVersions": {
+      "query-plan-v3-observable": 8
+    },
+    "casesWithDecomposition": 2,
+    "casesWithAutoRouting": 6,
+    "refusedCases": 1
+  },
+  "results": [
+    {
+      "id": "query-summary-paraphrase-product",
+      "question": "Orion 主要能干嘛？",
+      "tags": [
+        "query",
+        "summary",
+        "product"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 2681,
+      "answer": "Orion 主要能进行文档上传、异步入库、混合检索和带引用的回答生成；同时用于统一接入知识库文档，提供检索、引用和问答能力。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.599978,
+      "topItems": [
+        {
+          "title": "Orion Product Overview",
+          "heading": "核心能力",
+          "sectionPath": "Orion 产品总览 > 核心能力",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 核心能力\n\n核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "Orion 产品总览",
+          "sectionPath": "Orion 产品总览",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] Orion 产品总览"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "产品定位",
+          "sectionPath": "Orion 产品总览 > 产品定位",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 产品定位\n\nOrion 用于统一接入知识库文档，提供检索、引用和问答能力。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Product Overview",
+          "snippet": "[Heading] 产品定位 Orion 用于统一接入知识库文档，提供检索、引用和问答能力。"
+        }
+      ],
+      "resolvedDocScope": [
+        128
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "Orion 主要能干嘛？",
+        "focusQuestion": "Orion 核心能力",
+        "decomposition": [],
+        "intent": {
+          "summary": true,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "Orion 核心能力",
+          "Orion 核心能力 Orion 主要能干嘛 product overview 产品概览 核心能力 概览",
+          "Orion 主要能干嘛？"
+        ],
+        "retrievalQueries": [
+          "Orion 核心能力",
+          "Orion 核心能力 Orion 主要能干嘛？ Orion 主要能干嘛 product overview 产品概览 核心能力 概览",
+          "Orion 主要能干嘛？"
+        ],
+        "queryVectorCount": 4,
+        "timingsMs": {
+          "embed": 1323,
+          "route": 0,
+          "retrieve": 46,
+          "generate": 1310,
+          "total": 2681
+        }
+      },
+      "xCache": "miss",
+      "xTraceId": "75a2649f723a8c177bf1be8e50b",
+      "docScope": [
+        128
+      ]
+    },
+    {
+      "id": "query-procedure-paraphrase-route",
+      "question": "启动服务第二步要敲什么命令？",
+      "tags": [
+        "query",
+        "procedure",
+        "routing",
+        "ops"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 2223,
+      "answer": "执行 docker compose up --build -d。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.592646,
+      "topItems": [
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "服务启动步骤",
+          "sectionPath": "Orion 运行手册 > 服务启动步骤",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "服务启动步骤",
+          "sectionPath": "Orion 运行手册 > 服务启动步骤",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "初步排查",
+          "sectionPath": "Orion 运行手册 > 初步排查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Ops Runbook",
+          "snippet": "[Heading] 服务启动步骤 1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        }
+      ],
+      "resolvedDocScope": [
+        98,
+        109
+      ],
+      "routedDocs": [
+        {
+          "docId": 98,
+          "title": "Orion Ops Runbook",
+          "score": 0.555185,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector+domain+procedural"
+        },
+        {
+          "docId": 109,
+          "title": "Orion Ops Runbook",
+          "score": 0.518798,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector+keyword+domain+procedural"
+        }
+      ],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "启动服务第二步要敲什么命令？",
+        "focusQuestion": "服务启动步骤 第二步 命令",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": true,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "服务启动步骤 第二步 命令",
+          "服务启动步骤 第二步 命令 启动服务第二步要敲什么命令 ops runbook 运维 流程 步骤",
+          "启动服务第二步要敲什么命令？"
+        ],
+        "retrievalQueries": [
+          "服务启动步骤 第二步 命令",
+          "服务启动步骤 第二步 命令 启动服务第二步要敲什么命令？ 启动服务第二步要敲什么命令 ops runbook 运维 流程 步骤 命令",
+          "启动服务第二步要敲什么命令？"
+        ],
+        "queryVectorCount": 4,
+        "timingsMs": {
+          "embed": 1399,
+          "route": 79,
+          "retrieve": 38,
+          "generate": 704,
+          "total": 2223
+        }
+      },
+      "xCache": "miss",
+      "xTraceId": "75b87e89d916ad8cad499263b1",
+      "docScope": []
+    },
+    {
+      "id": "query-mixed-cache-header",
+      "question": "缓存打中的时候哪个响应头会变成 hit？",
+      "tags": [
+        "query",
+        "api",
+        "cache",
+        "routing"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 1980,
+      "answer": "x-cache",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.488591,
+      "topItems": [
+        {
+          "title": "Orion API Reference",
+          "heading": "缓存行为",
+          "sectionPath": "Orion API 参考 > 缓存行为",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 缓存行为\n\n命中缓存时，响应头 x-cache 会返回 hit。"
+        },
+        {
+          "title": "Orion API Reference",
+          "heading": "健康检查",
+          "sectionPath": "Orion API 参考 > 健康检查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 健康检查\n\nGET /health 用于检查服务是否可用。"
+        },
+        {
+          "title": "Orion API Reference",
+          "heading": "查询接口",
+          "sectionPath": "Orion API 参考 > 查询接口",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 查询接口\n\nPOST /rag/query 的 body 包含 question、topK、docScope。\ntopK 建议不超过 10。\ndocScope 用于限制只在指定文档集合内检索。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion API Reference",
+          "snippet": "[Heading] 查询接口 POST /rag/query 的 body 包含 question、topK、docScope。 topK 建议不超过 10。 docScope 用于限制只在指定文档集合内检索。"
+        }
+      ],
+      "resolvedDocScope": [
+        132
+      ],
+      "routedDocs": [
+        {
+          "docId": 132,
+          "title": "Orion API Reference",
+          "score": 0.624176,
+          "summary": "POST /docs/upload 用于上传文件，参数包括 file、title、owner。 POST /rag/query 的 body 包含 question、topK、docScope。 topK 建议不超过 10。 docScope 用于限制只在指定文档集合内检索。 GET /health 用于检查服务是否可用。 命中缓存时，响应头 x-cache 会返回 hit。",
+          "keywords": "Orion API 参考, 上传接口, 查询接口, 健康检查, 缓存行为, post, topk, docscope, orion, api, reference, docs",
+          "sourceType": "md",
+          "reason": "vector+domain+keyword"
+        }
+      ],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "缓存打中的时候哪个响应头会变成 hit？",
+        "focusQuestion": "x-cache 缓存 响应头",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": true,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "x-cache 缓存 响应头",
+          "x-cache 缓存 响应头 hit 缓存打中的时候哪个响应头会变成 api reference 接口",
+          "缓存打中的时候哪个响应头会变成 hit？"
+        ],
+        "retrievalQueries": [
+          "x-cache 缓存 响应头",
+          "x-cache 缓存 响应头 缓存打中的时候哪个响应头会变成 hit？ hit 缓存打中的时候哪个响应头会变成 api reference 接口",
+          "缓存打中的时候哪个响应头会变成 hit？"
+        ],
+        "queryVectorCount": 4,
+        "timingsMs": {
+          "embed": 1316,
+          "route": 80,
+          "retrieve": 36,
+          "generate": 545,
+          "total": 1980
+        }
+      },
+      "xCache": "miss",
+      "xTraceId": "75c883566817843f004161da4fe",
+      "docScope": []
+    },
+    {
+      "id": "query-mixed-health-endpoint",
+      "question": "health check endpoint 是哪个？",
+      "tags": [
+        "query",
+        "api",
+        "ops",
+        "routing"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 2120,
+      "answer": "health check endpoint 是 `/health`。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.612434,
+      "topItems": [
+        {
+          "title": "Orion API Reference",
+          "heading": "健康检查",
+          "sectionPath": "Orion API 参考 > 健康检查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 健康检查\n\nGET /health 用于检查服务是否可用。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "初步排查",
+          "sectionPath": "Orion 运行手册 > 初步排查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "初步排查",
+          "sectionPath": "Orion 运行手册 > 初步排查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion API Reference",
+          "snippet": "[Heading] 健康检查 GET /health 用于检查服务是否可用。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "snippet": "[Heading] 初步排查 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。"
+        }
+      ],
+      "resolvedDocScope": [
+        131,
+        85,
+        94
+      ],
+      "routedDocs": [
+        {
+          "docId": 131,
+          "title": "Orion API Reference",
+          "score": 0.681232,
+          "summary": "POST /docs/upload 用于上传文件，参数包括 file、title、owner。 POST /rag/query 的 body 包含 question、topK、docScope。 topK 建议不超过 10。 docScope 用于限制只在指定文档集合内检索。 GET /health 用于检查服务是否可用。 命中缓存时，响应头 x-cache 会返回 hit。",
+          "keywords": "Orion API 参考, 上传接口, 查询接口, 健康检查, 缓存行为, post, topk, docscope, orion, api, reference, docs",
+          "sourceType": "md",
+          "reason": "vector+domain+keyword"
+        },
+        {
+          "docId": 85,
+          "title": "Orion Ops Runbook",
+          "score": 0.510077,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector+domain"
+        },
+        {
+          "docId": 94,
+          "title": "Orion Ops Runbook",
+          "score": 0.345645,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector+domain"
+        }
+      ],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "health check endpoint 是哪个？",
+        "focusQuestion": "/health 健康检查 接口",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": true,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "/health 健康检查 接口",
+          "/health 健康检查 接口 health check endpoint 是哪个 api reference 接口",
+          "health check endpoint 是哪个？"
+        ],
+        "retrievalQueries": [
+          "/health 健康检查 接口",
+          "/health 健康检查 接口 health check endpoint 是哪个？ health check endpoint 是哪个 api reference 接口",
+          "health check endpoint 是哪个？"
+        ],
+        "queryVectorCount": 4,
+        "timingsMs": {
+          "embed": 1360,
+          "route": 82,
+          "retrieve": 44,
+          "generate": 629,
+          "total": 2120
+        }
+      },
+      "xCache": "miss",
+      "xTraceId": "75d94bc139bce1b30136b608a3",
+      "docScope": []
+    },
+    {
+      "id": "query-definition-mixed-metadata",
+      "question": "chunk metadata 指的是什么？",
+      "tags": [
+        "query",
+        "definition",
+        "metadata"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 2446,
+      "answer": "chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.636743,
+      "topItems": [
+        {
+          "title": "Orion Product Overview",
+          "heading": "术语定义",
+          "sectionPath": "Orion 产品总览 > 术语定义",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 术语定义\n\nchunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "核心能力",
+          "sectionPath": "Orion 产品总览 > 核心能力",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 核心能力\n\n核心能力包括文档上传、异步入库、混合检索和带引用的回答生成。"
+        },
+        {
+          "title": "Orion Product Overview",
+          "heading": "产品定位",
+          "sectionPath": "Orion 产品总览 > 产品定位",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 产品定位\n\nOrion 用于统一接入知识库文档，提供检索、引用和问答能力。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Product Overview",
+          "snippet": "[Heading] 术语定义 chunk metadata 是描述 chunk 标题、层级路径、类型和来源的结构化信息。"
+        }
+      ],
+      "resolvedDocScope": [
+        128
+      ],
+      "routedDocs": [],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "chunk metadata 指的是什么？",
+        "focusQuestion": "chunk metadata 术语定义",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": true,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "chunk metadata 术语定义",
+          "chunk metadata 术语定义 chunk metadata 指的是什么 definition 术语定义 定义",
+          "chunk metadata 指的是什么？"
+        ],
+        "retrievalQueries": [
+          "chunk metadata 术语定义",
+          "chunk metadata 术语定义 chunk metadata 指的是什么？ chunk metadata 指的是什么 definition 术语定义 定义",
+          "chunk metadata 指的是什么？"
+        ],
+        "queryVectorCount": 4,
+        "timingsMs": {
+          "embed": 1374,
+          "route": 0,
+          "retrieve": 40,
+          "generate": 1018,
+          "total": 2446
+        }
+      },
+      "xCache": "miss",
+      "xTraceId": "75eb4e97cde79f2118879b3a2f",
+      "docScope": [
+        128
+      ]
+    },
+    {
+      "id": "query-decompose-freeze-window",
+      "question": "发布冻结什么时候开始，什么时候结束？",
+      "tags": [
+        "query",
+        "decomposition",
+        "policy",
+        "team"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 3234,
+      "answer": "常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.4201,
+      "topItems": [
+        {
+          "title": "Orion Team Handbook",
+          "heading": null,
+          "sectionPath": null,
+          "chunkType": "paragraph",
+          "sourceType": "txt",
+          "text": "Orion 团队手册\n\n知识库平台由平台使能团队负责维护。\n常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。\n紧急 hotfix 需要事故负责人审批。\n新同学在查看运行手册前，先阅读产品总览和 API 参考。"
+        },
+        {
+          "title": "Orion Team Handbook",
+          "heading": null,
+          "sectionPath": null,
+          "chunkType": "paragraph",
+          "sourceType": "txt",
+          "text": "Orion 团队手册\n\n知识库平台由平台使能团队负责维护。\n常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。\n紧急 hotfix 需要事故负责人审批。\n新同学在查看运行手册前，先阅读产品总览和 API 参考。"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Team Handbook",
+          "snippet": "Orion 团队手册 知识库平台由平台使能团队负责维护。 常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。 紧急 hotfix 需要事故负责人审批。 新同学在查看运行手册前，先阅读产品总览和 API 参考。"
+        }
+      ],
+      "resolvedDocScope": [
+        126,
+        133
+      ],
+      "routedDocs": [
+        {
+          "docId": 126,
+          "title": "Orion Team Handbook",
+          "score": 0.497269,
+          "summary": "Orion 团队手册 知识库平台由平台使能团队负责维护。 常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。 紧急 hotfix 需要事故负责人审批。 新同学在查看运行手册前，先阅读产品总览和 API 参考。",
+          "keywords": "orion, team, handbook, hotfix, api",
+          "sourceType": "txt",
+          "reason": "vector+keyword+domain"
+        },
+        {
+          "docId": 133,
+          "title": "Orion Team Handbook",
+          "score": 0.346683,
+          "summary": "Orion 团队手册 知识库平台由平台使能团队负责维护。 常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。 紧急 hotfix 需要事故负责人审批。 新同学在查看运行手册前，先阅读产品总览和 API 参考。",
+          "keywords": "orion, team, handbook, hotfix, api",
+          "sourceType": "txt",
+          "reason": "vector"
+        }
+      ],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "发布冻结什么时候开始，什么时候结束？",
+        "focusQuestion": "发布冻结 开始时间 结束时间",
+        "decomposition": [
+          "发布冻结 开始时间",
+          "发布冻结 结束时间",
+          "发布冻结什么时候开始，什么时候结束"
+        ],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": true,
+          "threshold": false,
+          "api": false,
+          "multiPart": true
+        },
+        "routeQueries": [
+          "发布冻结 开始时间 结束时间",
+          "发布冻结 开始时间 结束时间 发布冻结什么时候开始 什么时候结束 team handbook 团队手册 policy 时间窗口",
+          "发布冻结什么时候开始，什么时候结束？",
+          "发布冻结 开始时间"
+        ],
+        "retrievalQueries": [
+          "发布冻结 开始时间 结束时间",
+          "发布冻结 开始时间 结束时间 发布冻结什么时候开始，什么时候结束？ 发布冻结 开始时间 发布冻结 结束时间 发布冻结什么时候开始，什么时候结束 发布冻结什么时候开始 什么时候结束 team handbook 团队手册 policy 时间窗口",
+          "发布冻结什么时候开始，什么时候结束？",
+          "发布冻结 开始时间",
+          "发布冻结 结束时间"
+        ],
+        "queryVectorCount": 6,
+        "timingsMs": {
+          "embed": 2110,
+          "route": 80,
+          "retrieve": 38,
+          "generate": 1003,
+          "total": 3234
+        }
+      },
+      "xCache": "miss",
+      "xTraceId": "75fc50e8d932183e1479957e710",
+      "docScope": []
+    },
+    {
+      "id": "query-decompose-onboarding-order",
+      "question": "新同学先看什么，再看什么？",
+      "tags": [
+        "query",
+        "decomposition",
+        "team",
+        "onboarding"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": false,
+      "latencyMs": 3146,
+      "answer": "新同学先看产品总览和 API 参考，再看运行手册。",
+      "refused": false,
+      "refusalReason": null,
+      "evidenceScore": 0.428402,
+      "topItems": [
+        {
+          "title": "Orion Team Handbook",
+          "heading": null,
+          "sectionPath": null,
+          "chunkType": "paragraph",
+          "sourceType": "txt",
+          "text": "Orion 团队手册\n\n知识库平台由平台使能团队负责维护。\n常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。\n紧急 hotfix 需要事故负责人审批。\n新同学在查看运行手册前，先阅读产品总览和 API 参考。"
+        },
+        {
+          "title": "Orion Team Handbook",
+          "heading": null,
+          "sectionPath": null,
+          "chunkType": "paragraph",
+          "sourceType": "txt",
+          "text": "Orion 团队手册\n\n知识库平台由平台使能团队负责维护。\n常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。\n紧急 hotfix 需要事故负责人审批。\n新同学在查看运行手册前，先阅读产品总览和 API 参考。"
+        },
+        {
+          "title": "Orion API Reference",
+          "heading": "Orion API 参考",
+          "sectionPath": "Orion API 参考",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] Orion API 参考"
+        }
+      ],
+      "citations": [
+        {
+          "title": "Orion Team Handbook",
+          "snippet": "Orion 团队手册 知识库平台由平台使能团队负责维护。 常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。 紧急 hotfix 需要事故负责人审批。 新同学在查看运行手册前，先阅读产品总览和 API 参考。"
+        },
+        {
+          "title": "Orion API Reference",
+          "snippet": "[Heading] Orion API 参考"
+        }
+      ],
+      "resolvedDocScope": [
+        115,
+        126,
+        125
+      ],
+      "routedDocs": [
+        {
+          "docId": 115,
+          "title": "Orion Team Handbook",
+          "score": 0.576709,
+          "summary": "Orion 团队手册 知识库平台由平台使能团队负责维护。 常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。 紧急 hotfix 需要事故负责人审批。 新同学在查看运行手册前，先阅读产品总览和 API 参考。",
+          "keywords": "orion, team, handbook, hotfix, api",
+          "sourceType": "txt",
+          "reason": "vector+domain"
+        },
+        {
+          "docId": 126,
+          "title": "Orion Team Handbook",
+          "score": 0.516214,
+          "summary": "Orion 团队手册 知识库平台由平台使能团队负责维护。 常规发布冻结从每周五 17:00 开始，到周一 10:00 结束。 紧急 hotfix 需要事故负责人审批。 新同学在查看运行手册前，先阅读产品总览和 API 参考。",
+          "keywords": "orion, team, handbook, hotfix, api",
+          "sourceType": "txt",
+          "reason": "vector+keyword+domain"
+        },
+        {
+          "docId": 125,
+          "title": "Orion API Reference",
+          "score": 0.449223,
+          "summary": "POST /docs/upload 用于上传文件，参数包括 file、title、owner。 POST /rag/query 的 body 包含 question、topK、docScope。 topK 建议不超过 10。 docScope 用于限制只在指定文档集合内检索。 GET /health 用于检查服务是否可用。 命中缓存时，响应头 x-cache 会返回 hit。",
+          "keywords": "Orion API 参考, 上传接口, 查询接口, 健康检查, 缓存行为, post, topk, docscope, orion, api, reference, docs",
+          "sourceType": "md",
+          "reason": "vector+domain"
+        }
+      ],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "新同学先看什么，再看什么？",
+        "focusQuestion": "团队手册 新同学 阅读顺序 产品总览 API 参考 运行手册",
+        "decomposition": [
+          "新同学 先看什么",
+          "新同学 再看什么",
+          "新同学先看什么，再看什么"
+        ],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": true
+        },
+        "routeQueries": [
+          "团队手册 新同学 阅读顺序 产品总览 API 参考 运行手册",
+          "团队手册 新同学 阅读顺序 产品总览 API 参考 运行手册 新同学先看什么 再看什么 team handbook 团队手册 policy",
+          "新同学先看什么，再看什么？",
+          "新同学 先看什么"
+        ],
+        "retrievalQueries": [
+          "团队手册 新同学 阅读顺序 产品总览 API 参考 运行手册",
+          "团队手册 新同学 阅读顺序 产品总览 API 参考 运行手册 新同学先看什么，再看什么？ 新同学 先看什么 新同学 再看什么 新同学先看什么，再看什么 新同学先看什么 再看什么 team handbook 团队手册 policy",
+          "新同学先看什么，再看什么？",
+          "新同学 先看什么",
+          "新同学 再看什么"
+        ],
+        "queryVectorCount": 6,
+        "timingsMs": {
+          "embed": 2067,
+          "route": 101,
+          "retrieve": 52,
+          "generate": 923,
+          "total": 3146
+        }
+      },
+      "xCache": "miss",
+      "xTraceId": "761096ff29e40f59924155d4061",
+      "docScope": []
+    },
+    {
+      "id": "query-refusal-unknown-policy",
+      "question": "这套资料里有 GPU 温度监控策略吗？",
+      "tags": [
+        "query",
+        "refusal",
+        "guardrail"
+      ],
+      "passed": true,
+      "answerAllOk": true,
+      "answerAnyOk": true,
+      "retrievalOk": true,
+      "citationOk": true,
+      "refusalOk": true,
+      "citationCountOk": true,
+      "hasRefusalExpectation": true,
+      "latencyMs": 1192,
+      "answer": "根据当前检索到的内容，我还不能可靠回答这个问题。 当前命中的内容和问题关联度不够高，继续作答风险较大。",
+      "refused": true,
+      "refusalReason": "low_retrieval_confidence",
+      "evidenceScore": 0.174163,
+      "topItems": [
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "初步排查",
+          "sectionPath": "Orion 运行手册 > 初步排查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "初步排查",
+          "sectionPath": "Orion 运行手册 > 初步排查",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 初步排查\n\n1. 先看 gateway 健康状态。\n2. 再检查 ai-service 日志。\n3. 最后确认 PostgreSQL 和 Redis 连接。"
+        },
+        {
+          "title": "Orion Ops Runbook",
+          "heading": "服务启动步骤",
+          "sectionPath": "Orion 运行手册 > 服务启动步骤",
+          "chunkType": "section",
+          "sourceType": "md",
+          "text": "[Heading] 服务启动步骤\n\n1. 检查 .env 配置。\n2. 执行 docker compose up --build -d。\n3. 访问 /health 确认 gateway 和 ai-service 可用。"
+        }
+      ],
+      "citations": [],
+      "resolvedDocScope": [
+        57,
+        118
+      ],
+      "routedDocs": [
+        {
+          "docId": 57,
+          "title": "Orion Ops Runbook",
+          "score": 0.062942,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector"
+        },
+        {
+          "docId": 118,
+          "title": "Orion Ops Runbook",
+          "score": 0.054603,
+          "summary": "1. 检查 .env 配置。 2. 执行 docker compose up --build -d。 3. 访问 /health 确认 gateway 和 ai-service 可用。 当接口 5xx 比例连续五分钟超过 5% 时触发故障响应。 1. 先看 gateway 健康状态。 2. 再检查 ai-service 日志。 3. 最后确认 PostgreSQL 和 Redis 连接。 如果十五分钟内无法恢复，就升级给值班负责人和后端负责人。",
+          "keywords": "Orion 运行手册, 服务启动步骤, 故障触发条件, 初步排查, 升级规则, gateway, ai-service, orion, ops, runbook, env, docker",
+          "sourceType": "md",
+          "reason": "vector"
+        }
+      ],
+      "queryDebug": {
+        "plannerVersion": "query-plan-v3-observable",
+        "normalizedQuestion": "这套资料里有 GPU 温度监控策略吗？",
+        "focusQuestion": "",
+        "decomposition": [],
+        "intent": {
+          "summary": false,
+          "definition": false,
+          "procedural": false,
+          "structured": false,
+          "temporal": false,
+          "threshold": false,
+          "api": false,
+          "multiPart": false
+        },
+        "routeQueries": [
+          "GPU 这套资料里有 温度监控策略吗",
+          "这套资料里有 GPU 温度监控策略吗？"
+        ],
+        "retrievalQueries": [
+          "这套资料里有 GPU 温度监控策略吗？ GPU 这套资料里有 温度监控策略吗",
+          "这套资料里有 GPU 温度监控策略吗？"
+        ],
+        "queryVectorCount": 3,
+        "timingsMs": {
+          "embed": 1067,
+          "route": 82,
+          "retrieve": 41,
+          "generate": 0,
+          "total": 1192
+        }
+      },
+      "xCache": "miss",
+      "xTraceId": "7623fb1107f6f52203348a0907a",
+      "docScope": []
+    }
+  ],
+  "_reportPath": "/home/wmr/projects/rag-kb-cpp/rag-kb-cpp/eval/reports/query-20260322-170123.json"
+}

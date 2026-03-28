@@ -1,0 +1,253 @@
+{
+  "suiteId": "query",
+  "description": "面向 query handling 的专项套件，覆盖 rewrite、mixed query、decomposition 和 refusal。",
+  "documents": [
+    {
+      "key": "product_overview",
+      "path": "eval/corpus/product_overview.md",
+      "title": "Orion Product Overview",
+      "owner": "eval-query"
+    },
+    {
+      "key": "ops_runbook",
+      "path": "eval/corpus/ops_runbook.md",
+      "title": "Orion Ops Runbook",
+      "owner": "eval-query"
+    },
+    {
+      "key": "api_reference",
+      "path": "eval/corpus/api_reference.md",
+      "title": "Orion API Reference",
+      "owner": "eval-query"
+    },
+    {
+      "key": "team_handbook",
+      "path": "eval/corpus/team_handbook.txt",
+      "title": "Orion Team Handbook",
+      "owner": "eval-query"
+    }
+  ],
+  "cases": [
+    {
+      "id": "query-summary-paraphrase-product",
+      "question": "Orion 主要能干嘛？",
+      "topK": 3,
+      "docScope": [
+        "product_overview"
+      ],
+      "tags": [
+        "query",
+        "summary",
+        "product"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "文档上传",
+          "混合检索"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "核心能力"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "query-procedure-paraphrase-route",
+      "question": "启动服务第二步要敲什么命令？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "procedure",
+        "routing",
+        "ops"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "docker compose up --build -d"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Ops Runbook",
+            "heading": "服务启动步骤"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Ops Runbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "query-mixed-cache-header",
+      "question": "缓存打中的时候哪个响应头会变成 hit？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "api",
+        "cache",
+        "routing"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "x-cache"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion API Reference",
+            "heading": "缓存行为"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion API Reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "query-mixed-health-endpoint",
+      "question": "health check endpoint 是哪个？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "api",
+        "ops",
+        "routing"
+      ],
+      "expectations": {
+        "answerContainsAny": [
+          "/health"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion API Reference",
+            "heading": "健康检查"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion API Reference"
+          }
+        ]
+      }
+    },
+    {
+      "id": "query-definition-mixed-metadata",
+      "question": "chunk metadata 指的是什么？",
+      "topK": 3,
+      "docScope": [
+        "product_overview"
+      ],
+      "tags": [
+        "query",
+        "definition",
+        "metadata"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "结构化信息",
+          "层级路径"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Product Overview",
+            "heading": "术语定义"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Product Overview"
+          }
+        ]
+      }
+    },
+    {
+      "id": "query-decompose-freeze-window",
+      "question": "发布冻结什么时候开始，什么时候结束？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "decomposition",
+        "policy",
+        "team"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "周五 17:00",
+          "周一 10:00"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Team Handbook",
+            "sourceType": "txt"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Team Handbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "query-decompose-onboarding-order",
+      "question": "新同学先看什么，再看什么？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "decomposition",
+        "team",
+        "onboarding"
+      ],
+      "expectations": {
+        "answerContainsAll": [
+          "产品总览",
+          "API 参考"
+        ],
+        "retrievalAny": [
+          {
+            "title": "Orion Team Handbook",
+            "sourceType": "txt"
+          }
+        ],
+        "citationAny": [
+          {
+            "title": "Orion Team Handbook"
+          }
+        ]
+      }
+    },
+    {
+      "id": "query-refusal-unknown-policy",
+      "question": "这套资料里有 GPU 温度监控策略吗？",
+      "topK": 3,
+      "useDefaultScope": false,
+      "tags": [
+        "query",
+        "refusal",
+        "guardrail"
+      ],
+      "expectations": {
+        "expectRefused": true,
+        "citationCount": 0,
+        "answerContainsAny": [
+          "还不能可靠回答",
+          "关联度不够"
+        ]
+      }
+    }
+  ]
+}

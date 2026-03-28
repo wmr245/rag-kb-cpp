@@ -1,15 +1,37 @@
-import re
+﻿import re
 from collections import Counter
 from typing import Dict, List, Optional, Tuple
 
+from app.core.config import (
+    LOCAL_RERANK_SCORE_WEIGHT,
+    RERANK_ENABLED,
+    RERANK_MODEL,
+    RERANK_PROVIDER,
+    RERANK_SCORE_WEIGHT,
+    RERANK_TOP_N,
+)
 from app.core.logging_config import logger
 from app.db.postgres import get_conn
-from app.models.schemas import Citation, RetrievedItem
+from app.models.schemas import Citation, RetrievedItem, RoutedDoc
 from app.services.embedding_service import vector_to_pg
+from app.services.rerank_service import RerankServiceError, rerank_candidates
 
 
 def _make_compact_text(text: str) -> str:
     return " ".join((text or "").split()).strip()
+
+
+def _contains_query_term(text: str, term: str) -> bool:
+    haystack = (text or "").lower()
+    needle = (term or "").strip().lower()
+    if not needle:
+        return False
+
+    if re.search(r"[a-z0-9]", needle):
+        pattern = r"(?<![a-z0-9_])" + re.escape(needle).replace(r"\ ", r"\s+") + r"(?![a-z0-9_])"
+        return re.search(pattern, haystack, flags=re.IGNORECASE) is not None
+
+    return needle in haystack
 
 
 def _extract_heading(text: str) -> str:
@@ -35,7 +57,6 @@ def _looks_like_heading_chunk(text: str) -> bool:
 
 
 def _mentions_structured_section_lookup(question: str) -> bool:
-    q = (question or "").lower()
     keywords = [
         "heading",
         "title",
@@ -46,21 +67,21 @@ def _mentions_structured_section_lookup(question: str) -> bool:
         "章节",
         "部分",
     ]
-    return any(keyword in q for keyword in keywords)
+    return any(_contains_query_term(question, keyword) for keyword in keywords)
 
 
 def _classify_query_intent(question: str) -> Dict[str, bool]:
     q = (question or "").strip().lower()
     summary = any(
-        keyword in q
+        _contains_query_term(q, keyword)
         for keyword in ["summary", "summarize", "overview", "main", "主要", "总结", "概述", "讲了什么"]
     )
     definition = any(
-        keyword in q
+        _contains_query_term(q, keyword)
         for keyword in ["what is", "是什么", "定义", "含义", "指什么", "介绍一下"]
     )
     procedural = any(
-        keyword in q
+        _contains_query_term(q, keyword)
         for keyword in ["step", "steps", "how", "how to", "流程", "步骤", "怎么", "如何"]
     )
     structured = _mentions_structured_section_lookup(question)
@@ -70,6 +91,14 @@ def _classify_query_intent(question: str) -> Dict[str, bool]:
         "procedural": procedural,
         "structured": structured,
     }
+
+
+def _resolve_query_intent(question: str, query_intent: Optional[Dict[str, bool]]) -> Dict[str, bool]:
+    if query_intent:
+        signal_keys = ["summary", "definition", "procedural", "structured", "temporal", "threshold"]
+        if any(bool(query_intent.get(key)) for key in signal_keys):
+            return query_intent
+    return _classify_query_intent(question)
 
 
 def _cn_num_to_int(raw: str) -> Optional[int]:
@@ -614,6 +643,7 @@ def _rerank_score(
     question: str,
     title: str,
     text: str,
+    context_text: str,
     heading: str,
     section_path: str,
     chunk_type: str,
@@ -626,11 +656,11 @@ def _rerank_score(
 ) -> float:
     resolved_heading = heading or _extract_heading(text)
 
-    kw = _keyword_overlap_score(question, text)
+    kw = max(_keyword_overlap_score(question, text), _keyword_overlap_score(question, context_text))
     title_kw = _keyword_overlap_score(question, title)
     heading_kw = _keyword_overlap_score(question, resolved_heading) if resolved_heading else 0.0
     section_kw = _section_path_overlap_score(question, section_path)
-    phrase = _phrase_hit_score(question, title, text)
+    phrase = max(_phrase_hit_score(question, title, text), _phrase_hit_score(question, title, context_text))
     metadata_phrase = _metadata_phrase_hit_score(question, resolved_heading, section_path)
 
     final_score = (
@@ -676,6 +706,53 @@ def _rerank_score(
     return round(max(final_score, 0.0), 6)
 
 
+def _blend_scores(local_score: float, rerank_score: float) -> float:
+    local_weight = max(LOCAL_RERANK_SCORE_WEIGHT, 0.0)
+    rerank_weight = max(RERANK_SCORE_WEIGHT, 0.0)
+    total_weight = local_weight + rerank_weight
+    if total_weight <= 0:
+        return round(max(local_score, 0.0), 6)
+
+    blended = ((local_score * local_weight) + (rerank_score * rerank_weight)) / total_weight
+    return round(max(blended, 0.0), 6)
+
+
+def _item_debug_preview(row: Dict[str, object]) -> Dict[str, object]:
+    local_score = float(row.get("local_score", row.get("final_score") or 0.0) or 0.0)
+    blended_score = float(row.get("blended_score", row.get("final_score") or 0.0) or 0.0)
+    rerank_score = row.get("rerank_score")
+    return {
+        "chunkId": int(row.get("chunk_id") or 0),
+        "title": str(row.get("title") or ""),
+        "heading": str(row.get("heading") or "") or None,
+        "sectionPath": str(row.get("section_path") or "") or None,
+        "chunkType": str(row.get("chunk_type") or "") or None,
+        "sourceType": str(row.get("source_type") or "") or None,
+        "localScore": round(local_score, 6),
+        "rerankScore": None if rerank_score is None else float(rerank_score),
+        "blendedScore": round(blended_score, 6),
+    }
+
+
+def _base_rerank_debug() -> Dict[str, object]:
+    return {
+        "enabled": bool(RERANK_ENABLED),
+        "provider": RERANK_PROVIDER or None,
+        "model": RERANK_MODEL or None,
+        "callCount": 0,
+        "requestedTopN": max(1, int(RERANK_TOP_N)),
+        "candidateCount": 0,
+        "appliedCount": 0,
+        "fallback": False,
+        "fallbackReason": None,
+        "latencyMs": 0,
+        "resolvedIntent": {},
+        "localTopItems": [],
+        "finalTopItems": [],
+        "orderingChanged": False,
+    }
+
+
 def _vector_sql(has_scope: bool) -> str:
     scope_clause = "AND c.doc_id = ANY(%s::bigint[])" if has_scope else ""
     return f"""
@@ -689,6 +766,7 @@ def _vector_sql(has_scope: bool) -> str:
             c.section_path,
             c.chunk_type,
             c.source_type,
+            c.context_text,
             d.title,
             1 - (c.embedding <=> %s::vector) AS score
         FROM chunks c
@@ -721,10 +799,11 @@ def _fetch_vector_rows(
 def _keyword_similarity_expr() -> str:
     return """
         (
-            0.32 * similarity(COALESCE(c.heading, ''), %s)
-            + 0.22 * similarity(COALESCE(c.section_path, ''), %s)
-            + 0.16 * similarity(COALESCE(d.title, ''), %s)
-            + 0.12 * similarity(COALESCE(c.text, ''), %s)
+            0.24 * similarity(COALESCE(c.heading, ''), %s)
+            + 0.18 * similarity(COALESCE(c.section_path, ''), %s)
+            + 0.14 * similarity(COALESCE(d.title, ''), %s)
+            + 0.24 * similarity(COALESCE(c.context_text, c.text, ''), %s)
+            + 0.08 * similarity(COALESCE(c.text, ''), %s)
         )
     """
 
@@ -746,6 +825,7 @@ def _fetch_keyword_rows(
             "COALESCE(c.heading, '')",
             "COALESCE(c.section_path, '')",
             "COALESCE(d.title, '')",
+            "COALESCE(c.context_text, c.text, '')",
             "COALESCE(c.text, '')",
         ]:
             where_parts.append(f"{field} ILIKE %s")
@@ -754,11 +834,11 @@ def _fetch_keyword_rows(
     similarity_threshold = 0.06 if (query_intent["structured"] or query_intent["definition"]) else 0.10
 
     keyword_filter = f"({similarity_expr} > %s)"
-    keyword_filter_params: List[object] = [question, question, question, question, similarity_threshold]
+    keyword_filter_params: List[object] = [question, question, question, question, question, similarity_threshold]
 
     if where_parts:
         keyword_filter = f"(({' OR '.join(where_parts)}) OR {similarity_expr} > %s)"
-        keyword_filter_params = where_params + [question, question, question, question, similarity_threshold]
+        keyword_filter_params = where_params + [question, question, question, question, question, similarity_threshold]
 
     sql = f"""
         SELECT
@@ -771,6 +851,7 @@ def _fetch_keyword_rows(
             c.section_path,
             c.chunk_type,
             c.source_type,
+            c.context_text,
             d.title,
             {similarity_expr} AS score
         FROM chunks c
@@ -782,7 +863,7 @@ def _fetch_keyword_rows(
         LIMIT %s
     """
 
-    exec_params: List[object] = [question, question, question, question]
+    exec_params: List[object] = [question, question, question, question, question]
     if doc_scope:
         exec_params.append(doc_scope)
     exec_params.extend(keyword_filter_params)
@@ -808,6 +889,7 @@ def _merge_candidate_rows(vector_rows: List[Tuple], keyword_rows: List[Tuple]) -
             section_path,
             chunk_type,
             source_type,
+            context_text,
             title,
             score,
         ) = row
@@ -825,6 +907,7 @@ def _merge_candidate_rows(vector_rows: List[Tuple], keyword_rows: List[Tuple]) -
                 "section_path": (section_path or "").strip(),
                 "chunk_type": (chunk_type or "").strip(),
                 "source_type": (source_type or "").strip(),
+                "context_text": (context_text or "").strip(),
                 "title": title or "",
                 "vector_score": 0.0,
                 "keyword_score": 0.0,
@@ -848,6 +931,8 @@ def _merge_candidate_rows(vector_rows: List[Tuple], keyword_rows: List[Tuple]) -
             current["chunk_type"] = (chunk_type or "").strip()
         if not current["source_type"]:
             current["source_type"] = (source_type or "").strip()
+        if not current["context_text"]:
+            current["context_text"] = (context_text or "").strip()
 
     for row in vector_rows:
         upsert(row, "vector")
@@ -868,14 +953,510 @@ def _merge_candidate_rows(vector_rows: List[Tuple], keyword_rows: List[Tuple]) -
     return normalized
 
 
+
+def _doc_vector_sql() -> str:
+    return """
+        SELECT
+            d.id,
+            d.title,
+            d.source_type,
+            d.doc_summary,
+            d.doc_keywords,
+            d.route_text,
+            1 - (d.route_embedding <=> %s::vector) AS score
+        FROM docs d
+        WHERE d.status = 'ready'
+          AND d.route_embedding IS NOT NULL
+        ORDER BY d.route_embedding <=> %s::vector
+        LIMIT %s
+    """
+
+
+
+def _fetch_doc_vector_rows(vector_literal: str, candidate_k: int) -> List[Tuple]:
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(_doc_vector_sql(), (vector_literal, vector_literal, candidate_k))
+            return cur.fetchall()
+
+
+
+def _doc_keyword_similarity_expr() -> str:
+    return """
+        (
+            0.30 * similarity(COALESCE(d.title, ''), %s)
+            + 0.24 * similarity(COALESCE(d.doc_summary, ''), %s)
+            + 0.18 * similarity(COALESCE(d.doc_keywords, ''), %s)
+            + 0.18 * similarity(COALESCE(d.route_text, ''), %s)
+        )
+    """
+
+
+
+def _fetch_doc_keyword_rows(
+    question: str,
+    candidate_k: int,
+    query_intent: Dict[str, bool],
+) -> List[Tuple]:
+    search_terms = _keyword_search_terms(question)
+    similarity_expr = _doc_keyword_similarity_expr()
+
+    where_parts: List[str] = []
+    where_params: List[object] = []
+    for term in search_terms:
+        pattern = f"%{term}%"
+        for field in [
+            "COALESCE(d.title, '')",
+            "COALESCE(d.doc_summary, '')",
+            "COALESCE(d.doc_keywords, '')",
+            "COALESCE(d.route_text, '')",
+        ]:
+            where_parts.append(f"{field} ILIKE %s")
+            where_params.append(pattern)
+
+    similarity_threshold = 0.05 if (query_intent["structured"] or query_intent["definition"]) else 0.08
+
+    keyword_filter = f"({similarity_expr} > %s)"
+    keyword_filter_params: List[object] = [question, question, question, question, similarity_threshold]
+
+    if where_parts:
+        keyword_filter = f"(({' OR '.join(where_parts)}) OR {similarity_expr} > %s)"
+        keyword_filter_params = where_params + [question, question, question, question, similarity_threshold]
+
+    sql = f"""
+        SELECT
+            d.id,
+            d.title,
+            d.source_type,
+            d.doc_summary,
+            d.doc_keywords,
+            d.route_text,
+            {similarity_expr} AS score
+        FROM docs d
+        WHERE d.status = 'ready'
+          AND {keyword_filter}
+        ORDER BY score DESC, d.id ASC
+        LIMIT %s
+    """
+
+    exec_params: List[object] = [question, question, question, question]
+    exec_params.extend(keyword_filter_params)
+    exec_params.append(candidate_k)
+
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, tuple(exec_params))
+            return cur.fetchall()
+
+
+
+def _merge_doc_candidate_rows(vector_rows: List[Tuple], keyword_rows: List[Tuple]) -> List[Dict[str, object]]:
+    merged: Dict[int, Dict[str, object]] = {}
+
+    def upsert(row: Tuple, source: str) -> None:
+        doc_id, title, source_type, doc_summary, doc_keywords, route_text, score = row
+
+        key = int(doc_id)
+        current = merged.get(key)
+        if current is None:
+            merged[key] = {
+                "doc_id": key,
+                "title": title or "",
+                "source_type": (source_type or "").strip(),
+                "doc_summary": (doc_summary or "").strip(),
+                "doc_keywords": (doc_keywords or "").strip(),
+                "route_text": (route_text or "").strip(),
+                "vector_score": 0.0,
+                "keyword_score": 0.0,
+                "retrieval_hits": 0,
+            }
+            current = merged[key]
+
+        numeric_score = round(float(score or 0.0), 6)
+        if source == "vector":
+            current["vector_score"] = max(float(current["vector_score"]), numeric_score)
+        else:
+            current["keyword_score"] = max(float(current["keyword_score"]), numeric_score)
+
+        current["retrieval_hits"] = int(current["retrieval_hits"]) | (1 if source == "vector" else 2)
+
+    for row in vector_rows:
+        upsert(row, "vector")
+
+    for row in keyword_rows:
+        upsert(row, "keyword")
+
+    normalized: List[Dict[str, object]] = []
+    for row in merged.values():
+        retrieval_hits = int(row["retrieval_hits"])
+        normalized.append(
+            {
+                **row,
+                "retrieval_hits": (1 if retrieval_hits & 1 else 0) + (1 if retrieval_hits & 2 else 0),
+            }
+        )
+
+    return normalized
+
+
+
+
+
+def _term_coverage_score(question: str, text: str, limit: int = 8) -> float:
+    haystack = (text or "").lower()
+    terms = []
+    seen = set()
+    for term in _keyword_search_terms(question, limit=limit):
+        normalized = (term or "").strip().lower()
+        if len(normalized) < 2 or normalized in seen:
+            continue
+        seen.add(normalized)
+        terms.append(normalized)
+
+    if not terms:
+        return 0.0
+
+    hits = sum(1 for term in terms if term in haystack)
+    return hits / len(terms)
+
+
+
+def _exact_phrase_bonus(question: str, text: str) -> float:
+    q = _make_compact_text(question).lower()
+    t = _make_compact_text(text).lower()
+    if not q or not t:
+        return 0.0
+    if q in t:
+        return 1.0
+    return 0.0
+
+
+def _normalized_ascii_terms(text: str) -> List[str]:
+    return [term for term in re.findall(r"[a-z0-9_]+", (text or "").lower()) if len(term) >= 3]
+
+
+def _infer_doc_domain_tokens(title: str, summary: str, keywords: str, route_text: str) -> set[str]:
+    material = " ".join([title or "", summary or "", keywords or "", route_text or ""]).lower()
+    tokens = set(_normalized_ascii_terms(material))
+
+    if any(term in material for term in ["??", "??", "??", "??", "??", "??"]):
+        tokens.add("ops")
+    if any(term in material for term in ["??", "??", "??", "??", "??"]):
+        tokens.add("product")
+    if any(term in material for term in ["??", "??", "metadata", "??"]):
+        tokens.add("definition")
+
+    return tokens
+
+
+def _infer_query_domain_tokens(question: str, query_intent: Dict[str, bool]) -> set[str]:
+    q = (question or "").lower()
+    tokens = set(_normalized_ascii_terms(q))
+
+    if query_intent["procedural"] or any(term in q for term in ["??", "??", "??", "??", "??", "??"]):
+        tokens.add("ops")
+    if query_intent["summary"] or any(term in q for term in ["??", "??", "??", "??", "??", "??"]):
+        tokens.add("product")
+    if query_intent["definition"] or any(term in q for term in ["??", "??", "metadata", "??"]):
+        tokens.add("definition")
+
+    return tokens
+
+
+def _domain_alignment_score(question: str, row: Dict[str, object], query_intent: Dict[str, bool]) -> float:
+    query_tokens = _infer_query_domain_tokens(question, query_intent)
+    if not query_tokens:
+        return 0.0
+
+    doc_tokens = _infer_doc_domain_tokens(
+        title=str(row.get("title") or ""),
+        summary=str(row.get("doc_summary") or ""),
+        keywords=str(row.get("doc_keywords") or ""),
+        route_text=str(row.get("route_text") or ""),
+    )
+
+    if not doc_tokens:
+        return 0.0
+
+    overlap = len(query_tokens & doc_tokens)
+    if overlap == 0:
+        return -0.08
+
+    coverage = overlap / max(1, len(query_tokens))
+    return round(0.12 * coverage, 6)
+
+
+def _route_min_score_threshold(query_intent: Dict[str, bool]) -> float:
+    if query_intent["structured"]:
+        return 0.12
+    if query_intent["procedural"]:
+        return 0.16
+    if query_intent["definition"]:
+        return 0.15
+    if query_intent["summary"]:
+        return 0.14
+    return 0.17
+
+
+def _route_relative_floor(query_intent: Dict[str, bool]) -> float:
+    if query_intent["procedural"]:
+        return 0.42
+    if query_intent["structured"] or query_intent["definition"]:
+        return 0.38
+    return 0.35
+
+
+def _route_reason(
+    row: Dict[str, object],
+    query_intent: Dict[str, bool],
+    domain_alignment: float,
+) -> str:
+    reasons: List[str] = []
+    if float(row.get("vector_score") or 0.0) >= 0.30:
+        reasons.append("vector")
+    if float(row.get("keyword_score") or 0.0) >= 0.12:
+        reasons.append("keyword")
+    if domain_alignment > 0:
+        reasons.append("domain")
+    if query_intent["procedural"]:
+        reasons.append("procedural")
+    elif query_intent["definition"]:
+        reasons.append("definition")
+    elif query_intent["summary"]:
+        reasons.append("summary")
+    elif query_intent["structured"]:
+        reasons.append("structured")
+
+    deduped: List[str] = []
+    seen = set()
+    for reason in reasons:
+        if reason in seen:
+            continue
+        seen.add(reason)
+        deduped.append(reason)
+    return "+".join(deduped) if deduped else "fallback"
+
+def _doc_route_score(
+    question: str,
+    title: str,
+    doc_summary: str,
+    doc_keywords: str,
+    route_text: str,
+    source_type: str,
+    vector_score: float,
+    keyword_score: float,
+    retrieval_hits: int,
+    query_intent: Dict[str, bool],
+) -> float:
+    title_kw = _keyword_overlap_score(question, title)
+    summary_kw = _keyword_overlap_score(question, doc_summary)
+    keywords_kw = _keyword_overlap_score(question, (doc_keywords or "").replace(",", " "))
+    route_kw = _keyword_overlap_score(question, route_text)
+    phrase = _phrase_hit_score(question, title, route_text or doc_summary)
+
+    title_coverage = _term_coverage_score(question, title)
+    keyword_coverage = _term_coverage_score(question, doc_keywords)
+    summary_coverage = _term_coverage_score(question, doc_summary)
+    exact_title_bonus = _exact_phrase_bonus(question, title)
+    exact_keyword_bonus = _exact_phrase_bonus(question, doc_keywords)
+
+    final_score = (
+        0.34 * max(vector_score, 0.0)
+        + 0.18 * max(keyword_score, 0.0)
+        + 0.12 * title_kw
+        + 0.10 * summary_kw
+        + 0.08 * keywords_kw
+        + 0.06 * route_kw
+        + 0.05 * phrase
+        + 0.10 * title_coverage
+        + 0.07 * keyword_coverage
+        + 0.05 * summary_coverage
+    )
+
+    if retrieval_hits >= 2:
+        final_score += 0.06
+    elif keyword_score >= 0.28:
+        final_score += 0.02
+
+    if exact_title_bonus > 0:
+        final_score += 0.08
+    if exact_keyword_bonus > 0:
+        final_score += 0.05
+
+    if query_intent["structured"] and source_type == "md":
+        final_score += 0.03
+    if query_intent["procedural"] and source_type == "md":
+        final_score += 0.03
+    if query_intent["definition"] and (title_coverage >= 0.34 or keyword_coverage >= 0.34 or summary_kw >= 0.18):
+        final_score += 0.04
+    if query_intent["summary"] and summary_coverage >= 0.34:
+        final_score += 0.03
+
+    weak_title_and_keyword = title_coverage == 0.0 and keyword_coverage == 0.0
+    if weak_title_and_keyword and summary_kw < 0.08 and route_kw < 0.08:
+        final_score -= 0.05
+    if source_type == "txt" and weak_title_and_keyword and retrieval_hits < 2:
+        final_score -= 0.03
+
+    return round(max(final_score, 0.0), 6)
+
+
+
+
+
+def _doc_dedupe_key(row: Dict[str, object]) -> str:
+    title = _make_compact_text(str(row.get("title") or "")).lower()
+    source_type = _make_compact_text(str(row.get("source_type") or "")).lower()
+    summary = _make_compact_text(str(row.get("doc_summary") or "")).lower()
+    route_text = _make_compact_text(str(row.get("route_text") or "")).lower()
+    keywords = _make_compact_text(str(row.get("doc_keywords") or "")).lower()
+
+    semantic_anchor = summary or route_text[:240] or keywords
+    semantic_anchor = semantic_anchor[:320]
+    return f"{source_type}|{title}|{semantic_anchor}"
+
+
+
+def _dedupe_doc_route_rows(rows: List[Dict[str, object]]) -> List[Dict[str, object]]:
+    deduped: List[Dict[str, object]] = []
+    seen = set()
+
+    for row in rows:
+        key = _doc_dedupe_key(row)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(row)
+
+    return deduped
+
+def route_documents(
+    question: str,
+    question_embedding: List[float],
+    top_n: int = 4,
+    query_intent: Optional[Dict[str, bool]] = None,
+) -> List[RoutedDoc]:
+    vector_literal = vector_to_pg(question_embedding)
+    query_intent = _resolve_query_intent(question, query_intent)
+
+    vector_candidate_k = min(max(top_n * 4, 8), 20)
+    keyword_candidate_k = min(max(top_n * 5, 10), 24)
+
+    vector_rows = _fetch_doc_vector_rows(vector_literal=vector_literal, candidate_k=vector_candidate_k)
+    keyword_rows = _fetch_doc_keyword_rows(
+        question=question,
+        candidate_k=keyword_candidate_k,
+        query_intent=query_intent,
+    )
+
+    merged_rows = _merge_doc_candidate_rows(vector_rows, keyword_rows)
+
+    rescored_rows = []
+    for row in merged_rows:
+        base_score = _doc_route_score(
+            question=question,
+            title=str(row["title"] or ""),
+            doc_summary=str(row["doc_summary"] or ""),
+            doc_keywords=str(row["doc_keywords"] or ""),
+            route_text=str(row["route_text"] or ""),
+            source_type=str(row["source_type"] or ""),
+            vector_score=float(row["vector_score"] or 0.0),
+            keyword_score=float(row["keyword_score"] or 0.0),
+            retrieval_hits=int(row["retrieval_hits"] or 0),
+            query_intent=query_intent,
+        )
+        domain_alignment = _domain_alignment_score(question=question, row=row, query_intent=query_intent)
+        final_score = round(max(base_score + domain_alignment, 0.0), 6)
+        rescored_rows.append(
+            {
+                **row,
+                "base_score": base_score,
+                "domain_alignment": domain_alignment,
+                "final_score": final_score,
+                "reason": _route_reason(row=row, query_intent=query_intent, domain_alignment=domain_alignment),
+            }
+        )
+
+    rescored_rows.sort(
+        key=lambda x: (x["final_score"], x["vector_score"], x["keyword_score"]),
+        reverse=True,
+    )
+
+    deduped_rows = _dedupe_doc_route_rows(rescored_rows)
+    if not deduped_rows:
+        return []
+
+    absolute_floor = _route_min_score_threshold(query_intent)
+    leading_score = float(deduped_rows[0]["final_score"] or 0.0)
+    relative_floor = round(leading_score * _route_relative_floor(query_intent), 6)
+    score_floor = max(absolute_floor, relative_floor)
+
+    filtered_rows = []
+    for index, row in enumerate(deduped_rows):
+        score = float(row["final_score"] or 0.0)
+        retrieval_hits = int(row["retrieval_hits"] or 0)
+        weak_single_hit = retrieval_hits < 2 and score < score_floor + 0.04
+        if index == 0:
+            filtered_rows.append(row)
+            continue
+        if score < score_floor:
+            continue
+        if weak_single_hit:
+            continue
+        filtered_rows.append(row)
+
+    final_rows = filtered_rows[:top_n]
+    routed_docs = [
+        RoutedDoc(
+            docId=int(row["doc_id"]),
+            title=str(row["title"]),
+            score=float(row["final_score"]),
+            summary=str(row["doc_summary"]) or None,
+            keywords=str(row["doc_keywords"]) or None,
+            sourceType=str(row["source_type"]) or None,
+            reason=str(row["reason"]) or None,
+        )
+        for row in final_rows
+    ]
+
+    logger.info(
+        "route_documents question_len=%s vector_candidates=%s keyword_candidates=%s merged_candidates=%s deduped_candidates=%s filtered_candidates=%s score_floor=%.4f result_count=%s top_preview=%s",
+        len(question),
+        len(vector_rows),
+        len(keyword_rows),
+        len(merged_rows),
+        len(deduped_rows),
+        len(final_rows),
+        score_floor,
+        len(routed_docs),
+        [
+            {
+                "doc_id": row["doc_id"],
+                "title": row["title"],
+                "source_type": row["source_type"],
+                "vector_score": row["vector_score"],
+                "keyword_score": row["keyword_score"],
+                "base_score": row["base_score"],
+                "domain_alignment": row["domain_alignment"],
+                "final_score": row["final_score"],
+                "reason": row["reason"],
+            }
+            for row in final_rows
+        ],
+    )
+
+    return routed_docs
+
 def search_chunks(
     question: str,
     question_embedding: List[float],
     doc_scope: List[int],
     top_k: int,
-) -> List[RetrievedItem]:
+    query_intent: Optional[Dict[str, bool]] = None,
+) -> Tuple[List[RetrievedItem], Dict[str, object]]:
     vector_literal = vector_to_pg(question_embedding)
-    query_intent = _classify_query_intent(question)
+    query_intent = _resolve_query_intent(question, query_intent)
+    rerank_debug = _base_rerank_debug()
 
     vector_candidate_multiplier = 6 if (query_intent["structured"] or query_intent["procedural"]) else 4
     vector_candidate_cap = 80 if query_intent["structured"] else 60
@@ -923,6 +1504,7 @@ def search_chunks(
             section_path=clean_section_path,
             chunk_type=clean_chunk_type,
             source_type=clean_source_type,
+            context_text=str(row.get("context_text") or ""),
             vector_score=float(row["vector_score"] or 0.0),
             keyword_score=float(row["keyword_score"] or 0.0),
             retrieval_hits=int(row["retrieval_hits"] or 0),
@@ -945,16 +1527,85 @@ def search_chunks(
         reverse=True,
     )
 
-    final_rows = rescored_rows[:top_k]
+    local_top_rows = rescored_rows[:top_k]
+    rerank_debug["resolvedIntent"] = dict(query_intent)
+    rerank_debug["localTopItems"] = [_item_debug_preview(row) for row in local_top_rows]
+
+    final_rows = list(local_top_rows)
+    if RERANK_ENABLED and rescored_rows:
+        rerank_debug["callCount"] = 1
+        rerank_pool_size = min(len(rescored_rows), max(top_k, int(RERANK_TOP_N)))
+        rerank_debug["requestedTopN"] = rerank_pool_size
+        rerank_debug["candidateCount"] = rerank_pool_size
+
+        rerank_rows = rescored_rows[:rerank_pool_size]
+        rerank_documents = [
+            str(row.get("context_text") or row.get("text") or "").strip()
+            for row in rerank_rows
+        ]
+
+        try:
+            rerank_scores, rerank_latency_ms = rerank_candidates(
+                query=question,
+                documents=rerank_documents,
+                top_n=rerank_pool_size,
+            )
+            rerank_debug["latencyMs"] = rerank_latency_ms
+            rerank_debug["appliedCount"] = len(rerank_scores)
+
+            blended_rows = []
+            for index, row in enumerate(rerank_rows):
+                local_score = float(row["final_score"] or 0.0)
+                rerank_score = float(rerank_scores[index])
+                blended_rows.append(
+                    {
+                        **row,
+                        "local_score": round(local_score, 6),
+                        "rerank_score": rerank_score,
+                        "blended_score": _blend_scores(local_score, rerank_score),
+                    }
+                )
+
+            blended_rows.sort(
+                key=lambda x: (
+                    x["blended_score"],
+                    x["local_score"],
+                    x["vector_score"],
+                    x["keyword_score"],
+                ),
+                reverse=True,
+            )
+            final_rows = blended_rows[:top_k]
+        except RerankServiceError as exc:
+            rerank_debug["fallback"] = True
+            rerank_debug["fallbackReason"] = str(exc)
+            logger.warning("search_chunks rerank fallback reason=%s", str(exc))
+        except Exception as exc:
+            rerank_debug["fallback"] = True
+            rerank_debug["fallbackReason"] = str(exc)
+            logger.exception("search_chunks rerank unexpected_error=%s", str(exc))
+
+    rerank_debug["finalTopItems"] = [_item_debug_preview(row) for row in final_rows]
+    rerank_debug["orderingChanged"] = [
+        int(row.get("chunk_id") or 0) for row in local_top_rows
+    ] != [
+        int(row.get("chunk_id") or 0) for row in final_rows
+    ]
 
     items: List[RetrievedItem] = []
     for row in final_rows:
+        local_score = float(row.get("local_score", row["final_score"]) or 0.0)
+        rerank_score = row.get("rerank_score")
+        blended_score = float(row.get("blended_score", row["final_score"]) or 0.0)
         items.append(
             RetrievedItem(
                 docId=int(row["doc_id"]),
                 chunkId=int(row["chunk_id"]),
                 chunkIndex=int(row["chunk_index"]),
-                score=float(row["final_score"]),
+                score=blended_score,
+                localScore=round(local_score, 6),
+                rerankScore=None if rerank_score is None else float(rerank_score),
+                blendedScore=round(blended_score, 6),
                 text=str(row["text"]),
                 heading=str(row["heading"]) or None,
                 sectionPath=str(row["section_path"]) or None,
@@ -969,11 +1620,14 @@ def search_chunks(
         )
 
     logger.info(
-        "search_chunks done vector_candidates=%s keyword_candidates=%s merged_candidates=%s result_count=%s top_preview=%s",
+        "search_chunks done vector_candidates=%s keyword_candidates=%s merged_candidates=%s result_count=%s rerank_enabled=%s rerank_applied=%s rerank_fallback=%s top_preview=%s",
         len(vector_rows),
         len(keyword_rows),
         len(merged_rows),
         len(items),
+        rerank_debug["enabled"],
+        rerank_debug["appliedCount"],
+        rerank_debug["fallback"],
         [
             {
                 "chunk_id": row["chunk_id"],
@@ -986,8 +1640,14 @@ def search_chunks(
                 "keyword_score": row["keyword_score"],
                 "retrieval_hits": row["retrieval_hits"],
                 "final_score": row["final_score"],
+                "local_score": row.get("local_score", row["final_score"]),
+                "rerank_score": row.get("rerank_score"),
+                "blended_score": row.get("blended_score", row["final_score"]),
             }
             for row in final_rows
         ],
     )
-    return items
+    return items, rerank_debug
+
+
+
