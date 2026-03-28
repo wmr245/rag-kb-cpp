@@ -1,4 +1,5 @@
 import type {
+  CharacterCard,
   CharacterCardListResponse,
   GameSessionListResponse,
   GameSessionStateResponse,
@@ -34,9 +35,23 @@ export async function getWorldbook(worldbookId: string) {
   return requestJson<Worldbook>(`/game/worldbooks/${worldbookId}`);
 }
 
+export async function createWorldbook(worldbook: Worldbook) {
+  return requestJson<Worldbook>('/game/worldbooks', {
+    method: 'POST',
+    body: JSON.stringify({ worldbook }),
+  });
+}
+
 export async function listCharacters(worldbookId?: string) {
   const query = worldbookId ? `?worldbookId=${encodeURIComponent(worldbookId)}` : '';
   return requestJson<CharacterCardListResponse>(`/game/character-cards${query}`);
+}
+
+export async function createCharacterCard(characterCard: CharacterCard) {
+  return requestJson<CharacterCard>('/game/character-cards', {
+    method: 'POST',
+    body: JSON.stringify({ characterCard }),
+  });
 }
 
 export async function listSessions() {
@@ -55,6 +70,19 @@ export async function createSession(payload: {
 }) {
   return requestJson<GameSessionStateResponse>('/game/sessions', {
     method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateSession(
+  sessionId: string,
+  payload: {
+    title?: string;
+    status?: 'active' | 'archived';
+  },
+) {
+  return requestJson<GameSessionStateResponse>(`/game/sessions/${sessionId}`, {
+    method: 'PATCH',
     body: JSON.stringify(payload),
   });
 }

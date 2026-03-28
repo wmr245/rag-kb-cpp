@@ -1,0 +1,12 @@
+{
+  "baseUrl": "http://127.0.0.1:5175",
+  "statusLabel": "3 个阻塞问题",
+  "canImport": false,
+  "issueCount": 3,
+  "issues": [
+    "worldbook.id已有同名 worldbook: campus_romance_01",
+    "characterCards[0].id已有同名角色卡: lin_xi",
+    "characterCards[1].id已有同名角色卡: he_yun"
+  ],
+  "consoleErrors": []
+}

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { motion } from 'motion/react';
 import type { GameTurnDebug, GameTurnResult } from '../lib/types';
 
@@ -7,14 +8,14 @@ interface TurnSpotlightProps {
   hasSession: boolean;
 }
 
-export function TurnSpotlight({ result, debug, hasSession }: TurnSpotlightProps) {
+export const TurnSpotlight = memo(function TurnSpotlight({ result, debug, hasSession }: TurnSpotlightProps) {
   if (result) {
     return (
       <section className="turn-spotlight">
         <div className="spotlight-background" />
-        <motion.div className="spotlight-card" initial={{ opacity: 0.96 }} animate={{ opacity: 1 }} transition={{ duration: 0.14 }}>
+        <motion.div className="spotlight-card" initial={{ opacity: 0.96, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16 }}>
           <div className="spotlight-header">
-            <div>
+            <div className="spotlight-heading">
               <p className="eyebrow">{'\u672c\u8f6e\u805a\u5149'}</p>
               <h3>{result.responderName}</h3>
             </div>
@@ -27,11 +28,11 @@ export function TurnSpotlight({ result, debug, hasSession }: TurnSpotlightProps)
           <p className="spotlight-quote">{result.primaryReply}</p>
 
           <div className="spotlight-support">
-            <div>
+            <div className="spotlight-support-block">
               <span className="preview-label">{'\u5bfc\u6f14\u63d0\u793a'}</span>
               <p>{debug?.directorNote || '\u8fd8\u6ca1\u6709\u989d\u5916\u63d0\u793a\u3002'}</p>
             </div>
-            <div>
+            <div className="spotlight-support-block">
               <span className="preview-label">{'\u573a\u666f'}</span>
               <p>{result.stateDiff.newSceneId}</p>
             </div>
@@ -55,4 +56,4 @@ export function TurnSpotlight({ result, debug, hasSession }: TurnSpotlightProps)
       </div>
     </section>
   );
-}
+});

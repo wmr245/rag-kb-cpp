@@ -290,6 +290,11 @@ class GameSessionCreateRequest(StrictModel):
     openingLocationId: str = ''
 
 
+class GameSessionUpdateRequest(StrictModel):
+    title: str = ''
+    status: str = ''
+
+
 class GameSessionStateResponse(StrictModel):
     session: GameSession
     scene: SceneSnapshot

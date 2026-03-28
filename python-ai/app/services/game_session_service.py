@@ -3,6 +3,7 @@
     GameSession,
     GameSessionCreateRequest,
     GameSessionSummary,
+    GameSessionUpdateRequest,
     GameTurnDebug,
     GameTurnResult,
     MemoryProfile,
@@ -154,8 +155,28 @@ def list_game_sessions() -> list[GameSessionSummary]:
     ]
 
 
+def update_game_session(session_id: str, req: GameSessionUpdateRequest) -> GameSession:
+    session = get_game_session(session_id)
+    next_title = req.title.strip()
+    next_status = req.status.strip()
+
+    if next_title:
+        session.title = next_title
+
+    if next_status:
+        if next_status not in {'active', 'archived'}:
+            raise GameValidationError(f'unsupported session status: {next_status}')
+        session.status = next_status
+
+    session.updatedAt = utc_now_iso()
+    save_record('sessions', session.id, dump_model(session))
+    return session
+
+
 def play_turn(session_id: str, message: str) -> tuple[GameSession, GameTurnResult, GameTurnDebug]:
     session = get_game_session(session_id)
+    if session.status != 'active':
+        raise GameValidationError('archived session cannot accept new turns')
     before_state = snapshot_turn_state(session)
     worldbook = get_worldbook(session.worldbookId)
     characters = [get_character_card(character_id) for character_id in session.characterIds]

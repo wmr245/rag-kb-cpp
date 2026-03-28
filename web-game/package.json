@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p ./tsconfig.json && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "regression:import": "node ./scripts/run-import-regression.mjs",
+    "regression:session-workspace": "node ./scripts/run-session-workspace-regression.mjs"
   },
   "dependencies": {
     "framer-motion": "^12.38.0",
@@ -19,6 +21,7 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@vitejs/plugin-react": "^5.0.4",
+    "playwright": "^1.58.2",
     "typescript": "^5.9.3",
     "vite": "^8.0.2"
   }

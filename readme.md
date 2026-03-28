@@ -1,6 +1,9 @@
 # rag-kb-cpp
 
-一个面向面试展示与逐步演进的 RAG 项目，采用 `C++ Gateway + Python AI Service + PostgreSQL/pgvector + Redis` 的组合实现。
+一个面向面试展示与逐步演进的项目，当前已经形成两条主线：
+
+- `RAG` 主链路：`C++ Gateway + Python AI Service + PostgreSQL/pgvector + Redis`
+- `web-game` 主链路：围绕开放世界恋爱叙事沙盒的会话工作台与长期记忆框架
 
 这个项目刻意强调两件事：
 
@@ -9,7 +12,12 @@
 
 ## 项目定位
 
-这是一个偏“手写核心链路”的知识库问答项目，而不是追求最快堆功能的 Demo。
+这已经不只是一个知识库问答 Demo。当前仓库更准确的定位是：
+
+- 一条已经相对收口的工程化 RAG 主链路
+- 一条正在成型的长期聊天 / 叙事沙盒框架
+
+它依然保持“手写核心链路优先”的风格，而不是一开始就依赖大框架封装。
 
 目标是把下面这些能力逐步做实：
 
@@ -38,10 +46,13 @@
 ├─ cpp-gateway/          # 对外 HTTP 网关，基于 Drogon
 ├─ python-ai/            # AI 核心服务，基于 FastAPI
 ├─ db/init/              # PostgreSQL 初始化脚本
+├─ web-game/             # 游戏工作台前端
+├─ game-data/            # 游戏 worldbook / character card / session 数据
 ├─ uploads/              # 上传文件共享目录
 ├─ scripts/              # 自测与辅助脚本
 ├─ eval/                 # 评测集、报告与基线
 ├─ notes/                # 迭代记录与问题复盘
+├─ guidance/             # 阶段判断、下一步计划与架构指引
 ├─ docker-compose.yml    # 整体启动编排
 └─ .env.example          # 示例环境变量
 ```
@@ -59,6 +70,7 @@
   - 混合检索、规则重排、引用生成
   - Optional cloud rerank with automatic fallback
   - 基于证据评分决定回答或拒答
+  - worldbook / character card / session / turn / memory 相关游戏服务
   - 使用 Redis 做查询缓存
 - `postgres`
   - 存储文档、任务、切片、日志
@@ -66,6 +78,26 @@
 - `redis`
   - 缓存查询结果
   - 存储知识库版本号等轻量状态
+- `web-game`
+  - 提供导入设定、会话管理、舞台窗口、剧情流和 memory timeline 等工作台界面
+
+## 当前重点方向
+
+RAG 主链路当前已经基本收口。新的主工作范围是：
+
+- 把 `web-game` 从“能演一局”推进到“长期聊天框架”
+- 长期目标不是继续堆 UI，而是做：
+  - session 生命周期
+  - archive 沉淀
+  - 长期 episodic memory
+  - profile / semantic memory
+  - 后续 turn 的长期记忆召回
+
+推荐先看：
+
+- [guidance/2026-03-28-long-memory-architecture.md](guidance/2026-03-28-long-memory-architecture.md)
+- [guidance/2026-03-28-next-prompt.md](guidance/2026-03-28-next-prompt.md)
+- [notes/2026-03-28-session-workspace-lifecycle.md](notes/2026-03-28-session-workspace-lifecycle.md)
 
 ## 请求链路
 

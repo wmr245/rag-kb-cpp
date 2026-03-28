@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { GameSession, GameTurnResult } from '../lib/types';
 
 interface DialogueStageProps {
@@ -14,7 +15,7 @@ function resolveActorName(actorType: string, actorId: string, actorNames: Record
   return actorNames[actorId] || actorId;
 }
 
-export function DialogueStage({ session, activeSceneLabel, actorNames, lastTurnResult, pending }: DialogueStageProps) {
+export const DialogueStage = memo(function DialogueStage({ session, activeSceneLabel, actorNames, lastTurnResult, pending }: DialogueStageProps) {
   const highlightedTurnIds = new Set(lastTurnResult?.turns.map((turn) => turn.turnId) ?? []);
   const castNames = (session?.runtimeState.currentCast ?? []).map((id) => actorNames[id] || id);
 
@@ -75,4 +76,4 @@ export function DialogueStage({ session, activeSceneLabel, actorNames, lastTurnR
       </div>
     </section>
   );
-}
+});

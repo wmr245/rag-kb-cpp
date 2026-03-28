@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { motion } from 'motion/react';
 import type { GameSession, GameTurnResult, MemoryProfile, SceneSnapshot } from '../lib/types';
 
@@ -40,9 +41,10 @@ function classifyStageTone(stage: string): StageTone {
   return 'neutral';
 }
 
-export function SceneInspector({ scene, session, actorNames, lastTurnResult }: SceneInspectorProps) {
+export const SceneInspector = memo(function SceneInspector({ scene, session, actorNames, lastTurnResult }: SceneInspectorProps) {
   const relationshipEntries = Object.entries(session?.runtimeState.relationshipStates ?? {});
   const latestDiff = lastTurnResult?.stateDiff;
+  const memoryTimeline = [...(session?.memoryEntries ?? [])].slice(-6).reverse();
 
   return (
     <aside className="scene-inspector">
@@ -73,6 +75,25 @@ export function SceneInspector({ scene, session, actorNames, lastTurnResult }: S
         )}
       </section>
 
+      <section className="inspector-block">
+        <p className="eyebrow">{'\u8bb0\u5fc6\u65f6\u95f4\u7ebf'}</p>
+        {memoryTimeline.length ? (
+          <div className="memory-timeline">
+            {memoryTimeline.map((entry) => (
+              <article className="memory-entry" key={entry.id}>
+                <div className="memory-entry-meta">
+                  <span>{entry.type}</span>
+                  <small>{entry.createdAt.replace('T', ' ').slice(0, 16)}</small>
+                </div>
+                <p className="memory-entry-copy">{entry.summary}</p>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="scene-copy">{'\u8fd8\u6ca1\u6709\u843d\u76d8\u7684\u8bb0\u5fc6\u7247\u6bb5\u3002\u5f00\u59cb\u51e0\u8f6e\u540e\uff0c\u8fd9\u91cc\u4f1a\u53d8\u6210\u8fd9\u6761\u8bb0\u5fc6\u7ebf\u7684\u7f29\u5f71\u3002'}</p>
+        )}
+      </section>
+
       <section className="inspector-block inspector-block--stretch">
         <p className="eyebrow">{'\u5173\u7cfb\u7f51\u683c'}</p>
         <div className="relation-list">
@@ -100,4 +121,4 @@ export function SceneInspector({ scene, session, actorNames, lastTurnResult }: S
       </section>
     </aside>
   );
-}
+});

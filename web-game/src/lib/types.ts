@@ -63,6 +63,59 @@ export interface CharacterCardListResponse {
   items: CharacterCardSummary[];
 }
 
+export interface SpeechStyle {
+  tone: string;
+  verbosity: string;
+  habitPhrases: string[];
+  avoidPhrases: string[];
+  cadenceHints: string[];
+}
+
+export interface UnlockableSecret {
+  id: string;
+  summary: string;
+  unlockCondition: string;
+}
+
+export interface RelationshipDefaults {
+  trust: number;
+  affection: number;
+  tension: number;
+  familiarity: number;
+  stage: string;
+}
+
+export interface CharacterCard {
+  id: string;
+  worldbookId: string;
+  name: string;
+  role: string;
+  tags: string[];
+  appearanceHints: string[];
+  personaTags: string[];
+  coreTraits: string[];
+  emotionalStyle: string;
+  socialStyle: string;
+  innerConflict: string;
+  speechStyle: SpeechStyle;
+  likes: string[];
+  dislikes: string[];
+  softSpots: string[];
+  tabooTopics: string[];
+  publicFacts: string[];
+  privateFacts: string[];
+  unlockableSecrets: UnlockableSecret[];
+  knowledgeBoundaries: string[];
+  scenePreferences: string[];
+  eventHooks: string[];
+  entryConditions: string[];
+  exitConditions: string[];
+  safetyRules: string[];
+  behaviorConstraints: string[];
+  disclosureRules: string[];
+  relationshipDefaults: RelationshipDefaults;
+}
+
 export interface GameSessionSummary {
   id: string;
   worldbookId: string;

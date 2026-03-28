@@ -7,6 +7,7 @@ from app.models.game_schemas import (
     GameSessionCreateRequest,
     GameSessionListResponse,
     GameSessionStateResponse,
+    GameSessionUpdateRequest,
     GameTurnRequest,
     GameTurnResponse,
     Worldbook,
@@ -15,7 +16,7 @@ from app.models.game_schemas import (
 )
 from app.services.character_card_service import create_character_card, get_character_card, list_character_cards
 from app.services.game_exceptions import GameConflictError, GameNotFoundError, GameValidationError
-from app.services.game_session_service import create_game_session, get_game_session, list_game_sessions, play_turn
+from app.services.game_session_service import create_game_session, get_game_session, list_game_sessions, play_turn, update_game_session
 from app.services.scene_resolver_service import build_scene_snapshot
 from app.services.worldbook_service import create_worldbook, get_worldbook, list_worldbooks
 
@@ -104,6 +105,18 @@ def list_game_sessions_endpoint():
 def get_game_session_endpoint(session_id: str):
     try:
         session = get_game_session(session_id)
+        worldbook = get_worldbook(session.worldbookId)
+        characters = [get_character_card(character_id) for character_id in session.characterIds]
+        scene = build_scene_snapshot(worldbook, characters, session)
+        return GameSessionStateResponse(session=session, scene=scene)
+    except Exception as exc:
+        _raise_http_error(exc)
+
+
+@router.patch('/sessions/{session_id}', response_model=GameSessionStateResponse)
+def update_game_session_endpoint(session_id: str, req: GameSessionUpdateRequest):
+    try:
+        session = update_game_session(session_id, req)
         worldbook = get_worldbook(session.worldbookId)
         characters = [get_character_card(character_id) for character_id in session.characterIds]
         scene = build_scene_snapshot(worldbook, characters, session)

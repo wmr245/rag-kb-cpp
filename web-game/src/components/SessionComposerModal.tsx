@@ -5,6 +5,7 @@ interface SessionComposerModalProps {
   open: boolean;
   worldbook: Worldbook | null;
   characters: CharacterCardSummary[];
+  existingSessionCount: number;
   selectedCharacterIds: string[];
   selectedLocationId: string;
   creating: boolean;
@@ -18,6 +19,7 @@ export function SessionComposerModal({
   open,
   worldbook,
   characters,
+  existingSessionCount,
   selectedCharacterIds,
   selectedLocationId,
   creating,
@@ -105,6 +107,9 @@ export function SessionComposerModal({
                       {selectedCharacterIds.length} {'\u4f4d\u89d2\u8272\u5c06\u5728 '}
                       {worldbook.locations.find((item) => item.id === selectedLocationId)?.name || '\u672a\u9009\u62e9\u5730\u70b9'}
                       {' \u51fa\u573a\uff0c\u7cfb\u7edf\u4f1a\u4ee5\u8be5\u5730\u70b9\u4f5c\u4e3a\u7b2c\u4e00\u5e55\u7684 scene \u8d77\u70b9\u3002'}
+                      {existingSessionCount > 0
+                        ? ` \u8fd9\u4f1a\u4f5c\u4e3a\u8be5\u4e16\u754c\u7684\u7b2c ${existingSessionCount + 1} \u6761\u72ec\u7acb\u8bb0\u5fc6\u7ebf\u3002`
+                        : ' \u8fd9\u4f1a\u6210\u4e3a\u8fd9\u4e2a\u4e16\u754c\u7684\u7b2c\u4e00\u6761\u72ec\u7acb\u8bb0\u5fc6\u7ebf\u3002'}
                     </p>
                   </div>
                   <button
