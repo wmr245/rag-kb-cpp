@@ -1,15 +1,6 @@
 import { memo, type FormEvent } from 'react';
 import { Archive, PencilLine, RotateCcw, Save, Trash2, X } from 'lucide-react';
-import type { GameSessionSummary } from '../lib/types';
-
-interface RailWorldbook {
-  id: string;
-  title: string;
-  version: string;
-  genre: string[];
-  tone: string[];
-  locationCount: number;
-}
+import type { AssistantSummary, GameSessionSummary, WorldbookSummary } from '../lib/types';
 
 interface RailCharacter {
   id: string;
@@ -29,11 +20,12 @@ interface RailSessionItem {
   summary: GameSessionSummary;
 }
 
-interface SessionRailProps {
-  worldbooks: RailWorldbook[];
-  selectedWorldbookId: string;
-  selectedWorldbookTitle: string;
-  onSelectWorldbook: (worldbookId: string) => void;
+interface AssistantRailProps {
+  assistants: AssistantSummary[];
+  selectedAssistantId: string;
+  selectedAssistant: AssistantSummary | null;
+  activatingAssistantId: string;
+  selectedWorldbook: WorldbookSummary | null;
   worldbookCharacters: RailCharacter[];
   activeSessions: RailSessionItem[];
   archivedSessions: RailSessionItem[];
@@ -45,6 +37,8 @@ interface SessionRailProps {
   onStartRenameSession: (session: GameSessionSummary) => void;
   onCancelRenameSession: () => void;
   onSubmitRenameSession: () => void;
+  onActivateAssistant: (assistant: AssistantSummary) => void;
+  onSelectAssistant: (assistantId: string) => void;
   onSelectSession: (sessionId: string) => void;
   onResumeRecentSession: (sessionId: string) => void;
   onArchiveSession: (sessionId: string) => void;
@@ -126,7 +120,7 @@ function SessionRow(props: {
             className="session-rename-input"
             value={renameDraft}
             onChange={(event) => onRenameDraftChange(event.target.value)}
-            placeholder="给这条记忆线起个名字"
+            placeholder="给这段对话快照起个名字"
             autoFocus
           />
           <div className="session-row-actions">
@@ -153,7 +147,7 @@ function SessionRow(props: {
               <p>{`${session.currentLocationLabel} · ${session.status}`}</p>
             </div>
             <div className="session-row-meta">
-              <span>{`${session.currentCastCount} 人在场`}</span>
+              <span>{`${session.currentCastCount} 位参与者`}</span>
               <small>{formatSessionRecency(session.updatedAt)}</small>
             </div>
           </button>
@@ -208,11 +202,12 @@ function SessionRow(props: {
   );
 }
 
-export const SessionRail = memo(function SessionRail({
-  worldbooks,
-  selectedWorldbookId,
-  selectedWorldbookTitle,
-  onSelectWorldbook,
+export const AssistantRail = memo(function AssistantRail({
+  assistants,
+  selectedAssistantId,
+  selectedAssistant,
+  activatingAssistantId,
+  selectedWorldbook,
   worldbookCharacters,
   activeSessions,
   archivedSessions,
@@ -224,6 +219,8 @@ export const SessionRail = memo(function SessionRail({
   onStartRenameSession,
   onCancelRenameSession,
   onSubmitRenameSession,
+  onActivateAssistant,
+  onSelectAssistant,
   onSelectSession,
   onResumeRecentSession,
   onArchiveSession,
@@ -233,26 +230,38 @@ export const SessionRail = memo(function SessionRail({
   onOpenSeedImport,
   creatingSession,
   launchCue,
-}: SessionRailProps) {
-  const hasSelectedWorldbook = Boolean(selectedWorldbookId);
+}: AssistantRailProps) {
   const sessionCount = activeSessions.length + archivedSessions.length;
+  const supportingCharacters = worldbookCharacters.filter((character) => character.id !== selectedAssistant?.characterId);
+  const selectedAssistantReady = selectedAssistant?.source === 'assistant';
 
   return (
-    <aside className="session-rail">
+    <aside className="session-rail assistant-rail">
       <div className="rail-brand">
-        <p className="eyebrow">{'雾夜档案'}</p>
-        <h1>{'雾夜恋爱档案室'}</h1>
-        <p className="brand-copy">{'一边看世界设定，一边让角色、台词和旁白在同一个夜色舞台里醒过来。'}</p>
+        <p className="eyebrow">{'个人助手工作台'}</p>
+        <h1>{'雾夜助手'}</h1>
+        <p className="brand-copy">{'背景设定、人格卡、持续对话和长期记忆都围绕同一个助手慢慢积累，历史快照退到次级入口。'}</p>
       </div>
 
       {launchCue ? (
         <section className="rail-section rail-section--callout">
           <div className="session-restore-card session-restore-card--launch">
             <span className="preview-label">{'导入完成后的下一步'}</span>
-            <strong>{`先为「${launchCue.worldbookTitle}」点亮第一幕`}</strong>
-            <p>{`${launchCue.characterCount} 张角色卡已经写入。先确认开场地点和阵容，再让这一夜开始累积长期记忆。`}</p>
-            <button className="primary-button rail-card-button" onClick={onOpenSessionComposer} type="button">
-              {'现在开场'}
+            <strong>{`先把「${launchCue.worldbookTitle}」收成一个助手`}</strong>
+            <p>{`${launchCue.characterCount} 张角色卡已经写入。先选定人格与背景，再开始第一段持续对话。`}</p>
+            <button
+              className="primary-button rail-card-button"
+              data-testid="assistant-primary-action"
+              onClick={() => {
+                if (selectedAssistant && selectedAssistant.source !== 'assistant') {
+                  onActivateAssistant(selectedAssistant);
+                  return;
+                }
+                onOpenSessionComposer();
+              }}
+              type="button"
+            >
+              {selectedAssistantReady ? '开始第一段对话' : '先启用当前助手'}
             </button>
           </div>
         </section>
@@ -262,7 +271,7 @@ export const SessionRail = memo(function SessionRail({
         <section className="rail-section rail-section--callout">
           <div className="session-restore-card">
             <div className="session-restore-copy">
-              <span className="preview-label">{'继续最近一局'}</span>
+              <span className="preview-label">{'继续最近对话'}</span>
               <strong>{recentSession.title}</strong>
               <p>{`${recentSession.currentLocationLabel} · ${formatSessionRecency(recentSession.updatedAt)}`}</p>
             </div>
@@ -271,7 +280,7 @@ export const SessionRail = memo(function SessionRail({
               onClick={() => onResumeRecentSession(recentSession.id)}
               type="button"
             >
-              {recentSession.isActive ? '回到当前会话' : '恢复这条记忆线'}
+              {recentSession.isActive ? '回到当前对话' : '恢复这段快照'}
             </button>
           </div>
         </section>
@@ -279,72 +288,142 @@ export const SessionRail = memo(function SessionRail({
 
       <section className="rail-section">
         <div className="section-heading">
-          <span>{'世界观'}</span>
-          <span>{worldbooks.length}</span>
+          <span>{'助手列表'}</span>
+          <span>{assistants.length}</span>
         </div>
-        <div className="worldbook-list">
-          {worldbooks.length ? (
-            worldbooks.map((worldbook) => {
-              const selected = worldbook.id === selectedWorldbookId;
+        <div className="worldbook-list" data-testid="assistant-list">
+          {assistants.length ? (
+            assistants.map((assistant) => {
+              const selected = assistant.id === selectedAssistantId;
+              const activating = activatingAssistantId === assistant.id;
+              const ready = assistant.source === 'assistant';
               return (
-                <button
-                  key={worldbook.id}
-                  className={`worldbook-pill${selected ? ' is-selected' : ''}`}
-                  onClick={() => onSelectWorldbook(worldbook.id)}
-                  type="button"
+                <div
+                  className={`session-row-shell${selected ? ' is-active' : ''}`}
+                  data-testid={`assistant-row-${assistant.id}`}
+                  key={assistant.id}
                 >
-                  <div>
-                    <strong>{worldbook.title}</strong>
-                    <span>{[...worldbook.genre, ...worldbook.tone].slice(0, 3).join(' · ') || '未标注风格'}</span>
-                  </div>
-                  <small>{worldbook.locationCount} {'个场景'}</small>
-                </button>
+                  <button
+                    className={`worldbook-pill${selected ? ' is-selected' : ''}`}
+                    data-testid={`assistant-select-${assistant.id}`}
+                    onClick={() => onSelectAssistant(assistant.id)}
+                    type="button"
+                  >
+                    <div>
+                      <strong>{assistant.name}</strong>
+                      <span>{assistant.summary}</span>
+                    </div>
+                    <small>{ready ? `${assistant.worldbookTitle} · 已启用` : `${assistant.worldbookTitle} · 待启用`}</small>
+                  </button>
+                  {!ready ? (
+                    <div className="session-row-actions">
+                      <button
+                        className="ghost-button session-action-button"
+                        data-testid={`assistant-activate-${assistant.id}`}
+                        onClick={() => onActivateAssistant(assistant)}
+                        type="button"
+                        disabled={activating}
+                      >
+                        {activating ? '启用中…' : '启用助手'}
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
               );
             })
           ) : (
-            <div className="rail-empty">{'还没有 worldbook，先导入一套世界观设定。'}</div>
+            <div className="rail-empty">{'还没有可用助手。先导入 worldbook 与角色卡。'}</div>
           )}
         </div>
+      </section>
+
+      <section className="rail-section">
+        <div className="section-heading">
+          <span>{'背景设定'}</span>
+          <span>{selectedWorldbook ? 1 : 0}</span>
+        </div>
+        {selectedWorldbook ? (
+          <div className="cast-list">
+            <div className="cast-row">
+              <div>
+                <strong>{selectedWorldbook.title}</strong>
+                <p>{[...selectedWorldbook.genre, ...selectedWorldbook.tone].slice(0, 3).join(' · ') || '未标注风格'}</p>
+              </div>
+              <span>{`${selectedWorldbook.locationCount} 个场景`}</span>
+            </div>
+          </div>
+        ) : (
+          <div className="rail-empty">{'选中一个助手后，这里会显示它绑定的背景设定。'}</div>
+        )}
         <button className="ghost-button rail-secondary-button" onClick={onOpenSeedImport} type="button">
-          {worldbooks.length ? '再导入一套设定' : '导入第一套设定'}
+          {selectedWorldbook ? '导入更多背景设定' : '导入第一套设定'}
         </button>
       </section>
 
       <section className="rail-section">
         <div className="section-heading">
-          <span>{'角色草稿'}</span>
+          <span>{'人格与陪聊角色'}</span>
           <span>{worldbookCharacters.length}</span>
         </div>
         <div className="cast-list">
-          {worldbookCharacters.length ? (
-            worldbookCharacters.map((character) => (
-              <div className="cast-row" key={character.id}>
+          {selectedAssistant ? (
+            <>
+              <div className="cast-row">
                 <div>
-                  <strong>{character.name}</strong>
-                  <p>{character.role || '角色未标注定位'}</p>
+                  <strong>{selectedAssistant.name}</strong>
+                  <p>{selectedAssistant.characterRole || '当前助手人格'}</p>
                 </div>
-                <span>{character.personaTags.slice(0, 2).join(' / ') || '待补标签'}</span>
+                <span>{selectedAssistant.personaTags.slice(0, 2).join(' / ') || '待补标签'}</span>
               </div>
-            ))
+              {supportingCharacters.slice(0, 4).map((character) => (
+                <div className="cast-row" key={character.id}>
+                  <div>
+                    <strong>{character.name}</strong>
+                    <p>{character.role || '辅助角色'}</p>
+                  </div>
+                  <span>{character.personaTags.slice(0, 2).join(' / ') || '待补标签'}</span>
+                </div>
+              ))}
+            </>
           ) : (
-            <div className="rail-empty">{'选中一个 worldbook 后，这里会显示可用角色卡。'}</div>
+            <div className="rail-empty">{'先选定一个助手人格，这里会显示它和当前背景里的其他角色。'}</div>
           )}
         </div>
-        <button className="create-session-button" onClick={onOpenSessionComposer} type="button" disabled={creatingSession || !selectedWorldbookId}>
-          {creatingSession ? '正在点亮第一幕…' : '策划这一夜的开场'}
+        <button
+          className="create-session-button"
+          data-testid="open-session-composer"
+          onClick={() => {
+            if (selectedAssistant && selectedAssistant.source !== 'assistant') {
+              onActivateAssistant(selectedAssistant);
+              return;
+            }
+            onOpenSessionComposer();
+          }}
+          type="button"
+          disabled={creatingSession || !selectedAssistant || activatingAssistantId === selectedAssistant.id}
+        >
+          {creatingSession
+            ? '正在准备对话片段…'
+            : !selectedAssistant
+              ? '先选择一个助手'
+              : selectedAssistant.source === 'assistant'
+                ? '开启新的对话片段'
+                : activatingAssistantId === selectedAssistant.id
+                  ? '正在启用助手…'
+                  : '先启用当前助手'}
         </button>
       </section>
 
-      <section className="rail-section rail-section--fill">
+      <section className="rail-section rail-section--fill" data-testid="assistant-snapshot-list">
         <div className="section-heading">
-          <span>{hasSelectedWorldbook ? `${selectedWorldbookTitle || '当前世界'}的会话` : '会话'}</span>
+          <span>{selectedAssistant ? `${selectedAssistant.name} 的对话快照` : '对话快照'}</span>
           <span>{sessionCount}</span>
         </div>
         <div className="session-list">
           {activeSessions.length ? (
             <section className="session-group">
               <div className="session-group-heading">
-                <span>{'进行中的记忆线'}</span>
+                <span>{'进行中的片段'}</span>
                 <small>{activeSessions.length}</small>
               </div>
               <div className="session-group-list">
@@ -370,9 +449,9 @@ export const SessionRail = memo(function SessionRail({
           ) : null}
 
           {archivedSessions.length ? (
-            <section className="session-group">
+            <section className="session-group" data-testid="archived-snapshot-group">
               <div className="session-group-heading">
-                <span>{'已归档记忆线'}</span>
+                <span>{'历史快照'}</span>
                 <small>{archivedSessions.length}</small>
               </div>
               <div className="session-group-list">
@@ -399,9 +478,11 @@ export const SessionRail = memo(function SessionRail({
 
           {!sessionCount ? (
             <div className="rail-empty rail-empty--session">
-              {hasSelectedWorldbook
-                ? '这个世界还没有会话。先策划开场，让第一条记忆线开始积累。'
-                : '还没有 session。先选世界、看角色，然后让第一场夜晚开始。'}
+              {selectedAssistant
+                ? selectedAssistant.source === 'assistant'
+                  ? '这个助手还没有对话快照。先开启第一段对话，让长期记忆开始积累。'
+                  : '这个人格还处在待启用状态。先启用助手，再开始第一段对话。'
+                : '还没有选定助手。先导入设定并选中一个人格。'}
             </div>
           ) : null}
         </div>

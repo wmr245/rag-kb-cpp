@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -p ./tsconfig.json && vite build",
     "preview": "vite preview",
+    "regression:assistant-workspace": "node ./scripts/run-assistant-workspace-regression.mjs",
     "regression:import": "node ./scripts/run-import-regression.mjs",
     "regression:session-workspace": "node ./scripts/run-session-workspace-regression.mjs"
   },

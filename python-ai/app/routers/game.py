@@ -1,9 +1,17 @@
 ﻿from fastapi import APIRouter, HTTPException, Query
 
+from app.core.config import GAME_TESTING_API_ENABLED
 from app.models.game_schemas import (
+    Assistant,
+    AssistantCreateRequest,
+    AssistantFixtureResetRequest,
+    AssistantFixtureResetResponse,
+    AssistantListResponse,
+    AssistantUpdateRequest,
     CharacterCard,
     CharacterCardCreateRequest,
     CharacterCardListResponse,
+    GameSessionDeleteResponse,
     GameSessionCreateRequest,
     GameSessionListResponse,
     GameSessionStateResponse,
@@ -14,9 +22,19 @@ from app.models.game_schemas import (
     WorldbookCreateRequest,
     WorldbookListResponse,
 )
+from app.services.assistant_fixture_service import reset_assistant_fixture
+from app.services.assistant_service import create_assistant, get_assistant, list_assistants, update_assistant
 from app.services.character_card_service import create_character_card, get_character_card, list_character_cards
 from app.services.game_exceptions import GameConflictError, GameNotFoundError, GameValidationError
-from app.services.game_session_service import create_game_session, get_game_session, list_game_sessions, play_turn, update_game_session
+from app.services.game_session_service import (
+    create_game_session,
+    delete_game_session,
+    get_game_session,
+    list_game_sessions,
+    play_turn,
+    update_game_session,
+)
+from app.services.long_memory_service import build_long_memory_state
 from app.services.scene_resolver_service import build_scene_snapshot
 from app.services.worldbook_service import create_worldbook, get_worldbook, list_worldbooks
 
@@ -81,6 +99,48 @@ def get_character_card_endpoint(character_id: str):
         _raise_http_error(exc)
 
 
+@router.post('/assistants', response_model=Assistant)
+def create_assistant_endpoint(req: AssistantCreateRequest):
+    try:
+        return create_assistant(req)
+    except Exception as exc:
+        _raise_http_error(exc)
+
+
+@router.get('/assistants', response_model=AssistantListResponse)
+def list_assistants_endpoint():
+    try:
+        return AssistantListResponse(items=list_assistants())
+    except Exception as exc:
+        _raise_http_error(exc)
+
+
+@router.get('/assistants/{assistant_id}', response_model=Assistant)
+def get_assistant_endpoint(assistant_id: str):
+    try:
+        return get_assistant(assistant_id)
+    except Exception as exc:
+        _raise_http_error(exc)
+
+
+@router.patch('/assistants/{assistant_id}', response_model=Assistant)
+def update_assistant_endpoint(assistant_id: str, req: AssistantUpdateRequest):
+    try:
+        return update_assistant(assistant_id, name=req.name, status=req.status, summary=req.summary)
+    except Exception as exc:
+        _raise_http_error(exc)
+
+
+@router.post('/testing/reset-assistant-fixture', response_model=AssistantFixtureResetResponse)
+def reset_assistant_fixture_endpoint(req: AssistantFixtureResetRequest):
+    if not GAME_TESTING_API_ENABLED:
+        raise HTTPException(status_code=404, detail='not found')
+    try:
+        return reset_assistant_fixture(req)
+    except Exception as exc:
+        _raise_http_error(exc)
+
+
 @router.post('/sessions', response_model=GameSessionStateResponse)
 def create_game_session_endpoint(req: GameSessionCreateRequest):
     try:
@@ -88,15 +148,15 @@ def create_game_session_endpoint(req: GameSessionCreateRequest):
         worldbook = get_worldbook(session.worldbookId)
         characters = [get_character_card(character_id) for character_id in session.characterIds]
         scene = build_scene_snapshot(worldbook, characters, session)
-        return GameSessionStateResponse(session=session, scene=scene)
+        return GameSessionStateResponse(session=session, scene=scene, longMemory=build_long_memory_state(session))
     except Exception as exc:
         _raise_http_error(exc)
 
 
 @router.get('/sessions', response_model=GameSessionListResponse)
-def list_game_sessions_endpoint():
+def list_game_sessions_endpoint(assistantId: str | None = Query(default=None)):
     try:
-        return GameSessionListResponse(items=list_game_sessions())
+        return GameSessionListResponse(items=list_game_sessions(assistantId or ''))
     except Exception as exc:
         _raise_http_error(exc)
 
@@ -108,7 +168,7 @@ def get_game_session_endpoint(session_id: str):
         worldbook = get_worldbook(session.worldbookId)
         characters = [get_character_card(character_id) for character_id in session.characterIds]
         scene = build_scene_snapshot(worldbook, characters, session)
-        return GameSessionStateResponse(session=session, scene=scene)
+        return GameSessionStateResponse(session=session, scene=scene, longMemory=build_long_memory_state(session))
     except Exception as exc:
         _raise_http_error(exc)
 
@@ -116,11 +176,24 @@ def get_game_session_endpoint(session_id: str):
 @router.patch('/sessions/{session_id}', response_model=GameSessionStateResponse)
 def update_game_session_endpoint(session_id: str, req: GameSessionUpdateRequest):
     try:
-        session = update_game_session(session_id, req)
+        session, archive_summary = update_game_session(session_id, req)
         worldbook = get_worldbook(session.worldbookId)
         characters = [get_character_card(character_id) for character_id in session.characterIds]
         scene = build_scene_snapshot(worldbook, characters, session)
-        return GameSessionStateResponse(session=session, scene=scene)
+        return GameSessionStateResponse(
+            session=session,
+            scene=scene,
+            longMemory=build_long_memory_state(session, archive_summary=archive_summary),
+        )
+    except Exception as exc:
+        _raise_http_error(exc)
+
+
+@router.delete('/sessions/{session_id}', response_model=GameSessionDeleteResponse)
+def delete_game_session_endpoint(session_id: str):
+    try:
+        session = delete_game_session(session_id)
+        return GameSessionDeleteResponse(deleted=True, sessionId=session.id, title=session.title)
     except Exception as exc:
         _raise_http_error(exc)
 
@@ -128,10 +201,17 @@ def update_game_session_endpoint(session_id: str, req: GameSessionUpdateRequest)
 @router.post('/sessions/{session_id}/turns', response_model=GameTurnResponse)
 def play_turn_endpoint(session_id: str, req: GameTurnRequest):
     try:
-        session, result, debug = play_turn(session_id, req.message)
+        session, result, debug, selected_long_memory_items = play_turn(session_id, req.message)
         worldbook = get_worldbook(session.worldbookId)
         characters = [get_character_card(character_id) for character_id in session.characterIds]
         scene = build_scene_snapshot(worldbook, characters, session)
-        return GameTurnResponse(acknowledged=True, session=session, scene=scene, result=result, debug=debug)
+        return GameTurnResponse(
+            acknowledged=True,
+            session=session,
+            scene=scene,
+            longMemory=build_long_memory_state(session, selected_items=selected_long_memory_items),
+            result=result,
+            debug=debug,
+        )
     except Exception as exc:
         _raise_http_error(exc)

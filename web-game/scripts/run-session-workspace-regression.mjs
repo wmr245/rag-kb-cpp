@@ -79,6 +79,14 @@ async function getActiveSessionShell(page) {
   return activeShell;
 }
 
+async function dismissDrawerScrim(page) {
+  const scrim = page.locator('.drawer-scrim').first();
+  if ((await scrim.count()) === 0) return;
+  if (!(await scrim.isVisible().catch(() => false))) return;
+  await scrim.click({ force: true });
+  await page.waitForTimeout(300);
+}
+
 async function main() {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   const baseUrl = await resolveBaseUrl();
@@ -105,23 +113,27 @@ async function main() {
   const importedSeed = await ensureSeedContent(page);
   await page.waitForTimeout(700);
   const { created: createdSession } = await ensureSessionExists(page);
+  await dismissDrawerScrim(page);
 
   const activeShell = await getActiveSessionShell(page);
   const currentSessionTitle = await activeShell.locator('.session-row strong').first().innerText();
   const renamedTitle = `回归记忆线 ${Date.now().toString().slice(-6)}`;
 
+  await dismissDrawerScrim(page);
   await activeShell.getByRole('button', { name: '重命名' }).click();
   await page.locator('.session-rename-input').fill(renamedTitle);
   await page.getByRole('button', { name: '保存' }).click();
   await page.getByText(`已重命名：${renamedTitle}`).waitFor({ state: 'visible' });
 
   const renamedShell = await getActiveSessionShell(page);
+  await dismissDrawerScrim(page);
   await renamedShell.getByRole('button', { name: '归档' }).click();
   await page.getByText(`已归档：${renamedTitle}`).waitFor({ state: 'visible' });
 
   const archivedShell = page.locator('.session-group').filter({ hasText: '已归档记忆线' }).locator('.session-row-shell', {
     has: page.getByText(renamedTitle),
   }).first();
+  await dismissDrawerScrim(page);
   await archivedShell.getByRole('button', { name: '恢复' }).click();
   await page.getByText(`已恢复：${renamedTitle}`).waitFor({ state: 'visible' });
 

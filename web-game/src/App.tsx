@@ -12,18 +12,21 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, CheckCircle2, Ghost, Pin, PinOff, Send, Sparkles, X, Zap } from 'lucide-react';
 
 import { DialogueStage } from './components/DialogueStage';
+import { AssistantRail } from './components/AssistantRail';
 import { SceneInspector } from './components/SceneInspector';
 import { SeedImportModal } from './components/SeedImportModal';
 import { SessionComposerModal } from './components/SessionComposerModal';
-import { SessionRail } from './components/SessionRail';
 import { TurnSpotlight } from './components/TurnSpotlight';
 import { WorldbookPreview } from './components/WorldbookPreview';
 import {
+  createAssistant,
   createCharacterCard,
   createSession,
+  deleteSession,
   createWorldbook,
   getSession,
   getWorldbook,
+  listAssistants,
   listCharacters,
   listSessions,
   listWorldbooks,
@@ -33,19 +36,26 @@ import {
 import { starterCharactersJson, starterPackJsonById, starterPacks, starterWorldbookJson } from './lib/starterPack';
 import { validateSeedImportDrafts } from './lib/importValidation';
 import {
-  readSessionWorkspaceMemory,
+  readAssistantWorkspaceMemory,
+  rememberAssistantSessionActivation,
   rememberImportLaunchCue,
+  rememberSelectedAssistant,
   rememberSelectedWorldbook,
-  rememberSessionActivation,
-  resolvePreferredSessionId,
+  resolveAssistantIdForSession,
+  resolvePreferredAssistantId,
+  resolvePreferredSessionIdForAssistant,
+  writeAssistantWorkspaceMemory,
+} from './lib/assistantWorkspace';
+import {
   resolvePreferredWorldbookId,
   sortSessionsByUpdatedAt,
-  writeSessionWorkspaceMemory,
 } from './lib/sessionWorkspace';
 import type {
+  AssistantSummary,
   CharacterCardSummary,
   GameSession,
   GameSessionSummary,
+  LongMemoryState,
   GameTurnDebug,
   GameTurnResult,
   SceneSnapshot,
@@ -53,7 +63,7 @@ import type {
   WorldbookSummary,
 } from './lib/types';
 
-const EMPTY_MESSAGE = '试着输入一句带情绪、承诺、试探或试错意味的话，让导演推动这一轮。';
+const EMPTY_MESSAGE = '试着输入一句带情绪、承诺、试探或试错意味的话，让这场对话继续发生。';
 const DEFAULT_COMPOSER = '谢谢你今天愿意陪我在图书馆多待一会儿。';
 const DEFAULT_IMPORT_WORLD_DRAFT = starterWorldbookJson;
 const DEFAULT_IMPORT_CHARACTER_DRAFT = starterCharactersJson;
@@ -69,6 +79,23 @@ const DEFAULT_STARTER_PACK_ID = starterPacks[0]?.id || 'starter';
 type DrawerState = 'closed' | 'collapsed' | 'expanded' | 'pinned';
 type ComposerState = 'idle' | 'focused' | 'sending' | 'disabled';
 
+function parseApiErrorMessage(error: unknown, fallback: string) {
+  if (!(error instanceof Error)) return fallback;
+  const raw = error.message.trim();
+  if (!raw) return fallback;
+
+  try {
+    const parsed = JSON.parse(raw) as { detail?: string };
+    if (typeof parsed.detail === 'string' && parsed.detail.trim()) {
+      return parsed.detail.trim();
+    }
+  } catch {
+    return raw;
+  }
+
+  return raw;
+}
+
 function readStoredBoolean(key: string, fallback: boolean) {
   if (typeof window === 'undefined') return fallback;
   const value = window.localStorage.getItem(key);
@@ -79,7 +106,7 @@ function readStoredBoolean(key: string, fallback: boolean) {
 function normalizeStoredDrawerState(value: string | null, canPinDrawers: boolean): DrawerState {
   if (value === 'closed' || value === 'collapsed' || value === 'expanded') return value;
   if (value === 'pinned') return canPinDrawers ? 'pinned' : 'expanded';
-  return 'closed';
+  return canPinDrawers ? 'collapsed' : 'closed';
 }
 
 function isPinnedState(state: DrawerState, canPinDrawers: boolean) {
@@ -88,26 +115,32 @@ function isPinnedState(state: DrawerState, canPinDrawers: boolean) {
 
 export default function App() {
   const [worldbooks, setWorldbooks] = useState<WorldbookSummary[]>([]);
+  const [assistants, setAssistants] = useState<AssistantSummary[]>([]);
   const [knownCharacters, setKnownCharacters] = useState<CharacterCardSummary[]>([]);
   const [worldbookCharacters, setWorldbookCharacters] = useState<CharacterCardSummary[]>([]);
   const [selectedWorldbook, setSelectedWorldbook] = useState<Worldbook | null>(null);
   const [sessions, setSessions] = useState<GameSessionSummary[]>([]);
+  const [selectedAssistantId, setSelectedAssistantId] = useState('');
   const [selectedWorldbookId, setSelectedWorldbookId] = useState('');
   const [activeSessionId, setActiveSessionId] = useState('');
   const [activeSession, setActiveSession] = useState<GameSession | null>(null);
   const [activeScene, setActiveScene] = useState<SceneSnapshot | null>(null);
+  const [activeLongMemory, setActiveLongMemory] = useState<LongMemoryState | null>(null);
   const [lastTurnResult, setLastTurnResult] = useState<GameTurnResult | null>(null);
   const [lastTurnDebug, setLastTurnDebug] = useState<GameTurnDebug | null>(null);
   const [composerValue, setComposerValue] = useState(DEFAULT_COMPOSER);
   const [loadingBootstrap, setLoadingBootstrap] = useState(true);
   const [creatingSession, setCreatingSession] = useState(false);
+  const [activatingAssistantId, setActivatingAssistantId] = useState('');
   const [updatingSessionId, setUpdatingSessionId] = useState('');
   const [submittingTurn, setSubmittingTurn] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [assistantActivationError, setAssistantActivationError] = useState('');
   const [sessionComposerOpen, setSessionComposerOpen] = useState(false);
   const [seedImportOpen, setSeedImportOpen] = useState(false);
   const [importingSeed, setImportingSeed] = useState(false);
   const [seedImportSuccessMessage, setSeedImportSuccessMessage] = useState('');
+  const [assistantActivationSuccessMessage, setAssistantActivationSuccessMessage] = useState('');
   const [canPinDrawers, setCanPinDrawers] = useState(
     typeof window !== 'undefined' ? window.matchMedia(PINNED_DRAWER_MEDIA_QUERY).matches : true,
   );
@@ -121,7 +154,7 @@ export default function App() {
   const [worldbookDraft, setWorldbookDraft] = useState(DEFAULT_IMPORT_WORLD_DRAFT);
   const [characterDraft, setCharacterDraft] = useState(DEFAULT_IMPORT_CHARACTER_DRAFT);
   const [selectedStarterPackId, setSelectedStarterPackId] = useState(DEFAULT_STARTER_PACK_ID);
-  const [workspaceMemory, setWorkspaceMemory] = useState(() => readSessionWorkspaceMemory());
+  const [workspaceMemory, setWorkspaceMemory] = useState(() => readAssistantWorkspaceMemory());
   const [renamingSessionId, setRenamingSessionId] = useState('');
   const [renameDraft, setRenameDraft] = useState('');
   const composerRef = useRef<HTMLTextAreaElement | null>(null);
@@ -130,17 +163,34 @@ export default function App() {
   const hydratedDrawerStateRef = useRef(false);
 
   async function refreshLibrary() {
-    const [worldbookResp, sessionResp, characterResp] = await Promise.all([listWorldbooks(), listSessions(), listCharacters()]);
+    const [worldbookResp, assistantResp, sessionResp, characterResp] = await Promise.all([
+      listWorldbooks(),
+      listAssistants(),
+      listSessions(),
+      listCharacters(),
+    ]);
     const nextWorldbooks = worldbookResp.items;
+    const nextAssistants = assistantResp.items;
     const nextSessions = sessionResp.items;
     const nextKnownCharacters = characterResp.items;
     startTransition(() => {
       setWorldbooks(nextWorldbooks);
+      setAssistants(nextAssistants);
       setSessions(nextSessions);
       setKnownCharacters(nextKnownCharacters);
     });
-    return { nextWorldbooks, nextSessions, nextKnownCharacters };
+    return { nextWorldbooks, nextAssistants, nextSessions, nextKnownCharacters };
   }
+
+  const selectedAssistant = useMemo(
+    () => assistants.find((assistant) => assistant.id === selectedAssistantId) || null,
+    [assistants, selectedAssistantId],
+  );
+
+  const selectedWorldbookSummary = useMemo(
+    () => worldbooks.find((worldbook) => worldbook.id === selectedWorldbookId) || null,
+    [selectedWorldbookId, worldbooks],
+  );
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -184,7 +234,7 @@ export default function App() {
   }, [showFeatureBand]);
 
   useEffect(() => {
-    writeSessionWorkspaceMemory(workspaceMemory);
+    writeAssistantWorkspaceMemory(workspaceMemory);
   }, [workspaceMemory]);
 
   useEffect(() => {
@@ -194,21 +244,45 @@ export default function App() {
   }, [seedImportSuccessMessage]);
 
   useEffect(() => {
+    if (!assistantActivationSuccessMessage) return;
+    const timeoutId = window.setTimeout(() => setAssistantActivationSuccessMessage(''), 4200);
+    return () => window.clearTimeout(timeoutId);
+  }, [assistantActivationSuccessMessage]);
+
+  useEffect(() => {
     if (canPinDrawers) return;
     setLeftDrawerState((prev) => (prev === 'pinned' ? 'expanded' : prev));
     setRightDrawerState((prev) => (prev === 'pinned' ? 'expanded' : prev));
   }, [canPinDrawers]);
 
-  function applyLoadedSession(nextSession: GameSession, nextScene: SceneSnapshot) {
+  function applyLoadedSession(
+    nextSession: GameSession,
+    nextScene: SceneSnapshot,
+    nextLongMemory: LongMemoryState,
+    nextAssistantId?: string,
+  ) {
+    const resolvedAssistantId =
+      nextAssistantId ||
+      resolveAssistantIdForSession({
+        session: nextSession,
+        assistants,
+        fallbackAssistantId: selectedAssistantId,
+      });
+
     setErrorMessage('');
-    setWorkspaceMemory((prev) => rememberSessionActivation(prev, nextSession));
+    setWorkspaceMemory((prev) => rememberAssistantSessionActivation(prev, resolvedAssistantId, nextSession));
     startTransition(() => {
       setActiveSessionId(nextSession.id);
       setActiveSession(nextSession);
       setActiveScene(nextScene);
+      setActiveLongMemory(nextLongMemory);
       setLastTurnResult(null);
       setLastTurnDebug(null);
+      setSelectedAssistantId(resolvedAssistantId);
       setSelectedWorldbookId(nextSession.worldbookId);
+      setLeftDrawerState((prev) => (prev === 'expanded' ? 'collapsed' : prev));
+      setRightDrawerState((prev) => (prev === 'expanded' ? 'collapsed' : prev));
+      setShowFeatureBand(false);
     });
   }
 
@@ -217,9 +291,91 @@ export default function App() {
       setActiveSessionId('');
       setActiveSession(null);
       setActiveScene(null);
+      setActiveLongMemory(null);
       setLastTurnResult(null);
       setLastTurnDebug(null);
     });
+  }
+
+  async function handleActivateAssistant(assistant: AssistantSummary | null) {
+    if (!assistant) return;
+    if (assistant.source === 'assistant') {
+      setSelectedAssistantId(assistant.id);
+      setSelectedWorldbookId(assistant.worldbookId);
+      return;
+    }
+
+    setActivatingAssistantId(assistant.id);
+    setAssistantActivationError('');
+    setAssistantActivationSuccessMessage('');
+    setErrorMessage('');
+
+    try {
+      const created = await createAssistant({
+        name: assistant.name,
+        worldbookId: assistant.worldbookId,
+        characterId: assistant.characterId,
+        userScope: assistant.userScope,
+        summary: assistant.summary,
+      });
+      const { nextAssistants } = await refreshLibrary();
+      const activatedAssistant =
+        nextAssistants.find((item) => item.id === created.id) ||
+        nextAssistants.find((item) => item.characterId === assistant.characterId) ||
+        null;
+      const nextAssistantId = activatedAssistant?.id || created.id;
+
+      startTransition(() => {
+        setSelectedAssistantId(nextAssistantId);
+        setSelectedWorldbookId(created.worldbookId);
+      });
+      setWorkspaceMemory((prev) =>
+        rememberImportLaunchCue(
+          rememberSelectedAssistant(prev, {
+            id: nextAssistantId,
+            worldbookId: created.worldbookId,
+          }),
+          null,
+        ),
+      );
+      setAssistantActivationSuccessMessage(`已启用助手：${created.name}`);
+    } catch (error) {
+      const message = parseApiErrorMessage(error, '启用助手失败');
+      if (message.includes('assistant already exists')) {
+        await refreshLibrary();
+        startTransition(() => {
+          setSelectedAssistantId(assistant.id);
+          setSelectedWorldbookId(assistant.worldbookId);
+        });
+        setWorkspaceMemory((prev) =>
+          rememberImportLaunchCue(
+            rememberSelectedAssistant(prev, {
+              id: assistant.id,
+              worldbookId: assistant.worldbookId,
+            }),
+            null,
+          ),
+        );
+        setAssistantActivationSuccessMessage(`已切换到已存在助手：${assistant.name}`);
+      } else {
+        setAssistantActivationError(message);
+      }
+    } finally {
+      setActivatingAssistantId('');
+    }
+  }
+
+  function handleOpenSessionComposer() {
+    if (!selectedAssistant) {
+      openDrawer('left');
+      return;
+    }
+    if (selectedAssistant.source !== 'assistant') {
+      void handleActivateAssistant(selectedAssistant);
+      return;
+    }
+    setAssistantActivationError('');
+    setSessionComposerOpen(true);
   }
 
   useEffect(() => {
@@ -274,10 +430,18 @@ export default function App() {
         ]);
 
         if (!cancelled) {
+          const orderedCharacterIds = selectedAssistantId
+            ? [
+                selectedAssistantId.replace(/^assistant:/, ''),
+                ...charactersResponse.items
+                  .map((item) => item.id)
+                  .filter((id) => id !== selectedAssistantId.replace(/^assistant:/, '')),
+              ]
+            : charactersResponse.items.map((item) => item.id);
           startTransition(() => {
             setSelectedWorldbook(worldbook);
             setWorldbookCharacters(charactersResponse.items);
-            setDraftCharacterIds(charactersResponse.items.map((item) => item.id));
+            setDraftCharacterIds(orderedCharacterIds);
             setDraftLocationId(worldbook.locations[0]?.id || '');
           });
         }
@@ -292,7 +456,7 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [selectedWorldbookId]);
+  }, [selectedAssistantId, selectedWorldbookId]);
 
   useEffect(() => {
     if (!selectedWorldbookId) return;
@@ -301,7 +465,43 @@ export default function App() {
     );
   }, [selectedWorldbookId]);
 
+  useEffect(() => {
+    if (!assistants.length) {
+      setSelectedAssistantId('');
+      return;
+    }
+
+    const selectedStillExists = assistants.some((assistant) => assistant.id === selectedAssistantId);
+    if (selectedStillExists) return;
+
+    const preferredAssistantId = resolvePreferredAssistantId({
+      assistants,
+      selectedWorldbookId,
+      memory: workspaceMemory,
+    });
+    if (preferredAssistantId) {
+      setSelectedAssistantId(preferredAssistantId);
+    }
+  }, [assistants, selectedAssistantId, selectedWorldbookId, workspaceMemory]);
+
+  useEffect(() => {
+    if (!selectedAssistant) return;
+    if (selectedAssistant.worldbookId !== selectedWorldbookId) {
+      setSelectedWorldbookId(selectedAssistant.worldbookId);
+    }
+    setWorkspaceMemory((prev) =>
+      prev.lastSelectedAssistantId === selectedAssistant.id ? prev : rememberSelectedAssistant(prev, selectedAssistant),
+    );
+  }, [selectedAssistant, selectedWorldbookId]);
+
+  useEffect(() => {
+    if (!assistantActivationError) return;
+    const timeoutId = window.setTimeout(() => setAssistantActivationError(''), 4200);
+    return () => window.clearTimeout(timeoutId);
+  }, [assistantActivationError]);
+
   const canSendTurn = Boolean(activeSessionId) && activeSession?.status === 'active';
+  const selectedAssistantReady = selectedAssistant?.source === 'assistant';
 
   const composerState: ComposerState = !canSendTurn
     ? 'disabled'
@@ -340,9 +540,9 @@ export default function App() {
   async function openSession(sessionId: string) {
     try {
       const response = await getSession(sessionId);
-      applyLoadedSession(response.session, response.scene);
+      applyLoadedSession(response.session, response.scene, response.longMemory);
     } catch {
-      setErrorMessage('会话加载失败');
+      setErrorMessage('对话片段加载失败');
     }
   }
 
@@ -367,11 +567,15 @@ export default function App() {
         startTransition(() => {
           setActiveSession(response.session);
           setActiveScene(response.scene);
+          setActiveLongMemory(response.longMemory);
         });
       }
 
       if (payload.status === 'archived') {
-        setSeedImportSuccessMessage(`已归档：${response.session.title}`);
+        const promotedCount = response.longMemory.archivePromotion?.promotedCount ?? 0;
+        setSeedImportSuccessMessage(
+          promotedCount > 0 ? `已归档：${response.session.title}，沉淀 ${promotedCount} 条长期记忆。` : `已归档：${response.session.title}`,
+        );
       } else if (payload.status === 'active' && response.session.status === 'active') {
         setSeedImportSuccessMessage(`已恢复：${response.session.title}`);
         void openSession(response.session.id);
@@ -392,7 +596,33 @@ export default function App() {
         });
       }
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : '更新会话失败');
+      setErrorMessage(error instanceof Error ? error.message : '更新对话片段失败');
+    } finally {
+      setUpdatingSessionId('');
+    }
+  }
+
+  async function handleDeleteSession(sessionId: string) {
+    const target = sessions.find((session) => session.id === sessionId);
+    const targetTitle = target?.title || '这段对话快照';
+    if (typeof window !== 'undefined' && !window.confirm(`确认永久删除「${targetTitle}」吗？这会移除这段对话快照。`)) {
+      return;
+    }
+
+    setUpdatingSessionId(sessionId);
+    try {
+      setErrorMessage('');
+      const response = await deleteSession(sessionId);
+      await refreshLibrary();
+      if (activeSessionId === sessionId) {
+        clearActiveWorkspace();
+      }
+      if (renamingSessionId === sessionId) {
+        cancelRenameSession();
+      }
+      setSeedImportSuccessMessage(`已删除：${response.title || targetTitle}`);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : '删除对话片段失败');
     } finally {
       setUpdatingSessionId('');
     }
@@ -402,7 +632,7 @@ export default function App() {
     if (!renamingSessionId) return;
     const nextTitle = renameDraft.trim();
     if (!nextTitle) {
-      setErrorMessage('会话名称不能为空');
+      setErrorMessage('对话片段名称不能为空');
       return;
     }
     await handleUpdateSession(renamingSessionId, { title: nextTitle });
@@ -410,12 +640,20 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (loadingBootstrap || !selectedWorldbookId) return;
+    if (loadingBootstrap || !selectedAssistant || !selectedAssistantReady) return;
 
-    if (activeSession?.worldbookId === selectedWorldbookId) return;
+    if (
+      activeSession &&
+      (activeSession.assistantId
+        ? activeSession.assistantId === selectedAssistant.id
+        : activeSession.worldbookId === selectedAssistant.worldbookId &&
+          activeSession.characterIds.includes(selectedAssistant.characterId))
+    ) {
+      return;
+    }
 
-    const preferredSessionId = resolvePreferredSessionId({
-      worldbookId: selectedWorldbookId,
+    const preferredSessionId = resolvePreferredSessionIdForAssistant({
+      assistant: selectedAssistant,
       sessions,
       memory: workspaceMemory,
     });
@@ -428,7 +666,7 @@ export default function App() {
     if (activeSessionId || activeSession || activeScene) {
       clearActiveWorkspace();
     }
-  }, [activeScene, activeSession, activeSessionId, loadingBootstrap, selectedWorldbookId, sessions, workspaceMemory]);
+  }, [activeScene, activeSession, activeSessionId, loadingBootstrap, selectedAssistant, selectedAssistantReady, sessions, workspaceMemory]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -439,15 +677,15 @@ export default function App() {
     try {
       setErrorMessage('');
       const response = await sendTurn(activeSessionId, content);
-      setWorkspaceMemory((prev) => rememberSessionActivation(prev, response.session));
+      setWorkspaceMemory((prev) => rememberAssistantSessionActivation(prev, selectedAssistantId, response.session));
       startTransition(() => {
         setActiveSession(response.session);
         setActiveScene(response.scene);
+        setActiveLongMemory(response.longMemory);
         setLastTurnResult(response.result);
         setLastTurnDebug(response.debug);
       });
-      const sessionResp = await listSessions();
-      setSessions(sessionResp.items);
+      await refreshLibrary();
     } catch {
       setErrorMessage('发送失败');
     } finally {
@@ -500,7 +738,7 @@ export default function App() {
         setSeedImportSuccessMessage(
           hasExistingImportedSessions
             ? `导入完成：${parsedWorldbook.title}，已写入 ${parsedCharacters.length} 张角色卡。`
-            : `导入完成：${parsedWorldbook.title}，下一步确认开场地点和阵容，点亮第一幕。`,
+            : `导入完成：${parsedWorldbook.title}，下一步选定助手人格并开始第一段持续对话。`,
         );
       });
     } catch (error) {
@@ -530,9 +768,13 @@ export default function App() {
 
   function openDrawer(side: 'left' | 'right') {
     if (side === 'left') {
+      setRightDrawerState((prev) => (prev === 'expanded' ? 'collapsed' : prev));
+      setShowFeatureBand(false);
       setLeftDrawerState('expanded');
       return;
     }
+    setLeftDrawerState((prev) => (prev === 'expanded' ? 'collapsed' : prev));
+    setShowFeatureBand(false);
     setRightDrawerState('expanded');
   }
 
@@ -584,8 +826,17 @@ export default function App() {
   }
 
   const scopedSessions = useMemo(
-    () => sortSessionsByUpdatedAt(sessions.filter((session) => session.worldbookId === selectedWorldbookId)),
-    [selectedWorldbookId, sessions],
+    () =>
+      sortSessionsByUpdatedAt(
+        sessions.filter((session) => {
+          if (!selectedAssistant) return session.worldbookId === selectedWorldbookId;
+          if (session.assistantId) {
+            return session.assistantId === selectedAssistant.id;
+          }
+          return session.worldbookId === selectedAssistant.worldbookId && session.characterIds.includes(selectedAssistant.characterId);
+        }),
+      ),
+    [selectedAssistant, selectedWorldbookId, sessions],
   );
 
   const locationNameById = useMemo(
@@ -623,13 +874,8 @@ export default function App() {
   );
 
   const recentSessionId = useMemo(
-    () =>
-      resolvePreferredSessionId({
-        worldbookId: selectedWorldbookId,
-        sessions,
-        memory: workspaceMemory,
-      }),
-    [selectedWorldbookId, sessions, workspaceMemory],
+    () => resolvePreferredSessionIdForAssistant({ assistant: selectedAssistant, sessions, memory: workspaceMemory }),
+    [selectedAssistant, sessions, workspaceMemory],
   );
 
   const recentSession = useMemo(
@@ -638,13 +884,17 @@ export default function App() {
   );
 
   const importLaunchCue =
-    workspaceMemory.importLaunchCue?.worldbookId === selectedWorldbookId ? workspaceMemory.importLaunchCue : null;
+    workspaceMemory.importLaunchCue?.worldbookId === selectedAssistant?.worldbookId ||
+    workspaceMemory.importLaunchCue?.worldbookId === selectedWorldbookId
+      ? workspaceMemory.importLaunchCue
+      : null;
 
   useEffect(() => {
+    if (!selectedAssistantReady) return;
     if (!importLaunchCue || !selectedWorldbook || scopedSessions.length > 0 || sessionComposerOpen) return;
     if (!worldbookCharacters.length || !selectedWorldbook.locations.length) return;
     setSessionComposerOpen(true);
-  }, [importLaunchCue, scopedSessions.length, selectedWorldbook, sessionComposerOpen, worldbookCharacters.length]);
+  }, [importLaunchCue, scopedSessions.length, selectedAssistantReady, selectedWorldbook, sessionComposerOpen, worldbookCharacters.length]);
 
   const actorNames = useMemo(
     () =>
@@ -657,7 +907,7 @@ export default function App() {
 
   const sceneLabel = activeScene
     ? `${activeScene.locationName} · ${activeScene.timeBlock}${activeSession?.status === 'archived' ? ' · 已归档' : ''}`
-    : '等待剧情开始';
+    : '等待助手接入';
   const hasSession = Boolean(activeSession);
   const showBootstrapSkeleton = loadingBootstrap && !worldbooks.length && !sessions.length && !activeSession;
   const hasExpandedOverlayDrawer = leftDrawerState === 'expanded' || rightDrawerState === 'expanded' || showFeatureBand;
@@ -695,46 +945,48 @@ export default function App() {
   );
 
   const heroChips = [
-    selectedWorldbook?.title || '未选择世界观',
-    activeScene?.locationName || '舞台窗口待命',
-    lastTurnResult?.eventSeed || '等待新的线索',
+    selectedAssistant?.name || '未选择助手',
+    selectedWorldbook?.title || '未选择背景',
+    activeScene?.locationName || '等待上下文',
   ];
 
-  const renderWindowHeadline = hasSession ? activeScene?.locationName || '场景监视窗' : '待开幕舞台';
+  const renderWindowHeadline = hasSession ? selectedAssistant?.name || activeScene?.locationName || '助手在线' : '助手待命';
   const renderWindowBody = hasSession
-    ? lastTurnResult?.primaryReply || activeScene?.locationDescription || '这一轮已经准备好进入更具体的视觉呈现。'
-    : '第一幕尚未点亮。先选择世界、角色和开场地点，让导演把这一夜推上舞台。';
+    ? lastTurnResult?.primaryDialogue || lastTurnResult?.primaryReply || activeScene?.locationDescription || '这一轮已经准备好进入更具体的回应。'
+    : '先选择一个助手，再确认背景和起始上下文，让第一段持续对话真正开始。';
   const renderWindowCue = hasSession
-    ? lastTurnDebug?.directorNote || '本轮还没有额外的导演提示。'
-    : '等待角色入场与第一句台词，舞台会从静态幕布切到演出中状态。';
+    ? lastTurnResult?.primaryNarration || '本轮还没有额外旁白，下一次互动会把动作、迟疑和气氛补进回应层。'
+    : '等待第一句消息发出，助手状态会从待命切成持续对话。';
   const stageCueItems = [
-    activeScene?.timeBlock || '开场前',
-    lastTurnResult?.eventSeed || '未触发事件 cue',
-    hasSession ? '演出中' : '待开幕',
+    activeScene?.timeBlock || '待连接',
+    lastTurnResult?.eventSeed || '暂无事件线索',
+    hasSession ? '持续对话中' : '待开始',
   ];
-  const stageStatusLabel = hasSession ? '演出中' : '待接入';
+  const stageStatusLabel = hasSession ? '在线' : '待接入';
   const composerPlaceholder =
     activeSession?.status === 'archived'
-      ? '这条记忆线已经归档。恢复后才能继续输入新的回合。'
+      ? '这段对话快照已经归档。恢复后才能继续发送消息。'
       : hasSession
         ? EMPTY_MESSAGE
-        : '先开启一场会话，再把第一句台词送上舞台。';
+        : '先开启一段对话，再把第一句消息发给助手。';
   const composerStatusCopy =
     composerState === 'sending'
-      ? '导演回应中'
+      ? '助手回应中'
       : composerState === 'disabled'
         ? activeSession?.status === 'archived'
-          ? '当前会话已归档，恢复后可继续推进'
-          : '先开启一场会话再继续'
+          ? '当前对话快照已归档，恢复后可继续'
+          : '先开启一段对话再继续'
         : sceneLabel;
   const composerStatePill =
     composerState === 'sending'
       ? '发送中'
       : composerState === 'disabled'
-        ? '待开场'
+        ? '待开始'
         : composerState === 'focused'
           ? '输入中'
           : '就绪';
+  const displayErrorMessage = assistantActivationError || errorMessage;
+  const displaySuccessMessage = assistantActivationSuccessMessage || seedImportSuccessMessage;
 
   return (
     <div className={shellClassName}>
@@ -763,8 +1015,8 @@ export default function App() {
         <aside className="workspace-pinned workspace-pinned--left">
           <div className="drawer-chrome drawer-chrome--pinned">
             <div className="drawer-chrome-copy">
-              <span className="drawer-label">{'设定工作台'}</span>
-              <strong>{'世界观、角色与会话入口'}</strong>
+              <span className="drawer-label">{'助手工作台'}</span>
+              <strong>{'助手、背景与历史入口'}</strong>
             </div>
             <div className="drawer-actions">
               <button className="ghost-button drawer-action" onClick={() => collapseDrawer('left')} type="button">
@@ -776,11 +1028,12 @@ export default function App() {
               </button>
             </div>
           </div>
-          <SessionRail
-            worldbooks={worldbooks}
-            selectedWorldbookId={selectedWorldbookId}
-            selectedWorldbookTitle={selectedWorldbook?.title || ''}
-            onSelectWorldbook={setSelectedWorldbookId}
+          <AssistantRail
+            assistants={assistants}
+            selectedAssistantId={selectedAssistantId}
+            selectedAssistant={selectedAssistant}
+            activatingAssistantId={activatingAssistantId}
+            selectedWorldbook={selectedWorldbookSummary}
             worldbookCharacters={worldbookCharacters}
             activeSessions={activeRailSessions}
             archivedSessions={archivedRailSessions}
@@ -794,6 +1047,10 @@ export default function App() {
             onSubmitRenameSession={() => {
               void submitSessionRename();
             }}
+            onActivateAssistant={(assistant) => {
+              void handleActivateAssistant(assistant);
+            }}
+            onSelectAssistant={setSelectedAssistantId}
             onSelectSession={openSession}
             onResumeRecentSession={openSession}
             onArchiveSession={(sessionId) => {
@@ -802,7 +1059,10 @@ export default function App() {
             onRestoreSession={(sessionId) => {
               void handleUpdateSession(sessionId, { status: 'active' });
             }}
-            onOpenSessionComposer={() => setSessionComposerOpen(true)}
+            onDeleteSession={(sessionId) => {
+              void handleDeleteSession(sessionId);
+            }}
+            onOpenSessionComposer={handleOpenSessionComposer}
             onOpenSeedImport={() => setSeedImportOpen(true)}
             creatingSession={creatingSession}
             launchCue={
@@ -828,8 +1088,8 @@ export default function App() {
           >
             <div className="drawer-chrome">
               <div className="drawer-chrome-copy">
-                <span className="drawer-label">{'设定工作台'}</span>
-                <strong>{'世界观、角色与会话入口'}</strong>
+                <span className="drawer-label">{'助手工作台'}</span>
+                <strong>{'助手、背景与历史入口'}</strong>
               </div>
               <div className="drawer-actions">
                 <button className="ghost-button drawer-action" onClick={() => collapseDrawer('left')} type="button">
@@ -850,11 +1110,12 @@ export default function App() {
               </div>
             </div>
 
-            <SessionRail
-              worldbooks={worldbooks}
-              selectedWorldbookId={selectedWorldbookId}
-              selectedWorldbookTitle={selectedWorldbook?.title || ''}
-              onSelectWorldbook={setSelectedWorldbookId}
+            <AssistantRail
+              assistants={assistants}
+              selectedAssistantId={selectedAssistantId}
+              selectedAssistant={selectedAssistant}
+              activatingAssistantId={activatingAssistantId}
+              selectedWorldbook={selectedWorldbookSummary}
               worldbookCharacters={worldbookCharacters}
               activeSessions={activeRailSessions}
               archivedSessions={archivedRailSessions}
@@ -868,6 +1129,10 @@ export default function App() {
               onSubmitRenameSession={() => {
                 void submitSessionRename();
               }}
+              onActivateAssistant={(assistant) => {
+                void handleActivateAssistant(assistant);
+              }}
+              onSelectAssistant={setSelectedAssistantId}
               onSelectSession={openSession}
               onResumeRecentSession={openSession}
               onArchiveSession={(sessionId) => {
@@ -876,7 +1141,10 @@ export default function App() {
               onRestoreSession={(sessionId) => {
                 void handleUpdateSession(sessionId, { status: 'active' });
               }}
-              onOpenSessionComposer={() => setSessionComposerOpen(true)}
+              onDeleteSession={(sessionId) => {
+                void handleDeleteSession(sessionId);
+              }}
+              onOpenSessionComposer={handleOpenSessionComposer}
               onOpenSeedImport={() => setSeedImportOpen(true)}
               creatingSession={creatingSession}
               launchCue={
@@ -893,8 +1161,13 @@ export default function App() {
       </AnimatePresence>
 
       {leftDrawerState === 'collapsed' ? (
-        <button className="drawer-edge-tab drawer-edge-tab--left" onClick={() => openDrawer('left')} type="button">
-          <span>{'设定'}</span>
+        <button className="drawer-edge-tab drawer-edge-tab--left" data-testid="left-drawer-edge" onClick={() => openDrawer('left')} type="button">
+          <span>{'助手'}</span>
+        </button>
+      ) : null}
+      {leftDrawerState === 'closed' && !leftDrawerPinned ? (
+        <button className="drawer-edge-tab drawer-edge-tab--left" data-testid="left-drawer-edge" onClick={() => openDrawer('left')} type="button">
+          <span>{'助手'}</span>
         </button>
       ) : null}
 
@@ -904,10 +1177,10 @@ export default function App() {
             <div className="top-strip-brand">
               <p className="eyebrow">
                 <Sparkles size={12} className="inline-icon" />
-                {'导演编排恋爱沙盒'}
+                {'assistant workspace'}
               </p>
-              <h1 className="workspace-title">{'雾夜导演台'}</h1>
-              <p className="workspace-subtitle">{'主舞台居中，设定与关系退到边缘，所有演出从底部导演台发出。'}</p>
+              <h1 className="workspace-title">{'雾夜助手'}</h1>
+              <p className="workspace-subtitle">{'保留背景设定、人格与低频旁白，让持续对话和长期记忆围绕同一个助手慢慢积累。'}</p>
             </div>
           </motion.div>
 
@@ -915,10 +1188,11 @@ export default function App() {
             <div className="layout-controls">
               <button
                 className={`ghost-button layout-toggle${leftDrawerState !== 'closed' ? ' is-active' : ''}`}
+                data-testid="toggle-left-drawer"
                 onClick={() => toggleDrawerFromTopBar('left')}
                 type="button"
               >
-                {leftDrawerState === 'closed' || leftDrawerState === 'collapsed' ? '展开设定' : '收起设定'}
+                {leftDrawerState === 'closed' || leftDrawerState === 'collapsed' ? '展开助手' : '收起助手'}
               </button>
               <button
                 className={`ghost-button layout-toggle${showHeroCopy ? ' is-active' : ''}`}
@@ -936,10 +1210,11 @@ export default function App() {
               </button>
               <button
                 className={`ghost-button layout-toggle${rightDrawerState !== 'closed' ? ' is-active' : ''}`}
+                data-testid="toggle-right-drawer"
                 onClick={() => toggleDrawerFromTopBar('right')}
                 type="button"
               >
-                {rightDrawerState === 'closed' || rightDrawerState === 'collapsed' ? '展开关系' : '收起关系'}
+                {rightDrawerState === 'closed' || rightDrawerState === 'collapsed' ? '展开资料' : '收起资料'}
               </button>
               <button
                 className={`ghost-button layout-toggle layout-toggle--focus${hasAuxPanelsOpen ? ' is-active' : ''}`}
@@ -976,7 +1251,7 @@ export default function App() {
                 <span className={`status-dot ${loadingBootstrap ? 'is-loading' : 'is-online'}`} />
                 {loadingBootstrap ? '同步中' : '系统在线'}
               </div>
-              <span className="session-id-tag">{activeSession ? `会话 ${activeSessionId.slice(0, 8)}` : '待机'}</span>
+              <span className="session-id-tag">{activeSession ? `片段 ${activeSessionId.slice(0, 8)}` : '待机'}</span>
             </div>
           </div>
         </header>
@@ -1011,9 +1286,9 @@ export default function App() {
                   exit={{ opacity: 0, x: -16 }}
                   transition={PANEL_TRANSITION}
                 >
-                  <h2 className="hero-title">{'把设定、情绪和舞台，收进同一夜里。'}</h2>
+                  <h2 className="hero-title">{'把人格、背景和记忆，收进同一条持续对话。'}</h2>
                   <p className="hero-support">
-                    {'主舞台负责演出，剧情流负责推进，左右抽屉只在你需要上下文时出现，底部导演台始终待命。'}
+                    {'中间区域负责长期聊天，左侧管理助手入口，右侧收纳资料与记忆，历史快照退到次级入口。'}
                   </p>
                   <div className="hero-meta-row">
                     {heroChips.map((chip) => (
@@ -1034,8 +1309,8 @@ export default function App() {
             >
               <div className="scene-canvas-header">
                 <div className="scene-canvas-head">
-                  <p className="eyebrow">{'主舞台'}</p>
-                  <span className="scene-canvas-caption">{hasSession ? 'Proscenium frame live' : 'Curtain closed'}</span>
+                  <p className="eyebrow">{'助手状态'}</p>
+                  <span className="scene-canvas-caption">{hasSession ? 'Persistent assistant context' : 'Assistant standby'}</span>
                 </div>
                 <span className="scene-canvas-status">{stageStatusLabel}</span>
               </div>
@@ -1050,7 +1325,7 @@ export default function App() {
                 <div className="scene-canvas-floor" />
                 <div className="scene-canvas-safezone" />
                 <div className="scene-canvas-body">
-                  <span className="scene-canvas-kicker">{activeScene?.timeBlock || '等待第一幕'}</span>
+                  <span className="scene-canvas-kicker">{activeScene?.timeBlock || '等待第一句消息'}</span>
                   <h2 className="scene-canvas-headline">{renderWindowHeadline}</h2>
                   <p className="scene-canvas-copy">{renderWindowBody}</p>
                 </div>
@@ -1065,7 +1340,7 @@ export default function App() {
                   ))}
                 </div>
                 <div className="scene-canvas-note">
-                  <span className="preview-label">{'导演提示'}</span>
+                  <span className="preview-label">{'低频旁白'}</span>
                   <p>{renderWindowCue}</p>
                 </div>
               </div>
@@ -1108,8 +1383,8 @@ export default function App() {
               <span className="focus-note-badge">{showFeatureBand ? '情报抽屉已展开' : '主体视图'}</span>
               <p>
                 {showFeatureBand
-                  ? '情报已经切到独立抽屉里，主舞台和剧情流会保持在原位。'
-                  : '当前只保留主舞台、剧情流与底部导演台。设定和关系可以在需要时从边缘呼出。'}
+                  ? '资料已经切到独立抽屉里，中间持续对话和底部输入区会保持在原位。'
+                  : '当前只保留持续对话与输入区。助手入口和资料抽屉可以在需要时从边缘呼出。'}
               </p>
             </motion.section>
           )}
@@ -1142,6 +1417,7 @@ export default function App() {
             >
               <DialogueStage
                 session={activeSession}
+                assistantName={selectedAssistant?.name || ''}
                 activeSceneLabel={sceneLabel}
                 actorNames={actorNames}
                 lastTurnResult={lastTurnResult}
@@ -1164,8 +1440,8 @@ export default function App() {
           >
             <div className="drawer-chrome">
               <div className="drawer-chrome-copy">
-                <span className="drawer-label">{'情报抽屉'}</span>
-                <strong>{'本回合聚焦与世界预览'}</strong>
+                <span className="drawer-label">{'助手聚焦'}</span>
+                <strong>{'当前回应与背景预览'}</strong>
               </div>
               <div className="drawer-actions">
                 <button className="ghost-button drawer-action" onClick={() => setShowFeatureBand(false)} type="button">
@@ -1183,7 +1459,7 @@ export default function App() {
             </div>
 
             <div className="feature-drawer-content">
-              <TurnSpotlight result={lastTurnResult} debug={lastTurnDebug} hasSession={hasSession} />
+              <TurnSpotlight result={lastTurnResult} hasSession={hasSession} />
               <WorldbookPreview
                 worldbook={selectedWorldbook}
                 characters={worldbookCharacters}
@@ -1207,7 +1483,7 @@ export default function App() {
             <div className="composer-heading">
               <label className="composer-label" htmlFor="turn-input">
                 <Ghost size={14} />
-                {'玩家输入'}
+                {'给助手发送消息'}
               </label>
               <span className={`composer-state-badge composer-state-badge--${composerState}`}>{composerStatePill}</span>
             </div>
@@ -1225,6 +1501,7 @@ export default function App() {
 
           <textarea
             id="turn-input"
+            data-testid="assistant-message-input"
             ref={composerRef}
             value={composerValue}
             onChange={(event) => setComposerValue(event.target.value)}
@@ -1248,13 +1525,14 @@ export default function App() {
             <button
               type="submit"
               className="send-button"
+              data-testid="assistant-send-button"
               disabled={!canSendTurn || submittingTurn || !composerValue.trim()}
             >
               {submittingTurn ? (
-                <span className="loading-text">{'导演回应中...'}</span>
+                <span className="loading-text">{'助手回应中...'}</span>
               ) : (
                 <>
-                  {'发送回合'}
+                  {'发送消息'}
                   <Send size={16} />
                 </>
               )}
@@ -1264,22 +1542,22 @@ export default function App() {
       </form>
 
       <AnimatePresence>
-        {errorMessage ? (
+        {displayErrorMessage ? (
           <motion.div className="error-banner" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-            <AlertCircle size={16} /> {errorMessage}
+            <AlertCircle size={16} /> {displayErrorMessage}
           </motion.div>
         ) : null}
       </AnimatePresence>
 
       <AnimatePresence>
-        {seedImportSuccessMessage ? (
+        {displaySuccessMessage ? (
           <motion.div
             className="success-banner"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 12 }}
           >
-            <CheckCircle2 size={16} /> {seedImportSuccessMessage}
+            <CheckCircle2 size={16} /> {displaySuccessMessage}
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -1288,8 +1566,8 @@ export default function App() {
         <aside className="workspace-pinned workspace-pinned--right">
           <div className="drawer-chrome drawer-chrome--pinned">
             <div className="drawer-chrome-copy">
-              <span className="drawer-label">{'关系面板'}</span>
-              <strong>{'场景位移与关系态势'}</strong>
+              <span className="drawer-label">{'助手资料'}</span>
+              <strong>{'资料、记忆与背景'}</strong>
             </div>
             <div className="drawer-actions">
               <button className="ghost-button drawer-action" onClick={() => collapseDrawer('right')} type="button">
@@ -1301,7 +1579,18 @@ export default function App() {
               </button>
             </div>
           </div>
-          <SceneInspector scene={activeScene} session={activeSession} actorNames={actorNames} lastTurnResult={lastTurnResult} />
+          <SceneInspector
+            scene={activeScene}
+            session={activeSession}
+            longMemory={activeLongMemory}
+            actorNames={actorNames}
+            assistantName={selectedAssistant?.name || ''}
+            assistantRole={selectedAssistant?.characterRole || ''}
+            assistantTags={selectedAssistant?.personaTags || []}
+            backgroundTitle={selectedWorldbook?.title || ''}
+            primaryCharacterId={selectedAssistant?.characterId || ''}
+            lastTurnResult={lastTurnResult}
+          />
         </aside>
       ) : null}
 
@@ -1309,6 +1598,7 @@ export default function App() {
         {rightDrawerState === 'expanded' ? (
           <motion.div
             className="workspace-drawer workspace-drawer--right"
+            data-testid="right-drawer"
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 48 }}
@@ -1316,8 +1606,8 @@ export default function App() {
           >
             <div className="drawer-chrome">
               <div className="drawer-chrome-copy">
-                <span className="drawer-label">{'关系面板'}</span>
-                <strong>{'场景位移与关系态势'}</strong>
+                <span className="drawer-label">{'助手资料'}</span>
+                <strong>{'资料、记忆与背景'}</strong>
               </div>
               <div className="drawer-actions">
                 <button className="ghost-button drawer-action" onClick={() => collapseDrawer('right')} type="button">
@@ -1328,7 +1618,7 @@ export default function App() {
                   {canPinDrawers ? '固定' : '停靠'}
                 </button>
                 <button
-                  aria-label="关闭关系面板"
+                  aria-label="关闭助手资料"
                   className="ghost-button drawer-close"
                   onClick={() => closeDrawer('right')}
                   type="button"
@@ -1338,14 +1628,30 @@ export default function App() {
               </div>
             </div>
 
-            <SceneInspector scene={activeScene} session={activeSession} actorNames={actorNames} lastTurnResult={lastTurnResult} />
+            <SceneInspector
+              scene={activeScene}
+              session={activeSession}
+              longMemory={activeLongMemory}
+              actorNames={actorNames}
+              assistantName={selectedAssistant?.name || ''}
+              assistantRole={selectedAssistant?.characterRole || ''}
+              assistantTags={selectedAssistant?.personaTags || []}
+              backgroundTitle={selectedWorldbook?.title || ''}
+              primaryCharacterId={selectedAssistant?.characterId || ''}
+              lastTurnResult={lastTurnResult}
+            />
           </motion.div>
         ) : null}
       </AnimatePresence>
 
       {rightDrawerState === 'collapsed' ? (
-        <button className="drawer-edge-tab drawer-edge-tab--right" onClick={() => openDrawer('right')} type="button">
-          <span>{'关系'}</span>
+        <button className="drawer-edge-tab drawer-edge-tab--right" data-testid="right-drawer-edge" onClick={() => openDrawer('right')} type="button">
+          <span>{'资料'}</span>
+        </button>
+      ) : null}
+      {rightDrawerState === 'closed' && !rightDrawerPinned ? (
+        <button className="drawer-edge-tab drawer-edge-tab--right" data-testid="right-drawer-edge" onClick={() => openDrawer('right')} type="button">
+          <span>{'资料'}</span>
         </button>
       ) : null}
 
@@ -1363,20 +1669,30 @@ export default function App() {
         }
         onSelectLocation={setDraftLocationId}
         onConfirm={async () => {
+          if (!selectedAssistantReady || !selectedAssistant) {
+            setAssistantActivationError('请先启用当前助手，再开始新的对话片段。');
+            setSessionComposerOpen(false);
+            return;
+          }
           setCreatingSession(true);
           try {
             setErrorMessage('');
+            const primaryAssistantCharacterId = selectedAssistant.characterId;
+            const orderedCharacterIds = [
+              ...(primaryAssistantCharacterId ? [primaryAssistantCharacterId] : []),
+              ...draftCharacterIds.filter((id) => id !== primaryAssistantCharacterId),
+            ];
             const response = await createSession({
-              worldbookId: selectedWorldbookId,
-              characterIds: draftCharacterIds,
-              title: `${selectedWorldbook?.title || '新会话'} · 夜${scopedSessions.length + 1}`,
+              worldbookId: selectedAssistant.worldbookId,
+              characterIds: orderedCharacterIds,
+              title: `${selectedAssistant.name || selectedWorldbook?.title || '新助手'} · 对话 ${scopedSessions.length + 1}`,
               openingLocationId: draftLocationId,
+              assistantId: selectedAssistantId || undefined,
             });
-            applyLoadedSession(response.session, response.scene);
+            applyLoadedSession(response.session, response.scene, response.longMemory, selectedAssistantId);
             setSessionComposerOpen(false);
-            const list = await listSessions();
-            setSessions(list.items);
-            setSeedImportSuccessMessage(`第一幕已点亮：${response.session.title}`);
+            await refreshLibrary();
+            setSeedImportSuccessMessage(`助手已接入：${response.session.title}`);
           } finally {
             setCreatingSession(false);
           }

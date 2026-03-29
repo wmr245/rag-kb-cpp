@@ -121,6 +121,7 @@ class RecentTurn(StrictModel):
     actorType: Literal['player', 'director', 'character']
     actorId: str
     text: str
+    presentationType: Literal['speech', 'narration'] = 'speech'
     sceneId: Optional[str] = None
     createdAt: str
 
@@ -131,6 +132,7 @@ class PresentedTurn(StrictModel):
     actorId: str
     actorName: str
     text: str
+    presentationType: Literal['speech', 'narration'] = 'speech'
     sceneId: Optional[str] = None
     createdAt: str
 
@@ -141,6 +143,7 @@ class MemoryEntry(StrictModel):
     scope: str = 'session'
     characterIds: List[str] = Field(default_factory=list)
     locationId: Optional[str] = None
+    sceneId: Optional[str] = None
     summary: str
     factPayload: Dict[str, Any] = Field(default_factory=dict)
     emotionPayload: Dict[str, Any] = Field(default_factory=dict)
@@ -161,6 +164,7 @@ class MemoryProfile(StrictModel):
 
 class GameSession(StrictModel):
     id: str
+    assistantId: str = ''
     worldbookId: str
     characterIds: List[str] = Field(default_factory=list)
     title: str
@@ -195,6 +199,7 @@ class CharacterCardSummary(StrictModel):
 
 class GameSessionSummary(StrictModel):
     id: str
+    assistantId: str = ''
     worldbookId: str
     title: str
     status: str
@@ -248,12 +253,19 @@ class TurnStateDiff(StrictModel):
     relationshipChanges: List[RelationshipStateDiff] = Field(default_factory=list)
 
 
+class CharacterReply(StrictModel):
+    dialogue: str = ''
+    narration: str = ''
+
+
 class GameTurnResult(StrictModel):
     responderId: str
     responderName: str
     sceneGoal: str
     eventSeed: Optional[str] = None
     turns: List[PresentedTurn] = Field(default_factory=list)
+    primaryDialogue: str = ''
+    primaryNarration: str = ''
     primaryReply: str
     stateDiff: TurnStateDiff
 
@@ -264,7 +276,47 @@ class GameTurnDebug(StrictModel):
     selectedMemorySummaries: List[str] = Field(default_factory=list)
     recentTurnDigest: List[str] = Field(default_factory=list)
     directorNote: str = ''
+    characterDialogue: str = ''
+    characterNarration: str = ''
     characterReply: str
+
+
+class LongMemoryItem(StrictModel):
+    id: str
+    sessionId: str
+    responderId: str
+    characterIds: List[str] = Field(default_factory=list)
+    locationId: Optional[str] = None
+    memoryType: str
+    retrievalSummary: str
+    displaySummary: str
+    createdAt: str
+    importance: float = 0.0
+    salience: float = 0.0
+
+
+class LongMemoryProfile(StrictModel):
+    characterId: str
+    relationshipStage: str = ''
+    playerImageSummary: str = ''
+    relationshipSummary: str = ''
+    retrievalSummary: str = ''
+    displaySummary: str = ''
+    displayTeaser: str = ''
+    openThreads: List[str] = Field(default_factory=list)
+    lastInteractionAt: Optional[str] = None
+
+
+class ArchivePromotionSummary(StrictModel):
+    promotedCount: int = 0
+    profileCount: int = 0
+
+
+class LongMemoryState(StrictModel):
+    profiles: Dict[str, LongMemoryProfile] = Field(default_factory=dict)
+    recentItems: List[LongMemoryItem] = Field(default_factory=list)
+    selectedItems: List[LongMemoryItem] = Field(default_factory=list)
+    archivePromotion: Optional[ArchivePromotionSummary] = None
 
 
 class WorldbookCreateRequest(StrictModel):
@@ -283,11 +335,80 @@ class CharacterCardListResponse(StrictModel):
     items: List[CharacterCardSummary] = Field(default_factory=list)
 
 
+class AssistantSummary(StrictModel):
+    id: str
+    source: Literal['assistant', 'projected_character'] = 'assistant'
+    name: str
+    worldbookId: str
+    worldbookTitle: str = ''
+    characterId: str
+    characterRole: str = ''
+    personaTags: List[str] = Field(default_factory=list)
+    userScope: str = 'default_player'
+    status: Literal['draft', 'active', 'archived'] = 'draft'
+    memoryStatus: Literal['empty', 'building', 'ready'] = 'empty'
+    summary: str = ''
+    updatedAt: str = ''
+    sessionCount: int = 0
+    activeSessionCount: int = 0
+    archivedSessionCount: int = 0
+    recentSessionId: str = ''
+
+
+class Assistant(StrictModel):
+    id: str
+    name: str
+    worldbookId: str
+    characterId: str
+    userScope: str = 'default_player'
+    status: Literal['draft', 'active', 'archived'] = 'draft'
+    memoryStatus: Literal['empty', 'building', 'ready'] = 'empty'
+    summary: str = ''
+    createdAt: str
+    updatedAt: str
+
+
+class AssistantListResponse(StrictModel):
+    items: List[AssistantSummary] = Field(default_factory=list)
+
+
+class AssistantCreateRequest(StrictModel):
+    name: str = ''
+    worldbookId: str
+    characterId: str
+    userScope: str = 'default_player'
+    status: Literal['draft', 'active', 'archived'] = 'active'
+    summary: str = ''
+
+
+class AssistantUpdateRequest(StrictModel):
+    name: str = ''
+    status: str = ''
+    summary: str = ''
+
+
+class AssistantFixtureResetRequest(StrictModel):
+    assistantId: str
+    characterId: str
+    purgeLegacyGeneratedData: bool = False
+
+
+class AssistantFixtureResetResponse(StrictModel):
+    deletedAssistants: int = 0
+    deletedCharacters: int = 0
+    deletedSessions: int = 0
+    deletedMemories: int = 0
+    deletedProfiles: int = 0
+    reusedFixture: bool = False
+
+
 class GameSessionCreateRequest(StrictModel):
+    assistantId: str = ''
     worldbookId: str
     characterIds: List[str] = Field(default_factory=list)
     title: str = ''
     openingLocationId: str = ''
+    userScope: str = 'default_player'
 
 
 class GameSessionUpdateRequest(StrictModel):
@@ -298,10 +419,17 @@ class GameSessionUpdateRequest(StrictModel):
 class GameSessionStateResponse(StrictModel):
     session: GameSession
     scene: SceneSnapshot
+    longMemory: LongMemoryState = Field(default_factory=LongMemoryState)
 
 
 class GameSessionListResponse(StrictModel):
     items: List[GameSessionSummary] = Field(default_factory=list)
+
+
+class GameSessionDeleteResponse(StrictModel):
+    deleted: bool = True
+    sessionId: str
+    title: str = ''
 
 
 class GameTurnRequest(StrictModel):
@@ -312,5 +440,6 @@ class GameTurnResponse(StrictModel):
     acknowledged: bool = True
     session: GameSession
     scene: SceneSnapshot
+    longMemory: LongMemoryState = Field(default_factory=LongMemoryState)
     result: GameTurnResult
     debug: GameTurnDebug

@@ -56,6 +56,56 @@ CREATE TABLE IF NOT EXISTS rag_logs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS game_memories (
+  id TEXT PRIMARY KEY,
+  assistant_id TEXT NOT NULL,
+  user_scope TEXT NOT NULL,
+  worldbook_id TEXT NOT NULL,
+  session_id TEXT NOT NULL,
+  responder_id TEXT NOT NULL,
+  character_ids TEXT[] NOT NULL DEFAULT '{}',
+  location_id TEXT,
+  scene_id TEXT,
+  day_index INT NOT NULL,
+  memory_type VARCHAR(32) NOT NULL,
+  summary TEXT NOT NULL,
+  retrieval_text TEXT NOT NULL,
+  trigger_hints TEXT[] NOT NULL DEFAULT '{}',
+  emotion_payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  relation_payload JSONB NOT NULL DEFAULT '{}'::jsonb,
+  salience DOUBLE PRECISION NOT NULL DEFAULT 0,
+  importance DOUBLE PRECISION NOT NULL DEFAULT 0,
+  visibility JSONB NOT NULL DEFAULT '{}'::jsonb,
+  archived_from_session BOOLEAN NOT NULL DEFAULT TRUE,
+  last_used_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  embedding VECTOR(1536)
+);
+
+CREATE TABLE IF NOT EXISTS game_memory_profiles (
+  assistant_id TEXT NOT NULL,
+  user_scope TEXT NOT NULL,
+  worldbook_id TEXT NOT NULL,
+  character_id TEXT NOT NULL,
+  player_scope TEXT NOT NULL,
+  latest_session_id TEXT NOT NULL,
+  relationship_stage VARCHAR(32) NOT NULL,
+  trust INT NOT NULL,
+  affection INT NOT NULL,
+  tension INT NOT NULL,
+  familiarity INT NOT NULL,
+  player_image_summary TEXT NOT NULL,
+  relationship_summary TEXT NOT NULL,
+  long_term_summary TEXT NOT NULL,
+  open_threads TEXT[] NOT NULL DEFAULT '{}',
+  important_memory_ids TEXT[] NOT NULL DEFAULT '{}',
+  last_interaction_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL,
+  updated_at TIMESTAMPTZ NOT NULL,
+  PRIMARY KEY (worldbook_id, character_id, player_scope)
+);
+
 CREATE INDEX IF NOT EXISTS idx_docs_owner_created_at
 ON docs(owner, created_at DESC);
 
@@ -110,3 +160,35 @@ CREATE INDEX IF NOT EXISTS idx_chunks_embedding_ivfflat
 ON chunks
 USING ivfflat (embedding vector_cosine_ops)
 WITH (lists = 100);
+
+CREATE INDEX IF NOT EXISTS idx_game_memories_worldbook_created_at
+ON game_memories(worldbook_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_game_memories_assistant_created_at
+ON game_memories(assistant_id, user_scope, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_game_memories_session_created_at
+ON game_memories(session_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_game_memories_responder_created_at
+ON game_memories(responder_id, created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_game_memories_summary_trgm
+ON game_memories USING gin (summary gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS idx_game_memories_retrieval_text_trgm
+ON game_memories USING gin (retrieval_text gin_trgm_ops);
+
+CREATE INDEX IF NOT EXISTS idx_game_memories_embedding_ivfflat
+ON game_memories
+USING ivfflat (embedding vector_cosine_ops)
+WITH (lists = 50);
+
+CREATE INDEX IF NOT EXISTS idx_game_memory_profiles_worldbook_updated_at
+ON game_memory_profiles(worldbook_id, updated_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_game_memory_profiles_assistant_updated_at
+ON game_memory_profiles(assistant_id, user_scope, updated_at DESC);
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_game_memory_profiles_assistant_character_scope
+ON game_memory_profiles(assistant_id, character_id, user_scope);

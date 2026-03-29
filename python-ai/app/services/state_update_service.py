@@ -2,6 +2,7 @@
 
 from app.models.game_schemas import (
     CharacterCard,
+    CharacterReply,
     GameSession,
     MemoryEntry,
     MemoryProfile,
@@ -92,12 +93,21 @@ def _unlock_secrets(card: CharacterCard, relation) -> list[str]:
     return unlocked
 
 
-def _append_recent_turn(session: GameSession, actor_type: str, actor_id: str, text: str, scene_id: str, created_at: str) -> RecentTurn:
+def _append_recent_turn(
+    session: GameSession,
+    actor_type: str,
+    actor_id: str,
+    text: str,
+    scene_id: str,
+    created_at: str,
+    presentation_type: str = 'speech',
+) -> RecentTurn:
     turn = RecentTurn(
         turnId=new_id('turn'),
         actorType=actor_type,
         actorId=actor_id,
         text=text,
+        presentationType=presentation_type,
         sceneId=scene_id,
         createdAt=created_at,
     )
@@ -114,6 +124,7 @@ def _append_memory(session: GameSession, summary: str, character_ids: list[str],
             scope='session',
             characterIds=character_ids,
             locationId=location_id,
+            sceneId=session.runtimeState.currentSceneId,
             summary=summary,
             factPayload={},
             emotionPayload={},
@@ -206,7 +217,7 @@ def apply_turn_result(
     responder: CharacterCard,
     plan: dict,
     player_message: str,
-    character_reply: str,
+    character_reply: CharacterReply,
 ) -> tuple[GameSession, list[RecentTurn]]:
     now = utc_now_iso()
     appended_turns: list[RecentTurn] = []
@@ -220,9 +231,30 @@ def apply_turn_result(
         session.runtimeState.activeEvents = session.runtimeState.activeEvents[-5:]
 
     appended_turns.append(_append_recent_turn(session, 'player', 'player', player_message, plan['sceneId'], now))
-    if plan.get('directorNote'):
-        appended_turns.append(_append_recent_turn(session, 'director', 'director', plan['directorNote'], plan['sceneId'], now))
-    appended_turns.append(_append_recent_turn(session, 'character', responder.id, character_reply, plan['sceneId'], now))
+    if character_reply.narration.strip():
+        appended_turns.append(
+            _append_recent_turn(
+                session,
+                'character',
+                responder.id,
+                character_reply.narration.strip(),
+                plan['sceneId'],
+                now,
+                'narration',
+            )
+        )
+    if character_reply.dialogue.strip():
+        appended_turns.append(
+            _append_recent_turn(
+                session,
+                'character',
+                responder.id,
+                character_reply.dialogue.strip(),
+                plan['sceneId'],
+                now,
+                'speech',
+            )
+        )
 
     relation = session.runtimeState.relationshipStates[responder.id]
     _apply_relationship_delta(responder, relation, player_message, plan.get('eventSeed'))

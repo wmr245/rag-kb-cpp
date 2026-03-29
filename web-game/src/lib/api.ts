@@ -1,6 +1,9 @@
 import type {
+  Assistant,
+  AssistantListResponse,
   CharacterCard,
   CharacterCardListResponse,
+  GameSessionDeleteResponse,
   GameSessionListResponse,
   GameSessionStateResponse,
   GameTurnResponse,
@@ -31,6 +34,41 @@ export async function listWorldbooks() {
   return requestJson<WorldbookListResponse>('/game/worldbooks');
 }
 
+export async function listAssistants() {
+  return requestJson<AssistantListResponse>('/game/assistants');
+}
+
+export async function getAssistant(assistantId: string) {
+  return requestJson<Assistant>(`/game/assistants/${assistantId}`);
+}
+
+export async function createAssistant(payload: {
+  name?: string;
+  worldbookId: string;
+  characterId: string;
+  userScope?: string;
+  summary?: string;
+}) {
+  return requestJson<Assistant>('/game/assistants', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function updateAssistant(
+  assistantId: string,
+  payload: {
+    name?: string;
+    status?: 'draft' | 'active' | 'archived';
+    summary?: string;
+  },
+) {
+  return requestJson<Assistant>(`/game/assistants/${assistantId}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function getWorldbook(worldbookId: string) {
   return requestJson<Worldbook>(`/game/worldbooks/${worldbookId}`);
 }
@@ -58,6 +96,11 @@ export async function listSessions() {
   return requestJson<GameSessionListResponse>('/game/sessions');
 }
 
+export async function listSessionsByAssistant(assistantId: string) {
+  const query = assistantId ? `?assistantId=${encodeURIComponent(assistantId)}` : '';
+  return requestJson<GameSessionListResponse>(`/game/sessions${query}`);
+}
+
 export async function getSession(sessionId: string) {
   return requestJson<GameSessionStateResponse>(`/game/sessions/${sessionId}`);
 }
@@ -67,6 +110,8 @@ export async function createSession(payload: {
   characterIds: string[];
   title: string;
   openingLocationId?: string;
+  assistantId?: string;
+  userScope?: string;
 }) {
   return requestJson<GameSessionStateResponse>('/game/sessions', {
     method: 'POST',
@@ -84,6 +129,12 @@ export async function updateSession(
   return requestJson<GameSessionStateResponse>(`/game/sessions/${sessionId}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
+  });
+}
+
+export async function deleteSession(sessionId: string) {
+  return requestJson<GameSessionDeleteResponse>(`/game/sessions/${sessionId}`, {
+    method: 'DELETE',
   });
 }
 

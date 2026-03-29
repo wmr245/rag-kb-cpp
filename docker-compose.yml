@@ -49,6 +49,7 @@ services:
       REDIS_PORT: 6379
       UPLOAD_DIR: /workspace/uploads
       GAME_DATA_DIR: ${GAME_DATA_DIR:-/workspace/game-data}
+      GAME_TESTING_API_ENABLED: ${GAME_TESTING_API_ENABLED:-true}
       REDIS_URL: redis://redis:6379/0
       QUERY_CACHE_TTL_SEC: 300
       QUERY_CACHE_PREFIX: rag:query:v1

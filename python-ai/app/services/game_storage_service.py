@@ -7,6 +7,7 @@ from app.core.config import GAME_DATA_DIR
 
 _BASE_DIR = Path(GAME_DATA_DIR)
 _KIND_DIRS = {
+    'assistants': _BASE_DIR / 'assistants',
     'worldbooks': _BASE_DIR / 'worldbooks',
     'character_cards': _BASE_DIR / 'character_cards',
     'sessions': _BASE_DIR / 'sessions',
@@ -36,6 +37,12 @@ def load_record(kind: str, record_id: str) -> Dict[str, Any] | None:
     if not path.exists():
         return None
     return json.loads(path.read_text(encoding='utf-8'))
+
+
+def delete_record(kind: str, record_id: str) -> None:
+    path = _record_path(kind, record_id)
+    if path.exists():
+        path.unlink()
 
 
 def list_records(kind: str) -> List[Dict[str, Any]]:

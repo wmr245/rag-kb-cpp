@@ -13,9 +13,9 @@
   "speechStyle": {
     "tone": "soft",
     "verbosity": "short",
-    "habitPhrases": ["也许吧", "你别多想"],
+    "habitPhrases": [],
     "avoidPhrases": ["高声命令", "直白威胁"],
-    "cadenceHints": ["停顿稍多", "先观察再回答"]
+    "cadenceHints": ["先观察再回答", "表达克制但自然连贯", "含蓄表达在意", "偶尔留白，但不要固定句式"]
   },
   "likes": ["旧书", "黄昏", "安静陪伴"],
   "dislikes": ["公开施压", "被逼着解释"],

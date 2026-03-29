@@ -22,6 +22,16 @@
   长期聊天框架的可落地方案，说明三层记忆、长期存储建模、archive 沉淀、retrieval 接入顺序，以及为什么不要直接复用现有文档 `chunks` 表。
 - `2026-03-28-next-prompt.md`
   当前最值得推进的新范围提示词，明确下一步应该把项目从“会话工作台”推进到“长期记忆后端 + 归档沉淀 + turn 检索”。
+- `2026-03-28-dialogue-long-memory-improvement-directions.md`
+  总结最新真实链路测试后的改进方向，重点讨论 prompt iteration、记忆分层、memory index 和 retrieval/prompt 的后续演进路径。
+- `2026-03-28-prompt-iteration-next-prompt.md`
+  当前最新的接力 prompt，明确下一轮最高优先级应该转向提示词与对话生成链迭代，而 memory index 设计是第二优先级。
+- `2026-03-29-personal-assistant-direction.md`
+  说明如何把当前项目从多时间线互动叙事框架收紧为“个人 AI 助手”，重点包括前端大改方向、后端 assistant-centric 记忆归属，以及 RAG/KG/长期记忆的职责划分。
+- `2026-03-29-next-prompt.md`
+  基于最新产品判断的接力 prompt，明确下一轮要优先推进 personal assistant 收口，而不是继续以多时间线 web-game 为主轴。
+- `2026-03-29-personal-assistant-task-breakdown.md`
+  把 personal assistant 方向进一步拆成具体任务清单，覆盖 assistant 模型、前端大改、后端记忆归属、memory index、迁移和验证。
 
 ## 当前使用方式
 
@@ -30,6 +40,11 @@
 - 需要把现有能力包装成更稳定的服务边界、供后续 Java 产品层或新 Agent 编排复用时，优先看 `2026-03-27-reusable-interfaces.md`
 - 需要开始做长期聊天框架的后端设计时，优先看 `2026-03-28-long-memory-architecture.md`
 - 需要判断当前项目接下来该怎么推进、按什么顺序推进时，优先看 `2026-03-28-next-prompt.md`
+- 需要按当前最新判断继续推进对话质量与 prompt 结构时，优先看 `2026-03-28-prompt-iteration-next-prompt.md`
+- 需要系统讨论 prompt iteration / 记忆分层 / memory index 方向时，优先看 `2026-03-28-dialogue-long-memory-improvement-directions.md`
+- 需要把项目整体收紧成 personal assistant、并判断前后端要怎么一起重构时，优先看 `2026-03-29-personal-assistant-direction.md`
+- 需要按这一最新产品方向继续接手推进时，优先看 `2026-03-29-next-prompt.md`
+- 需要直接开工 personal assistant 重构 backlog 时，优先看 `2026-03-29-personal-assistant-task-breakdown.md`
 - 需要回看上一轮 query handling 冲刺目标时，再参考 `2026-03-22-next-prompt.md`
 - 需要做阶段判断或能力对照时，参考 `2026-03-22-rag-capability-benchmark.md`
 - 需要回看云端 rerank 的设计背景时，参考 `2026-03-22-cloud-rerank-design.md`
@@ -54,5 +69,7 @@
 
 当前已经明确的新范围是：
 
-- `web-game` 的 session workspace 已经具备第一层生命周期能力
-- 项目下一步最值得做的是长期记忆后端，而不是继续主要投入视觉层或 rerank 微调
+- 项目正在从 `web-game` / 多时间线互动叙事框架，收紧成“个人 AI 助手”
+- `worldbook` 将保留为背景设定层，`character card` 将保留为助手人格层
+- 长期记忆、RAG 和未来知识图谱将共同构成 assistant-centric 的持续记忆系统
+- 前端下一步不是小修小补，而是需要从 session workspace 重构成 assistant workspace

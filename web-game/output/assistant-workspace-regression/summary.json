@@ -1,0 +1,26 @@
+{
+  "baseUrl": "http://127.0.0.1:5173",
+  "importedSeed": false,
+  "createdFixtureCharacter": false,
+  "createdFixtureAssistant": false,
+  "reusedFixture": true,
+  "activatedAssistant": "Assistant Regression Anchor",
+  "createdFirstSession": true,
+  "messageSent": true,
+  "renderedNarration": true,
+  "longMemoryVisibleAfterFirstTurn": true,
+  "archivedFirstSession": "Assistant Regression Anchor · 对话 1",
+  "archivedSnapshotVisible": true,
+  "createdSecondSession": true,
+  "longMemoryVisibleAfterRecall": true,
+  "longMemoryEntryCount": 3,
+  "resetResult": {
+    "deletedAssistants": 0,
+    "deletedCharacters": 0,
+    "deletedSessions": 2,
+    "deletedMemories": 1,
+    "deletedProfiles": 3,
+    "reusedFixture": true
+  },
+  "consoleErrors": []
+}

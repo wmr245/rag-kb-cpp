@@ -320,7 +320,7 @@ button:disabled {
 
 .session-rail,
 .scene-inspector {
-  padding: clamp(20px, 2vw, 28px) clamp(18px, 1.8vw, 24px);
+  padding: clamp(20px, 2vw, 28px) clamp(18px, 1.8vw, 24px) clamp(30px, 3vw, 40px);
   overflow-y: auto;
   background: linear-gradient(180deg, rgba(9, 12, 18, 0.95), rgba(7, 10, 15, 0.92));
 }
@@ -413,9 +413,8 @@ button:disabled {
 }
 
 .rail-section--fill {
-  flex: 1;
-  min-height: 0;
-  grid-template-rows: auto minmax(0, 1fr);
+  flex: 0 0 auto;
+  min-height: auto;
 }
 
 .section-heading {
@@ -443,12 +442,16 @@ button:disabled {
   gap: 10px;
 }
 
-.session-list,
 .location-option-list,
-.cast-option-list,
-.relation-list {
+.cast-option-list {
   min-height: 0;
   overflow: auto;
+}
+
+.session-list,
+.relation-list {
+  min-height: auto;
+  overflow: visible;
 }
 
 .session-group,
@@ -520,10 +523,16 @@ button:disabled {
 .session-row-shell {
   display: grid;
   gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .session-row-shell.is-active {
   transform: translateY(-1px);
+  border-color: rgba(142, 174, 252, 0.24);
+  box-shadow: 0 10px 24px rgba(52, 74, 126, 0.12);
 }
 
 .session-row-shell.is-busy {
@@ -658,6 +667,7 @@ button:disabled {
 
 .session-row-actions {
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 
 .session-action-button {
@@ -1346,6 +1356,24 @@ button:disabled {
   width: min(76%, 780px);
 }
 
+.dialogue-line--narration {
+  width: min(64%, 620px);
+  margin-right: auto;
+  margin-left: 28px;
+  padding: 14px 16px;
+  border-color: rgba(148, 163, 184, 0.12);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+}
+
+.dialogue-line--narration .dialogue-meta {
+  color: rgba(191, 203, 226, 0.74);
+}
+
+.dialogue-line--narration p {
+  color: rgba(223, 231, 244, 0.82);
+  line-height: 1.8;
+}
+
 .dialogue-line.is-highlighted {
   border-color: rgba(142, 174, 252, 0.32);
   box-shadow: 0 0 0 1px rgba(142, 174, 252, 0.1), 0 10px 24px rgba(76, 99, 167, 0.12);
@@ -1576,9 +1604,8 @@ button:disabled {
 }
 
 .inspector-block--stretch {
-  flex: 1;
-  min-height: 0;
-  grid-template-rows: auto minmax(0, 1fr);
+  flex: 0 0 auto;
+  min-height: auto;
 }
 
 .shift-line,
@@ -1635,6 +1662,57 @@ button:disabled {
   margin: 0;
   color: var(--text-soft);
   line-height: 1.6;
+}
+
+.relation-memory-panel {
+  display: grid;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.relation-memory-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.relation-memory-toggle {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.relation-memory-toggle:hover {
+  color: var(--text-soft);
+}
+
+.relation-memory-expanded {
+  display: grid;
+  gap: 10px;
+}
+
+.relation-memory-list {
+  display: grid;
+  gap: 8px;
+}
+
+.relation-memory-item {
+  margin: 0;
+  padding-left: 12px;
+  border-left: 2px solid rgba(148, 163, 184, 0.16);
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.profile-copy--teaser {
+  color: var(--text-soft);
 }
 
 .relationship-stage-badge {
@@ -2233,8 +2311,13 @@ button:disabled {
   }
 
   .dialogue-line--player,
-  .dialogue-line--character {
+  .dialogue-line--character,
+  .dialogue-line--narration {
     width: 100%;
+  }
+
+  .dialogue-line--narration {
+    margin-left: 0;
   }
 
   .focus-note {

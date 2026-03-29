@@ -1,22 +1,22 @@
 import { memo } from 'react';
 import { motion } from 'motion/react';
-import type { GameTurnDebug, GameTurnResult } from '../lib/types';
+import type { GameTurnResult } from '../lib/types';
 
 interface TurnSpotlightProps {
   result: GameTurnResult | null;
-  debug: GameTurnDebug | null;
   hasSession: boolean;
 }
 
-export const TurnSpotlight = memo(function TurnSpotlight({ result, debug, hasSession }: TurnSpotlightProps) {
+export const TurnSpotlight = memo(function TurnSpotlight({ result, hasSession }: TurnSpotlightProps) {
   if (result) {
+    const primarySpeech = result.primaryDialogue || result.primaryReply;
     return (
       <section className="turn-spotlight">
         <div className="spotlight-background" />
         <motion.div className="spotlight-card" initial={{ opacity: 0.96, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.16 }}>
           <div className="spotlight-header">
             <div className="spotlight-heading">
-              <p className="eyebrow">{'\u672c\u8f6e\u805a\u5149'}</p>
+              <p className="eyebrow">{'当前回应聚焦'}</p>
               <h3>{result.responderName}</h3>
             </div>
             <div className="spotlight-pills">
@@ -25,15 +25,17 @@ export const TurnSpotlight = memo(function TurnSpotlight({ result, debug, hasSes
             </div>
           </div>
 
-          <p className="spotlight-quote">{result.primaryReply}</p>
+          {primarySpeech ? <p className="spotlight-quote">{primarySpeech}</p> : null}
 
           <div className="spotlight-support">
+            {result.primaryNarration ? (
+              <div className="spotlight-support-block">
+                <span className="preview-label">{'低频旁白'}</span>
+                <p>{result.primaryNarration}</p>
+              </div>
+            ) : null}
             <div className="spotlight-support-block">
-              <span className="preview-label">{'\u5bfc\u6f14\u63d0\u793a'}</span>
-              <p>{debug?.directorNote || '\u8fd8\u6ca1\u6709\u989d\u5916\u63d0\u793a\u3002'}</p>
-            </div>
-            <div className="spotlight-support-block">
-              <span className="preview-label">{'\u573a\u666f'}</span>
+              <span className="preview-label">{'上下文'}</span>
               <p>{result.stateDiff.newSceneId}</p>
             </div>
           </div>
@@ -46,12 +48,12 @@ export const TurnSpotlight = memo(function TurnSpotlight({ result, debug, hasSes
     <section className="turn-spotlight">
       <div className="spotlight-background" />
       <div className="spotlight-card spotlight-card--empty">
-        <p className="eyebrow">{'\u672c\u8f6e\u805a\u5149'}</p>
-        <h3>{hasSession ? '\u8fd9\u4e00\u591c\u8fd8\u5728\u84c4\u529b' : '\u5148\u5f00\u542f\u4e00\u4e2a\u5267\u672c'}</h3>
+        <p className="eyebrow">{'当前回应聚焦'}</p>
+        <h3>{hasSession ? '助手还在积累上下文' : '先开启一段对话'}</h3>
         <p>
           {hasSession
-            ? '\u8fd9\u4e00\u5757\u4f1a\u5728 recent turns \u88ab\u63a8\u8fdb\u540e\uff0c\u6293\u51fa\u6700\u503c\u5f97\u88ab\u770b\u89c1\u7684\u53f0\u8bcd\u548c\u5bfc\u6f14\u7ebf\u7d22\u3002'
-            : '\u5148\u5f00\u542f session\uff0c\u4e2d\u95f4\u821e\u53f0\u624d\u4f1a\u771f\u6b63\u51fa\u73b0\u3002'}
+            ? '这里会在 recent turns 被推进后，抓出这一轮最值得被看见的回应与低频旁白。'
+            : '先开启与助手的第一段对话，中间会话窗口和这里的聚焦卡片才会一起亮起来。'}
         </p>
       </div>
     </section>

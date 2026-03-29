@@ -6,18 +6,32 @@
     GameSessionUpdateRequest,
     GameTurnDebug,
     GameTurnResult,
+    LongMemoryItem,
+    ArchivePromotionSummary,
     MemoryProfile,
     PresentedTurn,
     RelationshipState,
     RuntimeState,
 )
 from app.services.character_card_service import get_character_card
+from app.services.assistant_service import build_assistant_id, get_assistant
 from app.services.character_response_service import generate_character_response
 from app.services.director_agent_service import build_turn_plan
 from app.services.game_exceptions import GameConflictError, GameNotFoundError, GameValidationError
-from app.services.game_storage_service import list_records, load_record, save_record
+from app.services.game_storage_service import delete_record, list_records, load_record, save_record
 from app.services.game_utils import dump_model, new_id, utc_now_iso
-from app.services.memory_retrieval_service import build_memory_digest, build_recent_turn_digest, select_relevant_memories
+from app.services.long_memory_service import (
+    delete_session_long_memories,
+    load_long_memory_profiles,
+    promote_session_memories,
+    select_long_term_memories,
+)
+from app.services.memory_retrieval_service import (
+    build_memory_digest,
+    build_prompt_turn_digest,
+    build_recent_turn_digest,
+    select_relevant_memories,
+)
 from app.services.state_update_service import apply_turn_result, build_state_diff, snapshot_turn_state
 from app.services.worldbook_service import get_worldbook
 
@@ -83,17 +97,46 @@ def _resolve_actor_name(actor_type: str, actor_id: str, characters_by_id: dict[s
     return character.name if character else actor_id
 
 
-def create_game_session(req: GameSessionCreateRequest) -> GameSession:
-    if not req.characterIds:
-        raise GameValidationError('characterIds must not be empty')
+def _dedupe_memory_summaries(items: list[str]) -> list[str]:
+    seen: set[str] = set()
+    rows: list[str] = []
+    for item in items:
+        normalized = item.strip()
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        rows.append(normalized)
+    return rows
 
-    worldbook = get_worldbook(req.worldbookId)
-    character_ids = _dedupe_preserve(req.characterIds)
+
+def create_game_session(req: GameSessionCreateRequest) -> GameSession:
+    assistant_id = req.assistantId.strip()
+    requested_character_ids = _dedupe_preserve(req.characterIds)
+
+    if assistant_id:
+        assistant = get_assistant(assistant_id)
+        if req.worldbookId and req.worldbookId != assistant.worldbookId:
+            raise GameValidationError(
+                f'assistant {assistant.id} does not belong to requested worldbook {req.worldbookId}'
+            )
+        worldbook = get_worldbook(assistant.worldbookId)
+        character_ids = requested_character_ids or [assistant.characterId]
+        if assistant.characterId not in character_ids:
+            character_ids = [assistant.characterId, *character_ids]
+    else:
+        if not requested_character_ids:
+            raise GameValidationError('characterIds must not be empty')
+        worldbook = get_worldbook(req.worldbookId)
+        character_ids = requested_character_ids
+
     characters = [get_character_card(character_id) for character_id in character_ids]
 
     mismatched = [card.id for card in characters if card.worldbookId != worldbook.id]
     if mismatched:
         raise GameValidationError(f'character cards do not belong to worldbook {worldbook.id}: {mismatched}')
+
+    if not assistant_id:
+        assistant_id = build_assistant_id(character_ids[0])
 
     location_id = _select_initial_location(worldbook, req.openingLocationId)
     current_cast = _select_initial_cast(characters, location_id)
@@ -113,6 +156,7 @@ def create_game_session(req: GameSessionCreateRequest) -> GameSession:
 
     session = GameSession(
         id=new_id('sess'),
+        assistantId=assistant_id,
         worldbookId=worldbook.id,
         characterIds=character_ids,
         title=req.title or worldbook.title,
@@ -137,12 +181,15 @@ def get_game_session(session_id: str) -> GameSession:
     return GameSession.model_validate(payload)
 
 
-def list_game_sessions() -> list[GameSessionSummary]:
+def list_game_sessions(assistant_id: str = '') -> list[GameSessionSummary]:
     rows = [GameSession.model_validate(payload) for payload in list_records('sessions')]
+    if assistant_id.strip():
+        rows = [row for row in rows if (row.assistantId or build_assistant_id(row.characterIds[0] if row.characterIds else '')) == assistant_id.strip()]
     rows.sort(key=lambda row: row.updatedAt, reverse=True)
     return [
         GameSessionSummary(
             id=row.id,
+            assistantId=row.assistantId,
             worldbookId=row.worldbookId,
             title=row.title,
             status=row.status,
@@ -155,10 +202,12 @@ def list_game_sessions() -> list[GameSessionSummary]:
     ]
 
 
-def update_game_session(session_id: str, req: GameSessionUpdateRequest) -> GameSession:
+def update_game_session(session_id: str, req: GameSessionUpdateRequest) -> tuple[GameSession, ArchivePromotionSummary | None]:
     session = get_game_session(session_id)
     next_title = req.title.strip()
     next_status = req.status.strip()
+    archive_summary: ArchivePromotionSummary | None = None
+    next_updated_at = utc_now_iso()
 
     if next_title:
         session.title = next_title
@@ -166,14 +215,25 @@ def update_game_session(session_id: str, req: GameSessionUpdateRequest) -> GameS
     if next_status:
         if next_status not in {'active', 'archived'}:
             raise GameValidationError(f'unsupported session status: {next_status}')
+        if session.status == 'active' and next_status == 'archived':
+            session.updatedAt = next_updated_at
+            characters = [get_character_card(character_id) for character_id in session.characterIds]
+            archive_summary = promote_session_memories(session, {card.id: card for card in characters})
         session.status = next_status
 
-    session.updatedAt = utc_now_iso()
+    session.updatedAt = next_updated_at
     save_record('sessions', session.id, dump_model(session))
+    return session, archive_summary
+
+
+def delete_game_session(session_id: str) -> GameSession:
+    session = get_game_session(session_id)
+    delete_session_long_memories(session.id)
+    delete_record('sessions', session.id)
     return session
 
 
-def play_turn(session_id: str, message: str) -> tuple[GameSession, GameTurnResult, GameTurnDebug]:
+def play_turn(session_id: str, message: str) -> tuple[GameSession, GameTurnResult, GameTurnDebug, list[LongMemoryItem]]:
     session = get_game_session(session_id)
     if session.status != 'active':
         raise GameValidationError('archived session cannot accept new turns')
@@ -196,8 +256,37 @@ def play_turn(session_id: str, message: str) -> tuple[GameSession, GameTurnResul
         preliminary_plan['responderId'],
         limit=3,
     )
-    relevant_memory_summaries = build_memory_digest(relevant_memories)
+    working_memory_summaries = build_memory_digest(relevant_memories)
+    long_memory_profiles = load_long_memory_profiles(session)
+    responder_profile = long_memory_profiles.get(preliminary_plan['responderId'])
+    responder_profile_summaries = (
+        [responder_profile.retrievalSummary or responder_profile.relationshipSummary or responder_profile.playerImageSummary]
+        if responder_profile
+        else []
+    )
+    selected_long_memory_items = select_long_term_memories(
+        session,
+        message,
+        preliminary_plan['targetLocationId'],
+        preliminary_plan['responderId'],
+        limit=3,
+    )
+    episodic_memory_summaries = [
+        item.retrievalSummary
+        for item in selected_long_memory_items
+        if item.retrievalSummary
+        and not (
+            responder_profile_summaries
+            and any(item.retrievalSummary in summary for summary in responder_profile_summaries if summary)
+        )
+    ]
+    relevant_memory_summaries = _dedupe_memory_summaries(
+        working_memory_summaries
+        + responder_profile_summaries
+        + episodic_memory_summaries
+    )
     recent_turn_digest = build_recent_turn_digest(session)
+    prompt_turn_digest = build_prompt_turn_digest(session)
     final_plan = build_turn_plan(
         worldbook,
         characters,
@@ -213,7 +302,7 @@ def play_turn(session_id: str, message: str) -> tuple[GameSession, GameTurnResul
         session,
         final_plan,
         message,
-        recent_turn_digest,
+        prompt_turn_digest,
         relevant_memory_summaries,
     )
 
@@ -240,12 +329,15 @@ def play_turn(session_id: str, message: str) -> tuple[GameSession, GameTurnResul
                 actorId=turn.actorId,
                 actorName=_resolve_actor_name(turn.actorType, turn.actorId, characters_by_id),
                 text=turn.text,
+                presentationType=turn.presentationType,
                 sceneId=turn.sceneId,
                 createdAt=turn.createdAt,
             )
             for turn in appended_turns
         ],
-        primaryReply=character_reply,
+        primaryDialogue=character_reply.dialogue,
+        primaryNarration=character_reply.narration,
+        primaryReply=character_reply.dialogue or character_reply.narration,
         stateDiff=state_diff,
     )
     debug = GameTurnDebug(
@@ -254,6 +346,8 @@ def play_turn(session_id: str, message: str) -> tuple[GameSession, GameTurnResul
         selectedMemorySummaries=relevant_memory_summaries,
         recentTurnDigest=recent_turn_digest,
         directorNote=final_plan.get('directorNote', ''),
-        characterReply=character_reply,
+        characterDialogue=character_reply.dialogue,
+        characterNarration=character_reply.narration,
+        characterReply=character_reply.dialogue or character_reply.narration,
     )
-    return session, result, debug
+    return session, result, debug, selected_long_memory_items

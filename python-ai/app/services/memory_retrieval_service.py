@@ -34,7 +34,17 @@ def select_relevant_memories(
 
 def build_recent_turn_digest(session: GameSession, limit: int = 6) -> list[str]:
     turns = session.recentTurns[-limit:]
-    return [f'{turn.actorType}:{turn.actorId}:{turn.text}' for turn in turns]
+    return [f'{turn.actorType}:{turn.actorId}:{turn.presentationType}:{turn.text}' for turn in turns]
+
+
+def build_prompt_turn_digest(session: GameSession, limit: int = 6) -> list[str]:
+    turns = [
+        turn
+        for turn in session.recentTurns
+        if turn.actorType in {'player', 'character'} and (turn.actorType != 'character' or turn.presentationType == 'speech')
+    ]
+    turns = turns[-limit:]
+    return [f'{turn.actorType}:{turn.actorId}:{turn.presentationType}:{turn.text}' for turn in turns]
 
 
 def build_memory_digest(entries: list[MemoryEntry]) -> list[str]:

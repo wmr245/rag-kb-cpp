@@ -48,10 +48,6 @@ def _pick_event_seed(worldbook: Worldbook, player_message: str, location_id: str
     for event_seed in worldbook.eventSeeds:
         if any(_contains_term(player_message, token) for token in [event_seed, '雨', '情书', '误会', '告白']):
             return event_seed
-    if location_id == 'rooftop':
-        return next((event for event in worldbook.eventSeeds if '天台' in event), None)
-    if location_id == 'library':
-        return next((event for event in worldbook.eventSeeds if '情书' in event or '雨' in event), None)
     return None
 
 

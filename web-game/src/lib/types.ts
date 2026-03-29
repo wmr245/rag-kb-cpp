@@ -1,4 +1,7 @@
 export type ActorType = 'player' | 'director' | 'character';
+export type PresentationType = 'speech' | 'narration';
+export type AssistantStatus = 'draft' | 'active' | 'archived';
+export type AssistantMemoryStatus = 'empty' | 'building' | 'ready';
 
 export interface WorldbookFaction {
   id: string;
@@ -63,6 +66,43 @@ export interface CharacterCardListResponse {
   items: CharacterCardSummary[];
 }
 
+export interface AssistantSummary {
+  id: string;
+  source: 'projected_character' | 'assistant';
+  name: string;
+  worldbookId: string;
+  worldbookTitle: string;
+  characterId: string;
+  characterRole: string;
+  personaTags: string[];
+  userScope: string;
+  summary: string;
+  status: AssistantStatus;
+  memoryStatus: AssistantMemoryStatus;
+  updatedAt: string;
+  sessionCount: number;
+  activeSessionCount: number;
+  archivedSessionCount: number;
+  recentSessionId: string;
+}
+
+export interface Assistant {
+  id: string;
+  name: string;
+  worldbookId: string;
+  characterId: string;
+  userScope: string;
+  status: AssistantStatus;
+  memoryStatus: AssistantMemoryStatus;
+  summary: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AssistantListResponse {
+  items: AssistantSummary[];
+}
+
 export interface SpeechStyle {
   tone: string;
   verbosity: string;
@@ -118,6 +158,7 @@ export interface CharacterCard {
 
 export interface GameSessionSummary {
   id: string;
+  assistantId?: string;
   worldbookId: string;
   title: string;
   status: string;
@@ -129,6 +170,12 @@ export interface GameSessionSummary {
 
 export interface GameSessionListResponse {
   items: GameSessionSummary[];
+}
+
+export interface GameSessionDeleteResponse {
+  deleted: boolean;
+  sessionId: string;
+  title: string;
 }
 
 export interface RelationshipState {
@@ -157,6 +204,7 @@ export interface RecentTurn {
   actorType: ActorType;
   actorId: string;
   text: string;
+  presentationType?: PresentationType;
   sceneId?: string | null;
   createdAt: string;
 }
@@ -174,11 +222,13 @@ export interface MemoryEntry {
   id: string;
   summary: string;
   type: string;
+  sceneId?: string | null;
   createdAt: string;
 }
 
 export interface GameSession {
   id: string;
+  assistantId?: string;
   worldbookId: string;
   characterIds: string[];
   title: string;
@@ -241,6 +291,7 @@ export interface PresentedTurn {
   actorId: string;
   actorName: string;
   text: string;
+  presentationType?: PresentationType;
   sceneId?: string | null;
   createdAt: string;
 }
@@ -251,6 +302,8 @@ export interface GameTurnResult {
   sceneGoal: string;
   eventSeed?: string | null;
   turns: PresentedTurn[];
+  primaryDialogue: string;
+  primaryNarration: string;
   primaryReply: string;
   stateDiff: TurnStateDiff;
 }
@@ -261,12 +314,53 @@ export interface GameTurnDebug {
   selectedMemorySummaries: string[];
   recentTurnDigest: string[];
   directorNote: string;
+  characterDialogue: string;
+  characterNarration: string;
   characterReply: string;
+}
+
+export interface LongMemoryItem {
+  id: string;
+  sessionId: string;
+  responderId: string;
+  characterIds: string[];
+  locationId?: string | null;
+  memoryType: string;
+  retrievalSummary: string;
+  displaySummary: string;
+  createdAt: string;
+  importance: number;
+  salience: number;
+}
+
+export interface LongMemoryProfile {
+  characterId: string;
+  relationshipStage: string;
+  playerImageSummary: string;
+  relationshipSummary: string;
+  retrievalSummary: string;
+  displaySummary: string;
+  displayTeaser: string;
+  openThreads: string[];
+  lastInteractionAt?: string | null;
+}
+
+export interface ArchivePromotionSummary {
+  promotedCount: number;
+  profileCount: number;
+}
+
+export interface LongMemoryState {
+  profiles: Record<string, LongMemoryProfile>;
+  recentItems: LongMemoryItem[];
+  selectedItems: LongMemoryItem[];
+  archivePromotion?: ArchivePromotionSummary | null;
 }
 
 export interface GameSessionStateResponse {
   session: GameSession;
   scene: SceneSnapshot;
+  longMemory: LongMemoryState;
 }
 
 export interface GameTurnResponse extends GameSessionStateResponse {

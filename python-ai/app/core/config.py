@@ -14,6 +14,12 @@ POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "postgres")
 
 UPLOAD_DIR = os.getenv("UPLOAD_DIR", "/workspace/uploads")
 GAME_DATA_DIR = os.getenv("GAME_DATA_DIR", "/workspace/game-data")
+GAME_TESTING_API_ENABLED = os.getenv("GAME_TESTING_API_ENABLED", "false").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 
 EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-v2")
 EMBEDDING_DIM = int(os.getenv("EMBEDDING_DIM", "1536"))
